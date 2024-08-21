@@ -1,0 +1,50 @@
+# SPDX-FileCopyrightText: 2024 University of Applied Sciences Osnabrück
+# SPDX-FileContributor: Andreas Schliebitz
+# SPDX-FileContributor: Henri Graf
+# SPDX-FileContributor: Jonas Tüpker
+# SPDX-FileContributor: Lukas Hesse
+# SPDX-FileContributor: Maik Fruhner
+# SPDX-FileContributor: Prof. Dr.-Ing. Heiko Tapken
+# SPDX-FileContributor: Tobias Wamhof
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+fastapi~=0.110.0
+pydantic~=1.10.2
+uvicorn~=0.27.1
+python-dotenv~=1.0.1
+itsdangerous~=2.1.2
+python-keycloak~=0.26.1
+docker~=6.1.0
+PyYAML~=6.0.1
+rdflib~=6.1.1
+minio~=7.1.8
+python-multipart~=0.0.5
+sqlalchemy~=1.4.42
+psycopg2-binary~=2.9.3
+alembic~=1.8.1
+python-dxf~=11.1.0
+tenacity~=8.0.1
+python-dateutil~=2.8.2
+python-on-whales~=0.43.0
+prometheus-fastapi-instrumentator~=5.8.1,!=5.8.2
+memory-profiler~=0.60.0
+genson~=1.2.2
+jsonschema~=4.17.3
+numpy~=1.23.1
+matplotlib~=3.6.0
+xmltodict~=0.13.0
+geoalchemy2~=0.12.5
+fiftyone~=0.23.5
+pycocotools~=2.0.6
+requests~=2.30.0
+requirements-parser~=0.5.0
+validators~=0.28.0
+mistletoe~=1.0.1
+jsonref~=1.1.0
+openapi-spec-validator~=0.5.7
+dockerfile-parse~=2.0.1
+onnx~=1.14.0
+tritonclient[all]~=2.41.1
+attrdict~=2.0.1
+gitpython~=3.1.43

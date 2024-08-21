@@ -1,0 +1,169 @@
+{
+  "description": "EfficientNet (Tan et al., 2019) multi-class classification provided by Torchvision. Documentation: https://pytorch.org/vision/main/models/efficientnet.html",
+  "type": "object",
+  "required": [
+    "architecture",
+    "epochs",
+    "batch-size",
+    "img-size",
+    "optimizer",
+    "learning-rate",
+    "lr-scheduler",
+    "train-split",
+    "test-split"
+  ],
+  "properties": {
+    "architecture": {
+      "title": "Architecture",
+      "type": "string",
+      "default": "efficientnet_v2_s",
+      "enum": [
+        "efficientnet_b0",
+        "efficientnet_b1",
+        "efficientnet_b2",
+        "efficientnet_b3",
+        "efficientnet_b4",
+        "efficientnet_b5",
+        "efficientnet_b6",
+        "efficientnet_b7",
+        "efficientnet_v2_s",
+        "efficientnet_v2_m",
+        "efficientnet_v2_l"
+      ],
+      "description": "EfficientNet architecture (version and size) to train."
+    },
+    "pretrained": {
+      "title": "Pretrained on ImageNet-1K dataset",
+      "type": "boolean",
+      "default": true,
+      "description": "Initialize network with weights pretrained on ImageNet-1K (transfer learning)."
+    },
+    "epochs": {
+      "title": "Epochs",
+      "type": "integer",
+      "default": 50,
+      "minimum": 1,
+      "description": "Number of times the training dataset will be passed through the network."
+    },
+    "batch-size": {
+      "title": "Batch size",
+      "type": "integer",
+      "default": 32,
+      "minimum": 1,
+      "description": "Number of images with targets in each training batch."
+    },
+    "auto-batch-size": {
+      "title": "Auto batch size",
+      "type": "boolean",
+      "default": false,
+      "description": "Automatically determine and overwrite user-defined 'batch-size'."
+    },
+    "img-size": {
+      "title": "Image size",
+      "type": "integer",
+      "default": 300,
+      "minimum": 1,
+      "description": "Square image size used for resizing height and width of all input images."
+    },
+    "optimizer": {
+      "title": "Optimizer",
+      "type": "string",
+      "default": "AdamW",
+      "description": "Any optimizer implementation provided by 'torch.optim'."
+    },
+    "lr-scheduler": {
+      "title": "Learning Rate Scheduler",
+      "type": "string",
+      "default": "ReduceLROnPlateau",
+      "enum": [
+        "ReduceLROnPlateau",
+        "StepLR"
+      ],
+      "description": "Learning rate scheduler used while training."
+    },
+    "learning-rate": {
+      "title": "Learning rate",
+      "type": "number",
+      "default": 0.001,
+      "minimum": 0,
+      "description": "Step size for moving towards a minimum of the loss function."
+    },
+    "lr-step-size": {
+      "title": "Learning rate step size",
+      "type": "number",
+      "default": 30,
+      "minimum": 0,
+      "description": "Period of learning rate decay. Ignored if LR scheduler is not StepLR."
+    },
+    "auto-learning-rate": {
+      "title": "Auto learning rate",
+      "type": "boolean",
+      "default": false,
+      "description": "Automatically determine and overwrite user-defined 'learning-rate'."
+    },
+    "swa-learning-rate": {
+      "title": "SWA learning rate",
+      "type": "number",
+      "default": 0,
+      "minimum": 0,
+      "description": "Learning rate used for Stochastic Weight Averaging (SWA). 0 to disable."
+    },
+    "weight-decay": {
+      "title": "Weight decay",
+      "type": "number",
+      "default": 0.01,
+      "minimum": 0,
+      "description": "Penalty on the L2 norm of the network weights."
+    },
+    "momentum": {
+      "title": "Momentum",
+      "type": "number",
+      "default": 0,
+      "minimum": 0,
+      "description": "Maintain velocity and trajectory of gradient. Ignored if not supported by optimizer."
+    },
+    "patience": {
+      "title": "Early Stopping",
+      "type": "number",
+      "default": 0,
+      "minimum": 0,
+      "description": "Early Stopping patience in epochs on train loss. 0 to disable."
+    },
+    "label-smoothing": {
+      "title": "Label Smoothing",
+      "type": "number",
+      "default": 0,
+      "minimum": 0,
+      "description": "Regularize labels by introducing noise. 0 to disable"
+    },
+    "metrics-average": {
+      "title": "Metrics Averaging Method",
+      "type": "string",
+      "default": "micro",
+      "enum": [
+        "micro",
+        "macro",
+        "weighted",
+        "none",
+        "samples"
+      ],
+      "description": "Averaging method used for calculating classification metrics."
+    },
+    "train-split": {
+      "title": "Train split",
+      "type": "number",
+      "default": 0.8,
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Percentage of the dataset used for training."
+    },
+    "test-split": {
+      "title": "Test split",
+      "type": "number",
+      "default": 0.2,
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Percentage of the dataset used for testing the trained model."
+    }
+  }
+}

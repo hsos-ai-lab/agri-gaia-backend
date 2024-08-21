@@ -1,0 +1,5 @@
+{
+  "output-dir": "/train",
+  "images-dir": "/datasets/images",
+  "labels-dir": "/datasets/labels"
+}

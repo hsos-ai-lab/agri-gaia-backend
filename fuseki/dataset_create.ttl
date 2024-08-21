@@ -1,0 +1,81 @@
+# SPDX-FileCopyrightText: 2024 University of Applied Sciences Osnabrück
+# SPDX-FileContributor: Andreas Schliebitz
+# SPDX-FileContributor: Henri Graf
+# SPDX-FileContributor: Jonas Tüpker
+# SPDX-FileContributor: Lukas Hesse
+# SPDX-FileContributor: Maik Fruhner
+# SPDX-FileContributor: Prof. Dr.-Ing. Heiko Tapken
+# SPDX-FileContributor: Tobias Wamhof
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix : <http://base/#> .
+@prefix fuseki: <http://jena.apache.org/fuseki#> .
+@prefix ja: <http://jena.hpl.hp.com/2005/11/Assembler#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix tdb: <http://jena.hpl.hp.com/2008/tdb#> .
+
+:dataset
+    a ja:DatasetTxnMem .
+
+:service1
+    fuseki:dataset :dataset ;
+    fuseki:endpoint [
+        fuseki:name "shacl" ;
+        fuseki:operation fuseki:shacl
+    ] ;
+    fuseki:name "DATASET_NAME" ;
+    fuseki:serviceQuery "", "query", "sparql" ;
+    fuseki:serviceReadGraphStore "get" ;
+    fuseki:serviceReadWriteGraphStore "data" ;
+    fuseki:serviceUpdate "", "update" ;
+    a fuseki:Service .
+
+<http://jena.apache.org/2016/tdb#DatasetTDB>
+    rdfs:subClassOf ja:RDFDataset .
+
+<http://jena.apache.org/2016/tdb#DatasetTDB2>
+    rdfs:subClassOf ja:RDFDataset .
+
+<http://jena.apache.org/2016/tdb#GraphTDB>
+    rdfs:subClassOf ja:Model .
+
+<http://jena.apache.org/2016/tdb#GraphTDB2>
+    rdfs:subClassOf ja:Model .
+
+<http://jena.apache.org/text#TextDataset>
+    rdfs:subClassOf ja:RDFDataset .
+
+ja:DatasetRDFS
+    rdfs:subClassOf ja:RDFDataset .
+
+ja:DatasetTxnMem
+    rdfs:subClassOf ja:RDFDataset .
+
+ja:GraphRDFS
+    rdfs:subClassOf ja:Model .
+
+ja:MemoryDataset
+    rdfs:subClassOf ja:RDFDataset .
+
+ja:ModelRDFS
+    rdfs:subClassOf ja:Model .
+
+ja:RDFDatasetOne
+    rdfs:subClassOf ja:RDFDataset .
+
+ja:RDFDatasetSink
+    rdfs:subClassOf ja:RDFDataset .
+
+ja:RDFDatasetZero
+    rdfs:subClassOf ja:RDFDataset .
+
+ja:ViewGraph
+    rdfs:subClassOf ja:Model .
+
+tdb:DatasetTDB
+    rdfs:subClassOf ja:RDFDataset .
+
+tdb:GraphTDB
+    rdfs:subClassOf ja:Model .

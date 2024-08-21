@@ -1,0 +1,228 @@
+{
+  "description": "Settings for converting PyTorch, TensorFlow and Keras models to ONNX. Documentation: https://github.com/onnx/onnxmltools",
+  "type": "object",
+  "properties": {
+    "model_type": {
+      "title": "Model type",
+      "type": "string",
+      "default": "pytorch",
+      "enum": [
+        "pytorch",
+        "tensorflow",
+        "keras"
+      ],
+      "description": "The input model's type."
+    },
+    "input_names": {
+      "title": "Input names",
+      "type": "array",
+      "items": {
+        "title": "Input name",
+        "type": "string"
+      },
+      "description": "The names of the model's inputs."
+    },
+    "input_shapes": {
+      "title": "Input shapes",
+      "type": "array",
+      "items": {
+        "title": "Input shape",
+        "type": "array",
+        "items": [
+          {
+            "title": "Batch size",
+            "type": "number",
+            "minimum": 1
+          },
+          {
+            "title": "Channels",
+            "type": "number",
+            "minimum": 1
+          },
+          {
+            "title": "Height",
+            "type": "number",
+            "minimum": 1
+          },
+          {
+            "title": "Width",
+            "type": "number",
+            "minimum": 1
+          }
+        ]
+      },
+      "minItems": 1,
+      "description": "The shapes of the model's inputs."
+    },
+    "input_types": {
+      "title": "Input types",
+      "type": "array",
+      "items": {
+        "title": "Input type",
+        "type": "string",
+        "enum": [
+          "float16",
+          "float32",
+          "float64",
+          "int8",
+          "int16",
+          "int32",
+          "uint8",
+          "string",
+          "bool"
+        ]
+      },
+      "minItems": 1,
+      "description": "The datatypes of the model's inputs."
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "model_type": {
+            "const": "pytorch"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "output_names": {
+            "title": "Output names",
+            "type": "array",
+            "default": [],
+            "items": {
+              "title": "Output name",
+              "type": "string"
+            },
+            "description": "The names of the model's outputs."
+          },
+          "verbose": {
+            "title": "Verbose output",
+            "type": "boolean",
+            "default": false,
+            "description": "Print description of exported model."
+          },
+          "training": {
+            "title": "Model export mode",
+            "type": "string",
+            "enum": [
+              "EVAL",
+              "PRESERVE",
+              "TRAINING"
+            ],
+            "default": "EVAL",
+            "description": "Export the model in a specific mode."
+          },
+          "operator_export_type": {
+            "title": "Operator export type",
+            "type": "string",
+            "enum": [
+              "ONNX",
+              "ONNX_FALLTHROUGH",
+              "ONNX_ATEN",
+              "ONNX_ATEN_FALLBACK"
+            ],
+            "default": "ONNX",
+            "description": "Export type for ops"
+          },
+          "opset_version": {
+            "title": "ONNX model opset version",
+            "type": "number",
+            "default": 14,
+            "description": "The targeted ONNX model opset.",
+            "minimum": 7,
+            "maximum": 16
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "model_type": {
+            "const": "tensorflow"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "name": {
+            "title": "Name",
+            "type": "string",
+            "description": "The converted ONNX model internal name."
+          },
+          "output_names": {
+            "title": "Output names",
+            "type": "array",
+            "default": [],
+            "items": {
+              "title": "Output name",
+              "type": "string"
+            },
+            "description": "The output name list of the model."
+          },
+          "doc_string": {
+            "title": "Documentation",
+            "type": "string",
+            "default": "",
+            "description": "The model's documentation in Python docstring format."
+          },
+          "debug_mode": {
+            "title": "Debug mode",
+            "type": "boolean",
+            "default": false,
+            "description": "Enable the log and try to convert as much as possible."
+          },
+          "target_opset": {
+            "title": "ONNX model opset",
+            "type": "number",
+            "default": 14,
+            "description": "The targeted ONNX model opset.",
+            "minimum": 1,
+            "maximum": 19
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "model_type": {
+            "const": "keras"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "name": {
+            "title": "Name",
+            "type": "string",
+            "description": "The converted ONNX model internal name."
+          },
+          "doc_string": {
+            "title": "Documentation",
+            "type": "string",
+            "default": "",
+            "description": "The model's documentation in Python docstring format."
+          },
+          "target_opset": {
+            "title": "ONNX model opset",
+            "type": "number",
+            "default": 14,
+            "description": "The targeted ONNX model opset.",
+            "minimum": 1,
+            "maximum": 19
+          }
+        }
+      }
+    },
+    {
+      "required": [
+        "model_type",
+        "input_shapes",
+        "input_types"
+      ]
+    }
+  ]
+}

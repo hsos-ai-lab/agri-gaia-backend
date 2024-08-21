@@ -1,0 +1,42 @@
+{
+    "type": "directory",
+    "name": ".",
+    "contents": [
+        {
+            "type": "directory",
+            "name": "config",
+            "contents": [
+                {
+                    "type": "file",
+                    "name": "config.jsonschema"
+                },
+                {
+                    "type": "file",
+                    "name": "custom.json"
+                },
+                {
+                    "type": "file",
+                    "name": "presets.json"
+                }
+            ]
+        },
+        {
+            "type": "directory",
+            "name": "docker",
+            "contents": [
+                {
+                    "type": "file",
+                    "name": "Dockerfile"
+                },
+                {
+                    "type": "file",
+                    "name": "setup.py"
+                },
+                {
+                    "type": "file",
+                    "name": "train.py"
+                }
+            ]
+        }
+    ]
+}

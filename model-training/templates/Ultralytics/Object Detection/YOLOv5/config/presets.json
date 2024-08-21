@@ -1,0 +1,13 @@
+{
+  "data": "./dataset.yaml",
+  "project": "/train",
+  "name": "model",
+  "exist-ok": true,
+  "resume": false,
+  "nosave": false,
+  "noval": false,
+  "save-period": -1,
+  "noplots": true,
+  "local_rank": -1,
+  "bucket": ""
+}

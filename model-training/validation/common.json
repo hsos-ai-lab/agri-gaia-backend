@@ -1,0 +1,22 @@
+{
+    "type": "directory",
+    "name": "common",
+    "contents": [
+        {
+            "type": "file",
+            "name": "config.py"
+        },
+        {
+            "type": "file",
+            "name": "config_to_args.py"
+        },
+        {
+            "type": "file",
+            "name": "docker-entrypoint.sh"
+        },
+        {
+            "type": "file",
+            "name": "mount-s3.sh"
+        }
+    ]
+}
