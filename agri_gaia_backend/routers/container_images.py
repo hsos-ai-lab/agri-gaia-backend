@@ -140,12 +140,12 @@ async def download_container_image(
 
     def download_task(on_progress_change, on_error):
         (
-            platform_repository,
-            platform_tag,
+            repo_after_download,
+            tag_after_download,
         ) = docker_api.download_image_into_platform_registry(
             repository, tag, os_arch, platform_repository, platform_tag
         )
-        if platform_repository is None or platform_tag is None:
+        if repo_after_download is None or tag_after_download is None:
             error_msg = f"Image download for image '{repository}:{tag}' for architecture '{os_arch}' failed."
             on_error(error_msg)
             return
