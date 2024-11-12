@@ -13,6 +13,7 @@ from enum import Enum
 import json
 import logging
 from random import randbytes
+import time
 import traceback
 import numpy as np
 from io import BytesIO
@@ -123,8 +124,16 @@ def get_tritonInfo(
                     bucket_name, token, model_objects, model_filepath, model
                 )
 
-                # TODO:Delay until Model is actually uploaded
                 try:
+                    retries = 0
+                    while not triton_client.is_model_ready(model_name=model.name):
+                        time.sleep(0.5)
+                        retries += 1
+                        if retries > 300:
+                            raise RuntimeError(
+                                "Triton failed to load the model in time: " + str(e)
+                            )
+
                     model_metadata = triton_client.get_model_metadata(
                         model_name=model.name
                     )

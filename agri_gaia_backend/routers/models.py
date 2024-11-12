@@ -502,6 +502,7 @@ def delete_model(request: Request, model_id: int, db: Session = Depends(get_db))
         sparql_models_api.delete_model(model.metadata_uri)
 
     minio_api.delete_all_objects(bucket_name, prefix, token)
+    minio_api.delete_all_objects("triton", f"{model.name}/", token)
     sql_api.delete_model(db, model)
     sparql_util.delete_graph("model-" + str(model_id))
 
