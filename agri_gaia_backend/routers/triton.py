@@ -92,6 +92,7 @@ def get_tritonInfo(
             for model_id in models:
                 token = user.minio_token
                 model = check_exists(sql_api.get_model(db, model_id))
+                model_name = str(model_id)
 
                 # initialize Triton connection
                 # Triton Command:
@@ -101,7 +102,7 @@ def get_tritonInfo(
                         url=url, verbose=True
                     )
                 except Exception as e:
-                    raise ValueError("context creation failed: " + str(e))
+                    raise RuntimeError("Context creation failed: " + str(e))
 
                 # download the model file
                 # get all filenames in the model directory
@@ -121,29 +122,29 @@ def get_tritonInfo(
 
                 # get the actual model file and upload it to the triton bucket
                 _upload_model_files_to_triton(
-                    bucket_name, token, model_objects, model_filepath, model
+                    bucket_name, token, model_objects, model_filepath, model, model_name
                 )
 
                 try:
                     retries = 0
-                    while not triton_client.is_model_ready(model_name=model.name):
+                    while not triton_client.is_model_ready(model_name=model_name):
                         time.sleep(0.5)
                         retries += 1
                         if retries > 300:
                             raise RuntimeError(
-                                "Triton failed to load the model in time: " + str(e)
+                                "Triton failed to load the model in time."
                             )
 
                     model_metadata = triton_client.get_model_metadata(
-                        model_name=model.name
+                        model_name=model_name
                     )
                 except InferenceServerException as e:
-                    raise ValueError("failed to retrieve the metadata: " + str(e))
+                    raise RuntimeError("Failed to retrieve the metadata: " + str(e))
 
                 try:
-                    model_config = triton_client.get_model_config(model_name=model.name)
+                    model_config = triton_client.get_model_config(model_name=model_name)
                 except InferenceServerException as e:
-                    raise ValueError("failed to retrieve the config: " + str(e))
+                    raise RuntimeError("Failed to retrieve the config: " + str(e))
 
                 model_metadata, model_config = convert_http_metadata_config(
                     model_metadata, model_config
@@ -194,6 +195,7 @@ def get_tritonInfo(
                         model,
                         batch_size,
                         supports_batching,
+                        model_name,
                     )
 
                     # Collect results from the ongoing async requests
@@ -234,7 +236,7 @@ def get_tritonInfo(
 
 
 def _upload_model_files_to_triton(
-    bucket_name, token, model_objects, model_filepath, model
+    bucket_name, token, model_objects, model_filepath, model, model_name
 ):
     for item in model_objects:
         # currently only handling single files
@@ -262,7 +264,7 @@ def _upload_model_files_to_triton(
                             "output_shape",
                         ]
                     ):
-                        raise ValueError(
+                        raise RuntimeError(
                             "For Models of the format .pt or .graphdef the input tensor info and output tensor info must be defined"
                         )
 
@@ -302,7 +304,7 @@ def _upload_model_files_to_triton(
                     # upload the config to the correct endpoint
                     minio_api.upload_data(
                         bucket="triton",
-                        prefix=model.name,
+                        prefix=model_name,
                         token=token,
                         objectname="config.pbtxt",
                         data=bytes(cf),
@@ -313,13 +315,13 @@ def _upload_model_files_to_triton(
                 # upload the actual model file
                 minio_api.upload_data(
                     bucket="triton",
-                    prefix=model.name + "/1",
+                    prefix=f"{model_name}/1",
                     token=token,
-                    objectname="model." + file_ending,
+                    objectname=f"model.{file_ending}",
                     data=file_bytes,
                 )
             else:
-                raise ValueError(
+                raise RuntimeError(
                     "File ending "
                     + file_ending
                     + " is not supported by the triton backend"
@@ -338,6 +340,7 @@ def _infer_requests_async(
     model,
     batch_size,
     supports_batching,
+    model_name,
 ):
     async_requests = []
     sent_count = 0
@@ -368,7 +371,7 @@ def _infer_requests_async(
                 sent_count += 1
                 async_requests.append(
                     triton_client.async_infer(
-                        model.name,
+                        model_name,
                         inputs,
                         request_id=str(sent_count),
                         outputs=outputs,

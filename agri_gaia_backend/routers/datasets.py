@@ -456,14 +456,14 @@ def _create_initial_entry_postgres(
 
 def _save_dataset_metadata_to_fuseki(
     dataset: Dataset,
-    labels: List[str],
+    labels: Optional[List[str]],
     description: str,
     db: Session,
     metadata: str,
     locations: List[str],
     dataset_type: str,
     files,
-    annotation_labels,
+    annotation_labels: Optional[List[str]],
 ):
     """
     Saves dataset metadata to the Fuseki Triple storage.
@@ -488,28 +488,30 @@ def _save_dataset_metadata_to_fuseki(
         The URL used as an ID in the Fuseki Storage.
 
     Raises:
-        HTTPException: If uploading metadata to FUseki failes.
+        HTTPException: If uploading metadata to Fuseki failes.
     """
     try:
         config_files = validate_dataresource_configuration_files(
             dataset_type, files
         )
         temporary_fuseki_dataset = "dataset-" + str(dataset.id)
+        if labels is None:
+            labels = []
         if annotation_labels is not None:
             for annotation_label in annotation_labels:
                 result = check_keyword(annotation_label)
-                if result["concept"] != None and result["concept"] not in labels:
+                if result["concept"] is not None and result["concept"] not in labels:
                     labels.append(result["concept"])
                     annotation_labels.remove(annotation_label)
 
         sparql_util.createFusekiDataset(temporary_fuseki_dataset)
         label_uris = []
-        if labels != None:
+        if labels:
             for label in labels:
                 label_uris.append(sparql_util.convert_to_URI(label))
 
         location_uris = []
-        if locations != None:
+        if locations is not None:
             for location in locations:
                 location_uris.append(sparql_util.convert_to_URI(location))
 
