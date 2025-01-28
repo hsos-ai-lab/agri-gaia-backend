@@ -15,7 +15,6 @@ from typing import Optional, List
 from pydantic import BaseModel
 
 
-
 class DatasetBase(BaseModel):
     name: str
     public: Optional[bool]

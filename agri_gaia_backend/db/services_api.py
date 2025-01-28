@@ -32,10 +32,11 @@ def get_services_by_owner(
         .all()
     )
 
+
 def get_published_services(
-    db: Session, skip: int = 0, limit: int = 100  
+    db: Session, skip: int = 0, limit: int = 100
 ) -> List[models.Service]:
-    return(
+    return (
         db.query(models.Service)
         .filter(models.Service.public == True)
         .offset(skip)

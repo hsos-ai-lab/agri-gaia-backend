@@ -30,9 +30,7 @@ def create_edge_device(
     edge_key: str,
     portainer_id: int,
 ) -> EdgeDevice:
-    db_edge_device = EdgeDevice(
-        name=name, edge_key=edge_key, portainer_id=portainer_id
-    )
+    db_edge_device = EdgeDevice(name=name, edge_key=edge_key, portainer_id=portainer_id)
     db.add(db_edge_device)
     db.commit()
     db.refresh(db_edge_device)

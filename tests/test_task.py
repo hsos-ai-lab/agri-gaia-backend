@@ -76,7 +76,10 @@ class TestGetTask:
 
     def test_get_single_task_wrong_id(self, testclient: TestClient, test_task):
         response = testclient.get("/tasks/-10")
-        assert response.status_code == HTTP_404_NOT_FOUND, "Task shouldn't have been returned"
+        assert (
+            response.status_code == HTTP_404_NOT_FOUND
+        ), "Task shouldn't have been returned"
+
 
 class TestDeleteTask:
     def test_delete_task(

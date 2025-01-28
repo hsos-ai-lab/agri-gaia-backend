@@ -35,6 +35,7 @@ from pytorch_lightning.strategies import DDPStrategy, DDPSpawnStrategy
 if TYPE_CHECKING:
     from maskrcnn import MaskRCNN
 
+
 # See: https://pytorch.org/tutorials/intermediate/torchvision_tutorial.html#finetuning-from-a-pretrained-save_model
 def get_model(backbone: str, pretrained: bool, num_classes: int) -> TMaskRCNN:
     if backbone == "resnet50_fpn":

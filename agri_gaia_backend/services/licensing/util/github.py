@@ -27,12 +27,14 @@ def github_http_get(url: str) -> requests.Response:
     github_token = os.getenv("GITHUB_TOKEN")
     response = requests.get(
         url,
-        headers={
-            "Authorization": f"Bearer {github_token}",
-            "X-GitHub-Api-Version": "2022-11-28",
-        }
-        if github_token is not None
-        else None,
+        headers=(
+            {
+                "Authorization": f"Bearer {github_token}",
+                "X-GitHub-Api-Version": "2022-11-28",
+            }
+            if github_token is not None
+            else None
+        ),
     )
     print(url, response.status_code)
     return response

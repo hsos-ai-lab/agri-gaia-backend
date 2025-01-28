@@ -57,7 +57,7 @@ predef_ns = {
     "vann": "http://purl.org/vocab/vann/",
     "voaf": "http://purl.org/vocommons/voaf#",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
-    "agri-gaia-asset": "http://w3id.org/agri-gaia-x/asset#"
+    "agri-gaia-asset": "http://w3id.org/agri-gaia-x/asset#",
 }
 
 
@@ -96,11 +96,12 @@ def query_possible_data_ressource_labels():
     }
     """
     result = send_query(ONTOLOGIES_QUERY_ENDPOINT, query)
-    list = result['results']['bindings']
+    list = result["results"]["bindings"]
     labels = set()
     for i in list:
-        labels.add(i['label']['value'])
+        labels.add(i["label"]["value"])
     return labels
+
 
 def query_possible_data_ressources():
     query = """
@@ -115,10 +116,10 @@ def query_possible_data_ressources():
     }
     """
     result = send_query(ONTOLOGIES_QUERY_ENDPOINT, query)
-    list = result['results']['bindings']
+    list = result["results"]["bindings"]
     classes = set()
     for i in list:
-        classes.add(i['resType']['value'])
+        classes.add(i["resType"]["value"])
     return classes
 
 
@@ -201,6 +202,7 @@ def get_metadata_information_for_uri(uri: str):
     response = send_graph_query(DATASET_QUERY_ENDPOINT, query)
     return response
 
+
 def get_metadata_information_for_uris(uris: List[str]):
     query = f"""Construct {{
                     ?sub ?pred ?obj
@@ -212,6 +214,7 @@ def get_metadata_information_for_uris(uris: List[str]):
 
     response = send_graph_query(DATASET_QUERY_ENDPOINT, query)
     return response
+
 
 # TODO: this function might leak memory..
 # Sends a SparQL query to the Fuseki query endpoint and returns the result as json
@@ -263,6 +266,7 @@ def store_graph(graph, fuseki_dataset: str = "ds"):
         headers={**_create_auth_header(), **{"Content-Type": "text/turtle"}},
     )
 
+
 def store_json(metadata, fuseki_dataset: str = "ds"):
     """
     Stores metadata to the triple store located using the given endpoint.
@@ -279,6 +283,7 @@ def store_json(metadata, fuseki_dataset: str = "ds"):
         data=metadata,
         headers={**_create_auth_header(), **{"Content-Type": "application/ld+json"}},
     )
+
 
 def get_shapes():
     return _get_graph(SHAPES_ENDPOINT_GET)
@@ -355,7 +360,7 @@ def query_narrower_concepts(concept_uri):
     response = send_query(AGROVOC_QUERY_ENDPOINT, query)
     concepts = []
     if len(response) > 0:
-        for entry in response['results']['bindings']:
+        for entry in response["results"]["bindings"]:
             concepts.append(f"<{entry['obj']['value']}>")
     return concepts
 
@@ -540,8 +545,7 @@ def _get_concept_of_keyword(endpoint: str, keyword: str, language: str):
         return
 
     if language == "":
-        language = get_language(result["sub"]["value"], endpoint)[
-            ".0"]["value"]
+        language = get_language(result["sub"]["value"], endpoint)[".0"]["value"]
     concept = _get_concept(endpoint, result["sub"]["value"])["sub"]["value"]
 
     return concept, language
@@ -550,7 +554,6 @@ def _get_concept_of_keyword(endpoint: str, keyword: str, language: str):
 def _get_graph(endpoint):
     resp = requests.get(
         endpoint,
-        headers={**_create_auth_header(), **
-                 {"Accept": "text/turtle; charset=utf-8"}},
+        headers={**_create_auth_header(), **{"Accept": "text/turtle; charset=utf-8"}},
     )
     return resp.content

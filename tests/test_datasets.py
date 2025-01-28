@@ -200,7 +200,6 @@ class TestCreateDataset:
         assert response.status_code == HTTP_201_CREATED, "Error creating dataset"
         assert response.headers["Content-Type"] == "application/json"
 
-
         response_dataset = schemas.Dataset(**response.json())
         dataset_bucketname = response_dataset.bucket_name
         testfile_objectname = f"datasets/{response_dataset.id}/{testfile_name}"
@@ -208,7 +207,12 @@ class TestCreateDataset:
         def dataset_delete(response):
             if response.is_success:
                 response_dataset = schemas.Dataset(**response.json())
-                response = authenticated_client.request("DELETE", f"/datasets/{response_dataset.id}", json=cvat_authentication_data)
+                response = authenticated_client.request(
+                    "DELETE",
+                    f"/datasets/{response_dataset.id}",
+                    json=cvat_authentication_data,
+                )
+
         request.addfinalizer(lambda: dataset_delete(response=response))
 
         assert (
@@ -256,7 +260,9 @@ class TestDatasetDelete:
             "cvat_auth": cvat_authentication_data,
         }
 
-        response = authenticated_client.request("DELETE", f"/datasets/{test_dataset.id}", json=cvat_authentication_data)
+        response = authenticated_client.request(
+            "DELETE", f"/datasets/{test_dataset.id}", json=cvat_authentication_data
+        )
 
         assert response.status_code == HTTP_204_NO_CONTENT, "Error deleting dataset"
 
@@ -291,7 +297,9 @@ class TestDatasetDelete:
         ), "Precondition for delete dataset test failed, dataset files are not in MinIO"
         # TODO test if metadata is in fuseki
 
-        response = authenticated_client.request("DELETE", f"/datasets/-10", json=cvat_authentication_data)
+        response = authenticated_client.request(
+            "DELETE", f"/datasets/-10", json=cvat_authentication_data
+        )
 
         assert (
             response.status_code == HTTP_404_NOT_FOUND

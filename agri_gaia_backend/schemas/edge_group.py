@@ -12,6 +12,7 @@
 from typing import List
 from pydantic import BaseModel
 
+
 class EdgeGroupBase(BaseModel):
     name: str
     tag_ids: List[int]
