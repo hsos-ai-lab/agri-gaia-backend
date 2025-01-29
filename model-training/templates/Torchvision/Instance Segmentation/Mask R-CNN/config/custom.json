@@ -1,0 +1,5 @@
+{
+  "model_filepath": "/train/model.pt",
+  "score_name": "segm. mAP@.5:.95",
+  "score_regexp": "[ ]+segm_map[ ]+(\\d*[.]\\d*)\\n"
+}

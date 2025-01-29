@@ -1,0 +1,52 @@
+# SPDX-FileCopyrightText: 2024 University of Applied Sciences Osnabrück
+# SPDX-FileContributor: Andreas Schliebitz
+# SPDX-FileContributor: Henri Graf
+# SPDX-FileContributor: Jonas Tüpker
+# SPDX-FileContributor: Lukas Hesse
+# SPDX-FileContributor: Maik Fruhner
+# SPDX-FileContributor: Prof. Dr.-Ing. Heiko Tapken
+# SPDX-FileContributor: Tobias Wamhof
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+fastapi~=0.112.0
+pydantic~=2.8.2
+uvicorn~=0.30.6
+python-dotenv~=1.0.1
+itsdangerous~=2.2.0
+python-keycloak~=3.12.0
+docker~=7.1.0
+PyYAML~=6.0.2
+rdflib~=7.0.0
+minio~=7.2.7
+python-multipart~=0.0.9
+sqlalchemy~=2.0.32
+psycopg2-binary~=2.9.9
+alembic~=1.13.2
+python-dxf~=12.1.0
+tenacity~=9.0.0
+python-dateutil~=2.9.0.post0
+python-on-whales~=0.72.0
+prometheus-fastapi-instrumentator~=7.0.0
+memory-profiler~=0.61.0
+genson~=1.3.0
+jsonschema~=4.23.0
+numpy~=1.26.4
+matplotlib~=3.9.2
+xmltodict~=0.13.0
+geoalchemy2~=0.15.2
+fiftyone~=0.25.2
+pycocotools~=2.0.8
+requests~=2.32.3
+requirements-parser~=0.11.0
+validators~=0.28.0
+mistletoe~=1.4.0
+jsonref~=1.1.0
+openapi-spec-validator~=0.7.1
+dockerfile-parse~=2.0.1
+onnx~=1.16.2
+tritonclient[all]~=2.48.0
+attrdict~=2.0.1
+git+https://github.com/agrifoodTEF-de/edge-benchmarking-client.git@ee70af7671fe586fb0804ed1628651b22a442477
+gitpython~=3.1.43
+pytest~=8.3.2

@@ -1,0 +1,130 @@
+{
+  "description": "Mask R-CNN (He et al., 2017) instance segmentation provided by Torchvision. Documentation: https://pytorch.org/vision/master/models/mask_rcnn.html",
+  "type": "object",
+  "required": [
+    "backbone",
+    "epochs",
+    "batch-size",
+    "img-size",
+    "optimizer",
+    "learning-rate",
+    "train-split",
+    "test-split"
+  ],
+  "properties": {
+    "backbone": {
+      "title": "Backbone",
+      "type": "string",
+      "default": "resnet50_fpn",
+      "enum": [
+        "resnet50_fpn",
+        "resnet50_fpn_v2"
+      ],
+      "description": "Core feature extracting network used in conjunction with Mask R-CNN."
+    },
+    "pretrained": {
+      "title": "Pretrained on COCO dataset",
+      "type": "boolean",
+      "default": true,
+      "description": "Initialize network with weights pretrained on ImageNet-1K (transfer learning)."
+    },
+    "epochs": {
+      "title": "Epochs",
+      "type": "integer",
+      "default": 200,
+      "minimum": 1,
+      "description": "Number of times the training dataset will be passed through the network."
+    },
+    "batch-size": {
+      "title": "Batch size",
+      "type": "integer",
+      "default": 16,
+      "minimum": 1,
+      "description": "Number of images with targets in each training batch."
+    },
+    "auto-batch-size": {
+      "title": "Auto batch size",
+      "type": "boolean",
+      "default": false,
+      "description": "Automatically determine and overwrite user-defined 'batch-size'."
+    },
+    "img-size": {
+      "title": "Image size",
+      "type": "integer",
+      "default": 800,
+      "minimum": 1,
+      "description": "Image and mask heights are rescaled to this value while aspect ratio is preserved."
+    },
+    "optimizer": {
+      "title": "Optimizer",
+      "type": "string",
+      "default": "SGD",
+      "description": "Any optimizer implementation provided by 'torch.optim'."
+    },
+    "learning-rate": {
+      "title": "Learning rate",
+      "type": "number",
+      "default": 0.02,
+      "minimum": 0,
+      "description": "Step size for moving towards a minimum of the loss function."
+    },
+    "auto-learning-rate": {
+      "title": "Auto learning rate",
+      "type": "boolean",
+      "default": false,
+      "description": "Automatically determine and overwrite user-defined 'learning-rate'."
+    },
+    "swa-learning-rate": {
+      "title": "SWA learning rate",
+      "type": "number",
+      "default": 0,
+      "minimum": 0,
+      "description": "Learning rate used for Stochastic Weight Averaging (SWA). 0 to disable."
+    },
+    "weight-decay": {
+      "title": "Weight decay",
+      "type": "number",
+      "default": 0.0001,
+      "minimum": 0,
+      "description": "Penalty on the L2 norm of the network weights."
+    },
+    "momentum": {
+      "title": "Momentum",
+      "type": "number",
+      "default": 0.9,
+      "minimum": 0,
+      "description": "Maintain velocity and trajectory of gradient. Ignored if not supported by optimizer."
+    },
+    "patience": {
+      "title": "Early Stopping",
+      "type": "number",
+      "default": 0,
+      "minimum": 0,
+      "description": "Early Stopping patience in epochs on train loss. 0 to disable."
+    },
+    "test-threshold": {
+      "title": "Test threshold",
+      "type": "number",
+      "default": 0.5,
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Threshold value applied to soft prediction masks while testing."
+    },
+    "train-split": {
+      "title": "Train split",
+      "type": "number",
+      "default": 0.8,
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Percentage of the dataset used for training."
+    },
+    "test-split": {
+      "title": "Test split",
+      "type": "number",
+      "default": 0.2,
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Percentage of the dataset used for testing the trained model."
+    }
+  }
+}

@@ -1,0 +1,20 @@
+# SPDX-FileCopyrightText: 2024 University of Applied Sciences Osnabrück
+# SPDX-FileContributor: Andreas Schliebitz
+# SPDX-FileContributor: Henri Graf
+# SPDX-FileContributor: Jonas Tüpker
+# SPDX-FileContributor: Lukas Hesse
+# SPDX-FileContributor: Maik Fruhner
+# SPDX-FileContributor: Prof. Dr.-Ing. Heiko Tapken
+# SPDX-FileContributor: Tobias Wamhof
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+numpy~=1.23.3
+xmltodict~=0.13.0
+torch==1.13.0
+torchvision==0.14.0
+torchmetrics~=0.10.3
+scikit-learn~=1.1.2
+pytorch-lightning~=1.7.7
+ujson~=5.4.0
+Shapely~=1.8.4

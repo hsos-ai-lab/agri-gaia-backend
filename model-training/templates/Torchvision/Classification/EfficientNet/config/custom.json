@@ -1,0 +1,5 @@
+{
+  "model_filepath": "/train/model.pt",
+  "score_name": "Acc.",
+  "score_regexp": "[ ]+Accuracy[ ]+(\\d*[.]\\d*)\\n"
+}
