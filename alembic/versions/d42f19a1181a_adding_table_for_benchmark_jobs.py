@@ -54,7 +54,6 @@ def upgrade():
         sa.Column("last_modified", sa.DateTime(), nullable=True),
         sa.Column("bucket_name", sa.String(), nullable=True),
         sa.Column("metadata_uri", sa.String(), nullable=True),
-        sa.Column("minio_location", sa.String(), nullable=True),
         sa.PrimaryKeyConstraint("id"),
     )
     op.create_index(op.f("ix_inferences_id"), "inferences", ["id"], unique=False)

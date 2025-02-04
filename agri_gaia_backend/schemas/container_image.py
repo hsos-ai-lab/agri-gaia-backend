@@ -53,3 +53,6 @@ class ContainerImageBuildConfig(BaseModel):
                 "Only one of 'architecture' and 'edge_device_id' can be set"
             )
         return values
+    
+    class Config:
+        protected_namespaces = ()
