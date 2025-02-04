@@ -9,39 +9,37 @@
 #
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
-import datetime
-from enum import Enum
+import os
 import json
 import logging
-import os
-import copy
+import datetime
+import requests
+
+from enum import Enum
 from io import BytesIO
 from typing import List
-from agri_gaia_backend.schemas.benchmark_device import BenchmarkDevice
-from dotenv import load_dotenv, dotenv_values
-from agri_gaia_backend.services import minio_api
+from dotenv import load_dotenv
 from sqlalchemy.orm import Session
-from fastapi import APIRouter, Depends, Form, HTTPException, Request, Response, status
-import requests
+from google.protobuf import json_format
+from tritonclient.grpc import model_config_pb2
+from agri_gaia_backend.services import minio_api
+from agri_gaia_backend.schemas.benchmark_device import BenchmarkDevice
+from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from agri_gaia_backend.routers.common import (
     TaskCreator,
     check_exists,
     get_db,
     get_task_creator,
 )
-from agri_gaia_backend.schemas.keycloak_user import KeycloakUser
 from agri_gaia_backend.db import model_api as sql_api
-from agri_gaia_backend.db import dataset_api as dataset_sql_api
-from agri_gaia_backend.db import tasks_api
-from agri_gaia_backend.db import benchmark_api as sql_benchmark_api
-from agri_gaia_backend.util.benchmark import get_all_datasets
-
-from edge_benchmarking_client.client import EdgeBenchmarkingClient
-from edge_benchmarking_types.edge_farm.models import TritonInferenceClientConfig
-from tritonclient.grpc import model_config_pb2
-from google.protobuf import json_format
 from agri_gaia_backend.util.common import get_stacktrace
 from agri_gaia_backend.schemas.benchmark import Benchmark
+from agri_gaia_backend.util.benchmark import get_all_datasets
+from agri_gaia_backend.db import dataset_api as dataset_sql_api
+from agri_gaia_backend.schemas.keycloak_user import KeycloakUser
+from agri_gaia_backend.db import benchmark_api as sql_benchmark_api
+from edge_benchmarking_client.client import EdgeBenchmarkingClient
+from edge_benchmarking_types.edge_farm.models import TritonDenseNetClient
 
 
 ROOT_PATH = "/edge-benchmark"
@@ -135,8 +133,8 @@ def run_benchmark(
                         password=BASIC_AUTH_PASSWORD,
                     )
 
-                    # TODO Client Config not complete
-                    inference_client_config = TritonInferenceClientConfig(
+                    # TODO Inference client not complete
+                    inference_client = TritonDenseNetClient(
                         host=device.hostname,
                         model_name="densenet_onnx",
                         num_classes=1,
@@ -147,7 +145,7 @@ def run_benchmark(
                         edge_device=device.hostname,
                         dataset=dataset_files,
                         model=model_files[key],
-                        inference_client_config=inference_client_config,
+                        inference_client=inference_client,
                         model_metadata=None,
                         labels=annotations,
                         cleanup=True,
