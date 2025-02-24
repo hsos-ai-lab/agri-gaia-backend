@@ -306,8 +306,8 @@ class PortainerAPI:
             "LogoutURI": "",
             "OAuthAutoCreateUsers": True,
             "SSO": True,
-            "Scopes": "email",
-            "UserIdentifier": "email",
+            "Scopes": "openid",
+            "UserIdentifier": "preferred_username",
         }
 
         response = requests.put(
