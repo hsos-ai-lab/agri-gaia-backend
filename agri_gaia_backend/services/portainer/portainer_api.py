@@ -475,6 +475,26 @@ class PortainerAPI:
         create_container_response = response.json()
         container_id = create_container_response["Id"]
 
+        # add resource controls for team access
+        rc_response = requests.post(
+            url=f"{PORTAINER_API_URL}/resource_controls",
+            verify=VERIFY_SSL,
+            headers=auth_header,
+            json={
+                "administratorsOnly": False,
+                "public": False,
+                "resourceID": container_id,
+                "subResourceIDs": [],
+                "teams": [self.team_id],  # team id retrieved earlier in the setup process
+                "type": 1,
+                "users": []
+            },
+        )
+        if not rc_response.ok:
+            msg = rc_response.json().get("message", "Error setting resource control")
+            logger.error(msg)
+            raise HTTPException(400, msg)
+        
         # start
         response = requests.post(
             url=f"{PORTAINER_API_URL}/endpoints/{edge_device.portainer_id}/docker/containers/{container_id}/start",
