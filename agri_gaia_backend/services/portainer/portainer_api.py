@@ -306,8 +306,8 @@ class PortainerAPI:
             "LogoutURI": "",
             "OAuthAutoCreateUsers": True,
             "SSO": True,
-            "Scopes": "email",
-            "UserIdentifier": "email",
+            "Scopes": "openid",
+            "UserIdentifier": "preferred_username",
         }
 
         response = requests.put(
@@ -475,6 +475,26 @@ class PortainerAPI:
         create_container_response = response.json()
         container_id = create_container_response["Id"]
 
+        # get resource control ID of container just created
+        rc_id = create_container_response["Portainer"]["ResourceControl"]["Id"]
+
+        # update resource control to allow access from platform_users
+        rc_response = requests.put(
+            url=f"{PORTAINER_API_URL}/resource_controls/{rc_id}",
+            verify=VERIFY_SSL,
+            headers=auth_header,
+            json={
+                "administratorsOnly": False,
+                "public": False,
+                "teams": [ self.team_id ],
+                "users": [ ]
+            },
+        )
+        if not rc_response.ok:
+            msg = rc_response.json().get("message", "Error setting resource control")
+            logger.error(rc_response)
+            raise HTTPException(400, msg)
+        
         # start
         response = requests.post(
             url=f"{PORTAINER_API_URL}/endpoints/{edge_device.portainer_id}/docker/containers/{container_id}/start",
