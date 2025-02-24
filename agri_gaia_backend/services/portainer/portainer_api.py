@@ -475,65 +475,25 @@ class PortainerAPI:
         create_container_response = response.json()
         container_id = create_container_response["Id"]
 
-        # Retrieve existing resource controls to check for one linked to this container
-        rc_get_response = requests.get(
-            url=f"{PORTAINER_API_URL}/resource_controls",
+        # get resource control ID of container just created
+        rc_id = create_container_response["Portainer"]["ResourceControl"]["Id"]
+
+        # update resource control to allow access from platform_users
+        rc_response = requests.put(
+            url=f"{PORTAINER_API_URL}/resource_controls/{rc_id}",
             verify=VERIFY_SSL,
             headers=auth_header,
+            json={
+                "administratorsOnly": False,
+                "public": False,
+                "teams": [ self.team_id ],
+                "users": [ ]
+            },
         )
-        rc_get_response.raise_for_status()
-        resource_controls = rc_get_response.json()
-        
-        # Find a resource control with matching resourceID and type 1 (container)
-        existing_rc = next(
-            (rc for rc in resource_controls if rc.get("resourceID") == container_id and rc.get("type") == 1),
-            None,
-        )
-        
-        if existing_rc:
-            # Update the existing resource control by ensuring the team id is in its teams list.
-            teams = existing_rc.get("teams", [])
-            if self.team_id not in teams:
-                teams.append(self.team_id)
-            
-            rc_update_response = requests.put(
-                url=f"{PORTAINER_API_URL}/resource_controls/{existing_rc['Id']}",
-                verify=VERIFY_SSL,
-                headers=auth_header,
-                json={ 
-                    "administratorsOnly": existing_rc.get("administratorsOnly", False),
-                    "public": existing_rc.get("public", False),
-                    "resourceID": container_id,
-                    "subResourceIDs": existing_rc.get("subResourceIDs", []),
-                    "teams": teams,
-                    "type": existing_rc.get("type", 1),
-                    "users": existing_rc.get("users", [])
-                },
-            )
-            if not rc_update_response.ok:
-                msg = rc_update_response.json().get("message", "Error updating resource control")
-                logger.error(msg)
-                raise HTTPException(400, msg)
-        else:
-            # No resource control exists: create one with the team id in the teams list.
-            rc_response = requests.post(
-                url=f"{PORTAINER_API_URL}/resource_controls",
-                verify=VERIFY_SSL,
-                headers=auth_header,
-                json={
-                    "administratorsOnly": False,
-                    "public": False,
-                    "resourceID": container_id,
-                    "subResourceIDs": [],
-                    "teams": [self.team_id],
-                    "type": 1,
-                    "users": []
-                },
-            )
-            if not rc_response.ok:
-                msg = rc_response.json().get("message", "Error setting resource control")
-                logger.error(msg)
-                raise HTTPException(400, msg)
+        if not rc_response.ok:
+            msg = rc_response.json().get("message", "Error setting resource control")
+            logger.error(rc_response)
+            raise HTTPException(400, msg)
         
         # start
         response = requests.post(
