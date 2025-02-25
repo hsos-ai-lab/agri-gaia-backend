@@ -464,7 +464,7 @@ class PortainerAPI:
             json={
                 "Image": image,
                 "ExposedPorts": exposed_ports,
-                "HostConfig": {"AutoRemove": False, "PortBindings": host_port_bindings},
+                "HostConfig": {"AutoRemove": False, "PortBindings": host_port_bindings, "RestartPolicy": { "Name": "unless-stopped", "MaximumRetryCount": 0 } },
             },
         )
         if not response.ok:
@@ -478,6 +478,18 @@ class PortainerAPI:
         # get resource control ID of container just created
         rc_id = create_container_response["Portainer"]["ResourceControl"]["Id"]
 
+        # extract already-set user and team IDs
+        user_ids = [
+            user.get("UserId")
+            for user in create_container_response["Portainer"]["ResourceControl"]["UserAccesses"]
+        ]
+        team_ids = [
+            team.get("TeamId")
+            for team in create_container_response["Portainer"]["ResourceControl"]["TeamAccesses"]
+        ]
+        # append team ID of platform_users
+        team_ids.append(self.team_id)
+
         # update resource control to allow access from platform_users
         rc_response = requests.put(
             url=f"{PORTAINER_API_URL}/resource_controls/{rc_id}",
@@ -486,8 +498,8 @@ class PortainerAPI:
             json={
                 "administratorsOnly": False,
                 "public": False,
-                "teams": [ self.team_id ],
-                "users": [ ]
+                "teams": team_ids,
+                "users": user_ids
             },
         )
         if not rc_response.ok:
