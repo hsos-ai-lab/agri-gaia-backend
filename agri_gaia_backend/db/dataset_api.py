@@ -32,10 +32,11 @@ def get_datasets_by_owner(
         .all()
     )
 
+
 def get_published_datasets(
-    db: Session, skip: int = 0, limit: int = 100  
+    db: Session, skip: int = 0, limit: int = 100
 ) -> List[models.Dataset]:
-    return(
+    return (
         db.query(models.Dataset)
         .filter(models.Dataset.public == True)
         .offset(skip)

@@ -21,8 +21,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '75b5519ebbdf'
-down_revision = ('b4756864b403', '6ab621a12a8f')
+revision = "75b5519ebbdf"
+down_revision = ("b4756864b403", "6ab621a12a8f")
 branch_labels = None
 depends_on = None
 

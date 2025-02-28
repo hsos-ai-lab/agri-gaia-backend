@@ -22,7 +22,6 @@ import subprocess
 import logging
 
 
-
 from pathlib import Path
 from typing import Dict, List, Tuple, Union, Optional, Set
 from agri_gaia_backend.db import train_api as sql_api
@@ -38,9 +37,7 @@ from agri_gaia_backend.util.common import (
     mkdir,
     is_valid_json,
 )
-from agri_gaia_backend.util.jsonschema import (
-    JSONSchemaDefault
-)
+from agri_gaia_backend.util.jsonschema import JSONSchemaDefault
 from docker.models.containers import Container
 from fastapi import HTTPException
 from genson import SchemaBuilder

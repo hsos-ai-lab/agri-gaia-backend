@@ -491,9 +491,7 @@ def _save_dataset_metadata_to_fuseki(
         HTTPException: If uploading metadata to Fuseki failes.
     """
     try:
-        config_files = validate_dataresource_configuration_files(
-            dataset_type, files
-        )
+        config_files = validate_dataresource_configuration_files(dataset_type, files)
         temporary_fuseki_dataset = "dataset-" + str(dataset.id)
         if labels is None:
             labels = []

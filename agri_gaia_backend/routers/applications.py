@@ -15,7 +15,11 @@ from typing import List
 from fastapi import APIRouter, Depends, Response, status
 
 from sqlalchemy.orm import Session
-from agri_gaia_backend.schemas.application import Application, ApplicationCreate, ApplicationUpdate
+from agri_gaia_backend.schemas.application import (
+    Application,
+    ApplicationCreate,
+    ApplicationUpdate,
+)
 
 from agri_gaia_backend.routers.common import check_exists, get_db
 from agri_gaia_backend.db import (
@@ -42,10 +46,17 @@ def get_all_applications(
     applications = sql_api.get_applications(db, skip=skip, limit=limit)
     # add errors / logs.
     for app in applications:
-        stack = next((s for s in portainer_edge_stacks if s["Id"] == app.portainer_edge_stack_id), None)
+        stack = next(
+            (
+                s
+                for s in portainer_edge_stacks
+                if s["Id"] == app.portainer_edge_stack_id
+            ),
+            None,
+        )
         if stack:
             app.status = stack["Status"]
-            #for k in status.keys():
+            # for k in status.keys():
             #    status[k]["Type"]
             #    status[k]["Error"]
             #    status[k]["EndpointID"]
@@ -66,7 +77,7 @@ def create_application(
     edge_stack = portainer.deploy_edge_stack(
         name=application_create.name,
         edge_group_ids=application_create.group_ids,
-        yaml=application_create.yaml
+        yaml=application_create.yaml,
     )
     edge_stack_id = edge_stack["Id"]
     return sql_api.create_application(
@@ -76,9 +87,12 @@ def create_application(
         last_modified=datetime.now(),
     )
 
+
 @router.put("/{application_id}", response_model=Application)
 def edit_application(
-    application_id: int, application_update: ApplicationUpdate, db: Session = Depends(get_db)
+    application_id: int,
+    application_update: ApplicationUpdate,
+    db: Session = Depends(get_db),
 ):
 
     application: models.Application = check_exists(
@@ -88,7 +102,7 @@ def edit_application(
     portainer.edit_edge_stack(
         application.portainer_edge_stack_id,
         application_update.group_ids,
-        application_update.yaml
+        application_update.yaml,
     )
 
     application.yaml = application_update.yaml
@@ -96,15 +110,12 @@ def edit_application(
 
     logger.debug(application.portainer_edge_group_ids)
 
-    return sql_api.update_application(
-        db,
-        application
-    )
+    return sql_api.update_application(db, application)
 
 
 @router.delete("/{application_id}")
 def delete_application(application_id: int, db: Session = Depends(get_db)):
-    
+
     application: models.Application = check_exists(
         sql_api.get_application(db, application_id)
     )

@@ -12,6 +12,7 @@
 from typing import List
 from pydantic import BaseModel
 
+
 class ConnectorBase(BaseModel):
     name: str
     description: str
@@ -19,6 +20,7 @@ class ConnectorBase(BaseModel):
     ids_url: str
     minio_url: str
     api_key: str
+
 
 class Connector(ConnectorBase):
     id: int

@@ -21,6 +21,7 @@ logger = logging.getLogger("api-logger")
 
 config_dir = ".platform"
 
+
 def create_named_volume(name):
     client.volumes.create(name)
 

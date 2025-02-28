@@ -16,7 +16,9 @@ from agri_gaia_backend.db import models
 
 
 def get_connector(db: Session, connector_id: int) -> Optional[models.Connector]:
-    return db.query(models.Connector).filter(models.Connector.id == connector_id).first()
+    return (
+        db.query(models.Connector).filter(models.Connector.id == connector_id).first()
+    )
 
 
 def get_connectors_by_name(
@@ -42,7 +44,10 @@ def get_connector_by_name(
         .all()
     )
 
-def get_connectors(db: Session, skip: int = 0, limit: int = 100) -> List[models.Connector]:
+
+def get_connectors(
+    db: Session, skip: int = 0, limit: int = 100
+) -> List[models.Connector]:
     return db.query(models.Connector).offset(skip).limit(limit).all()
 
 
@@ -61,7 +66,7 @@ def create_connector(
         data_url=data_url,
         ids_url=ids_url,
         minio_url=minio_url,
-        api_key=api_key
+        api_key=api_key,
     )
     db.add(db_connector)
     db.commit()

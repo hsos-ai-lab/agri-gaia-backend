@@ -23,7 +23,6 @@ Official FastAPI Documentation for Testing: https://fastapi.tiangolo.com/tutoria
 
 Nice guide for the basics if testing FastAPI with pytest: https://www.jeffastor.com/blog/testing-fastapi-endpoints-with-docker-and-pytest
 
-
 ## Concept of testing fixtures
 
 Pytest does not use the basic XUnit pattern with the setup/teardown methods but uses a fixture concept instead. Fixtures provide a modular way to setup a testing environment.
@@ -40,9 +39,9 @@ Setup and Teardown with a fixture concept: https://stackoverflow.com/questions/2
 - For each test a new backend app is created. That means that the tested backend app is actually not the one that is currently running in the backend container as the init process.
 - For each test a new database session is created
 - For each test a new testclient is created. There are 3 Testclients:
-    - An unauthenticated testclient
-    - A testclient that is authenticated with the credentials from the testuser
-    - A testclient that automatically deletes the resources that are created with the post methods using the resources delete endpoint
+  - An unauthenticated testclient
+  - A testclient that is authenticated with the credentials from the testuser
+  - A testclient that automatically deletes the resources that are created with the post methods using the resources delete endpoint
 
 ## Warnings
 
