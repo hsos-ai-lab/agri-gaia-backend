@@ -368,7 +368,10 @@ def get_train_containers(
 ):
     train_containers = sql_api.get_train_containers(db, skip=skip, limit=limit)
     for train_container in train_containers:
-        train_container.status = get_container_status(train_container.container_id)
+        try:
+            train_container.status = get_container_status(train_container.container_id)
+        except HTTPException as e: # ignore "container not found" exceptions from docker host and proceed
+            pass
         sql_api.update_train_container(db, train_container)
     return train_containers
 
