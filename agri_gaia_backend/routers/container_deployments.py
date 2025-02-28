@@ -76,9 +76,7 @@ def create_container_deployment(
     )
 
     check_exists(
-        sql_container_api.get_container_image(
-            db, container_deployment_create.container_image_id
-        )
+        sql_container_api.get_container_image(db, container_deployment_create.container_image_id)
     )
 
     if not edge_device.registered:
@@ -106,11 +104,7 @@ def deploy_container(
         sql_api.get_container_deployment(db, container_deployment_id)
     )
 
-    check_exists(
-        sql_container_api.get_container_image(
-            db, container_deployment.container_image_id
-        )
-    )
+    check_exists(sql_container_api.get_container_image(db, container_deployment.container_image_id))
 
     check_exists(
         sql_edge_device_api.get_edge_device(db, container_deployment.edge_device_id)
@@ -122,9 +116,7 @@ def deploy_container(
         )
 
         container_image: ContainerImage = check_exists(
-            sql_container_api.get_container_image(
-                db, container_deployment.container_image_id
-            )
+            sql_container_api.get_container_image(db, container_deployment.container_image_id)
         )
 
         edge_device: EdgeDevice = check_exists(
@@ -134,7 +126,7 @@ def deploy_container(
             container_id = portainer.deploy_container_to_edge_device(
                 edge_device, container_image, container_deployment
             )
-
+            
             logger.debug("Container ID:")
             logger.debug(container_id)
 

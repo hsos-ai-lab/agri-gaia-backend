@@ -48,7 +48,6 @@ cvatClient = CvatClient(
     protocol="https", host=f"cvat.{PROJECT_BASE_URL}", port=None, verify_ssl=VERIFY_SSL
 )
 
-
 # TODO: Move this to docker_api (for some reason, listing all containers does not work using docker_api)
 def get_docker_container_fuzzy(fuzzy_name: str):
     client = docker.from_env()

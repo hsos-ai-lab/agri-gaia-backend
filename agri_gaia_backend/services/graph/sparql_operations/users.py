@@ -26,7 +26,6 @@ SPARQL_QUERY_ENDPOINT = f"{FUSEKI_ENDPOINT}ds/sparql"
 
 logger = logging.getLogger("api-logger")
 
-
 def query_for_username(username):
     query = f"""SELECT ?iri WHERE {{
             ?iri a <http://w3id.org/gaia-x/participant#Participant> .
@@ -34,7 +33,6 @@ def query_for_username(username):
         }}"""
 
     return util.send_query(SPARQL_QUERY_ENDPOINT, query)
-
 
 def delete_user(username):
     query = f"""
@@ -47,7 +45,6 @@ def delete_user(username):
             }}"""
 
     return util.send_update(SPARQL_UPDATE_ENDPOINT, query)
-
 
 def get_default_graph(username):
     graph = Graph()

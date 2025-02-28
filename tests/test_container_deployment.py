@@ -76,9 +76,7 @@ class TestCreateContainerDeployment:
 
         response = testclient.post("/container-deployments", json=payload)
 
-        assert (
-            not response.is_success
-        ), "Container deployment was created when it shouldn't be"
+        assert not response.is_success, "Container deployment was created when it shouldn't be"
         assert (
             response.status_code == HTTP_409_CONFLICT
         ), "Wrong response code for invalid container deployment creation"

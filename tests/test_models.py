@@ -45,10 +45,7 @@ class TestCreateModel:
             "includes_annotation_file": False,
         }
         files = {
-            "modelfile": (
-                "testfile.txt",
-                BytesIO("This is a test file.".encode("utf-8")),
-            ),
+            "modelfile": ("testfile.txt", BytesIO("This is a test file.".encode("utf-8"))),
         }
 
         response = testclient.post("/models", data=data, files=files)

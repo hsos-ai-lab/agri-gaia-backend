@@ -39,7 +39,7 @@ def validate_dataresource_configuration_files(
 
     Returns:
         a dictionary containing all relevant configuration files for the desired Dataset type.
-    """
+    """    
     if type == "AgriSyntheticImageDataResource" and files != None:
         foundConfig = None
         foundAssetCatalog = None
@@ -55,7 +55,7 @@ def validate_dataresource_configuration_files(
             )
         else:
             return {"config": foundConfig, "asset_catalog": foundAssetCatalog}
-    return
+    return 
 
 
 def is_cvat_annotation_xml(annotation_file: UploadFile) -> bool:

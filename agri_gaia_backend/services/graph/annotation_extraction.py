@@ -48,7 +48,7 @@ def get_metadata(file):
     )
 
     # file is not closed by ET.parse()
-    # leads to empty file being uploaded to Minio as File cursor
+    # leads to empty file being uploaded to Minio as File cursor 
     # is placed at the end of file after parsing the XML.
     file.seek(0)
 

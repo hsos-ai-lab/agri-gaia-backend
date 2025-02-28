@@ -16,7 +16,11 @@ import os
 import io
 
 from agri_gaia_backend.db import connector_api as sql_api
-from agri_gaia_backend.routers.common import check_exists, get_db, extract_zip
+from agri_gaia_backend.routers.common import (
+    check_exists,
+    get_db,
+    extract_zip
+)
 from agri_gaia_backend.schemas.keycloak_user import KeycloakUser
 from agri_gaia_backend.schemas.connector import Connector
 from agri_gaia_backend.services import minio_api
@@ -40,7 +44,7 @@ from agri_gaia_backend.services.edc.connector import (
     initiate_file_transfer,
     query_contract_negotiation,
     query_filetransfer,
-    own_connector_information,
+    own_connector_information
 )
 
 PROJECT_BASE_URL = os.environ.get("PROJECT_BASE_URL")
@@ -50,11 +54,8 @@ ROOT_PATH = "/network"
 logger = logging.getLogger("api-logger")
 router = APIRouter(prefix=ROOT_PATH)
 
-
 @router.get("", response_model=List[Connector])
-def get_all_connectors(
-    skip: int = 0, limit: int = 10000, db: Session = Depends(get_db)
-):
+def get_all_connectors(skip: int = 0, limit: int = 10000, db: Session = Depends(get_db)):
     """Fetches all Connectors from the postgres database
 
     Args:
@@ -66,7 +67,6 @@ def get_all_connectors(
         A list of all connectors, which are stored by the plattform.
     """
     return sql_api.get_connectors(db, skip=skip, limit=limit)
-
 
 @router.get("/info")
 def get_own_connector_information():
@@ -82,7 +82,6 @@ def get_own_connector_information():
     """
 
     return own_connector_information()
-
 
 @router.get("/{connector_id}", response_model=Connector)
 def get_connector(connector_id: int, db: Session = Depends(get_db)):
@@ -100,7 +99,6 @@ def get_connector(connector_id: int, db: Session = Depends(get_db)):
     """
     return check_exists(sql_api.get_connector(db, connector_id))
 
-
 @router.get("/contractNegotiation/{negotiation_id}")
 def query_negotiation(
     request: Request,
@@ -115,7 +113,6 @@ def query_negotiation(
     print(result)
     return result
 
-
 @router.get("/transferprocess/{transfer_id}")
 def query_transfer_Process(
     request: Request,
@@ -129,10 +126,7 @@ def query_transfer_Process(
     result = json.loads(response.decode("utf8").replace("'", '"'))
     return result
 
-
-@router.post(
-    "/transferprocess/{connector_id}/{agreement_id}/{asset_id}", response_model=str
-)
+@router.post("/transferprocess/{connector_id}/{agreement_id}/{asset_id}", response_model=str)
 def initiate_transfer(
     request: Request,
     connector_id: str,
@@ -148,18 +142,15 @@ def initiate_transfer(
         asset_id=asset_id,
         contract_agreement_id=agreement_id,
         bucket=user.username,
-        minio_endpoint="https://minio." + PROJECT_BASE_URL,
-        asset_name=agreement_id + ".zip",
-        connector_address=connector.ids_url,
+        minio_endpoint="https://minio."+PROJECT_BASE_URL,
+        asset_name=agreement_id+".zip",
+        connector_address=connector.ids_url
     )
 
     result = json.loads(response.decode("utf8").replace("'", '"'))
     return result["id"]
 
-
-@router.post(
-    "/contractNegotiation/{connector_id}/{offer_id}/{asset_id}", response_model=str
-)
+@router.post("/contractNegotiation/{connector_id}/{offer_id}/{asset_id}", response_model=str)
 def initiate_negotiation(
     request: Request,
     connector_id: str,
@@ -169,13 +160,10 @@ def initiate_negotiation(
 ):
     print(connector_id)
     connector = sql_api.get_connector(connector_id=connector_id, db=db)
-    response = create_contract_negotiation(
-        offer_id=offer_id, asset_id=asset_id, connector_ids_address=connector.ids_url
-    )
+    response = create_contract_negotiation(offer_id=offer_id, asset_id=asset_id, connector_ids_address=connector.ids_url)
     result = json.loads(response.decode("utf8").replace("'", '"'))
     return result["id"]
-
-
+    
 @router.post("/import/{asset_name}", response_model=Dataset)
 def initiate_transfer(
     request: Request,
@@ -184,13 +172,10 @@ def initiate_transfer(
 ):
     user: KeycloakUser = request.user
 
-    object = minio_api.get_object(
-        bucket=user.username, object_name=asset_name, token=user.minio_token
-    )
-
+    object = minio_api.get_object(bucket=user.username, object_name=asset_name, token=user.minio_token)
+    
     zip_content = extract_zip(io.BytesIO(object.data))
     return _import_dataset_from_zip(zip_content, db, request)
-
 
 @router.post("", response_model=Connector, status_code=status.HTTP_201_CREATED)
 def create_connector(
@@ -277,7 +262,6 @@ def _create_initial_entry_postgres(
             status_code=500,
             detail="Initial Addition of Connector failed. Please try again.",
         )
-
 
 @router.delete("/{connector_id}")
 def delete_connector(

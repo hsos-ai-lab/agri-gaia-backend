@@ -15,3 +15,4 @@ from starlette.authentication import SimpleUser
 class RegistryUser(SimpleUser):
     def __init__(self) -> None:
         super(RegistryUser, self).__init__("DockerRegistryUser")
+

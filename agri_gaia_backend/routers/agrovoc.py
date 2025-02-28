@@ -30,7 +30,7 @@ predef_datatypes = {
     "http://www.w3.org/2001/XMLSchema#anyType": "string",
     "http://www.w3.org/2001/XMLSchema#boolean": "boolean",
     "http://w3id.org/agri-gaia-x/asset#ApiPath": "string",
-    "http://www.w3.org/2001/XMLSchema#anyUri": "string",
+    "http://www.w3.org/2001/XMLSchema#anyUri": "string" 
 }
 
 
@@ -88,24 +88,21 @@ def get_additional_information_on_concept(keyword: str, language: str):
 
     return {"broader": broader, "narrower": narrower}
 
-
 # TODO: Move outside of this router
 @router.get("/classes")
 def get_all_classes():
     result = sparql_util.query_possible_data_ressource_labels()
     return result
 
-
 # TODO: Move outside of this router
 @router.get("/classes/{class_name}")
 def get_attributes_for_class(class_name: str):
     result = sparql_util.query_attributes_for_class(class_name)
-    attributes = result["results"]["bindings"]
-    return _create_json_schema(class_name, attributes=attributes)
-
+    attributes = result['results']['bindings']
+    return _create_json_schema(class_name, attributes=attributes) 
 
 # TODO: Move outside of this router
-def _create_json_schema(classname: str, attributes):
+def _create_json_schema(classname : str, attributes):
     schema = dict()
 
     schema["description"] = f"A JSON Schema for the {classname}."
@@ -116,13 +113,6 @@ def _create_json_schema(classname: str, attributes):
         if attribute["range"]["value"] in predef_datatypes:
             print(attribute)
             # TODO: keep label AND prop
-            propId = (
-                attribute["prop"]["value"]
-                .replace("<", "")
-                .replace(">", "")
-                .split("#")[1]
-            )
-            schema["properties"][propId] = {
-                "type": predef_datatypes[attribute["range"]["value"]]
-            }
+            propId = attribute["prop"]["value"].replace("<", "").replace(">", "").split("#")[1]
+            schema["properties"][propId] = {"type" : predef_datatypes[attribute["range"]["value"]]}
     return schema

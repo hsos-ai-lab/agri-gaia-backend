@@ -29,7 +29,6 @@ async def me(request: Request):
         content=jsonable_encoder({"hello": user.username, "token": user.access_token})
     )
 
-
 # respond to pings from a user to check login token validity
 @router.get("/ping", tags=["users"])
 async def me(request: Request):

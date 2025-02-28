@@ -63,9 +63,7 @@ POSTGRES_DB = os.environ.get("POSTGRES_DB")
 
 SQLALCHEMY_DATABASE_URL = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@postgres_backend:5432/{POSTGRES_DB}"
 
-OIDC_ENDPOINT = (
-    f"http://keycloak:8080/realms/{KEYCLOAK_REALM_NAME}/protocol/openid-connect/token"
-)
+OIDC_ENDPOINT = f"http://keycloak:8080/realms/{KEYCLOAK_REALM_NAME}/protocol/openid-connect/token"
 USERS_ENDPOINT = f"http://keycloak:8080/admin/realms/{KEYCLOAK_REALM_NAME}/users"
 
 PROJECT_BASE_URL = os.environ.get("PROJECT_BASE_URL")
@@ -74,7 +72,6 @@ VERIFY_SSL = bool_from_env("BACKEND_VERIFY_SSL")
 cvatClient = CvatClient(
     protocol="https", host=f"cvat.{PROJECT_BASE_URL}", port=None, verify_ssl=VERIFY_SSL
 )
-
 
 def get_admin_client():
     _admin_client = Minio(
@@ -85,10 +82,7 @@ def get_admin_client():
     )
     return _admin_client
 
-
-def get_oidc_access_token(
-    username: str, password: str, client_id: str, endpoint: str = OIDC_ENDPOINT
-) -> str:
+def get_oidc_access_token(username: str, password: str, client_id: str, endpoint: str = OIDC_ENDPOINT) -> str:
     payload = {
         "client_id": client_id,
         "grant_type": "password",
@@ -134,7 +128,7 @@ def register_testuser(test_user: Testuser):
         KEYCLOAK_ADMIN_USERNAME,
         KEYCLOAK_ADMIN_PASSWORD,
         client_id="admin-cli",
-        endpoint="http://keycloak:8080/realms/master/protocol/openid-connect/token",
+        endpoint="http://keycloak:8080/realms/master/protocol/openid-connect/token"
     )
 
     auth_header = {
@@ -306,9 +300,7 @@ def test_dataset(
     authenticated_client: TestClient, cvat_authentication_data
 ) -> schemas.Dataset:
     data = {
-        "semantic_labels": [
-            "http://aims.fao.org/aos/agrovoc/c_13551",
-        ],
+        "semantic_labels": ["http://aims.fao.org/aos/agrovoc/c_13551",],
         "name": "Test-Dataset",
         "description": "This is a test dataset with a single file.",
         "includes_annotation_file": False,
@@ -328,11 +320,9 @@ def test_dataset(
     yield testdataset
 
     dataset_url = f"/datasets/{testdataset.id}"
-    response = authenticated_client.request(
-        "DELETE", dataset_url, json=cvat_authentication_data
-    )
+    response = authenticated_client.request("DELETE", dataset_url, json=cvat_authentication_data)
 
-    # response = authenticated_client.delete(dataset_url, body=cvat_authentication_data)
+    #response = authenticated_client.delete(dataset_url, body=cvat_authentication_data)
     if not response.is_success:
         warning = UserWarning(
             f"CleanupError: Error deleting dataset: '{dataset_url}'\nResponse code: {response.status_code}\nResponse text: {response.text}"
@@ -351,10 +341,7 @@ def test_model(testclient: TestClient) -> schemas.Model:
         "includes_annotation_file": False,
     }
     files = {
-        "modelfile": (
-            "test_model.txt",
-            BytesIO("This is a test file.".encode("utf-8")),
-        ),
+        "modelfile": ("test_model.txt", BytesIO("This is a test file.".encode("utf-8"))),
     }
 
     response = testclient.post("/models", data=data, files=files)
@@ -380,7 +367,6 @@ def test_edge_device(testclient: TestClient) -> schemas.EdgeDevice:
     ]  # workaround tags attribute usually being filled by portainer
 
     return testedgedevice
-
 
 @pytest.fixture
 def registered_test_edge_device(
@@ -409,7 +395,6 @@ def registered_test_edge_device(
     testedgedevice = schemas.EdgeDevice(**edge_response.json())
 
     return testedgedevice
-
 
 @pytest.fixture
 def test_container_deployment(

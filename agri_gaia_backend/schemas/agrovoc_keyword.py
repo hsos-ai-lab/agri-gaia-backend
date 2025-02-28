@@ -11,14 +11,11 @@
 
 from pydantic import BaseModel
 
-
 class AgrovocKeyword(BaseModel):
     name: str
-
-
+    
 class AgrovocKeywordWithLanguage(AgrovocKeyword):
     language: str
-
-
+    
 class AgrovocUri(BaseModel):
     uri: str

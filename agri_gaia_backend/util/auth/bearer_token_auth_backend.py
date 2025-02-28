@@ -27,7 +27,6 @@ logger = logging.getLogger("api-logger")
 
 REGISTRY_TOKEN = os.environ.get("REGISTRY_TOKEN")
 
-
 class BearerTokenAuthBackend(AuthenticationBackend):
     def __init__(self) -> None:
         super().__init__()

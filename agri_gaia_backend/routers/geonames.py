@@ -20,11 +20,9 @@ ROOT_PATH = "/geonames"
 logger = logging.getLogger("api-logger")
 router = APIRouter(prefix=ROOT_PATH)
 
-
 @router.get("/locations")
 def get_geonames_locations() -> Set[str]:
     return sorted(sparql_util.get_possible_locations())
-
 
 @router.get("/locations/{location}/check")
 def check_location(location: str):

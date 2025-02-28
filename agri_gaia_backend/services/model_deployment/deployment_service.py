@@ -17,7 +17,6 @@ import logging
 
 logger = logging.getLogger("api-logger")
 
-
 #
 def deploy_model_to_edge(
     model: Model, edge_device: EdgeDevice

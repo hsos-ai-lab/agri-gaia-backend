@@ -637,12 +637,7 @@ async def update_train_config(
 ) -> Dict:
     data = await request.json()
 
-    (
-        train_config,
-        export_config,
-        dataset_id,
-        train_container_id,
-    ) = itemgetter(
+    train_config, export_config, dataset_id, train_container_id, = itemgetter(
         "train_config", "export_config", "dataset_id", "container_id"
     )(data)
 

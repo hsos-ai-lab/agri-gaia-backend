@@ -32,7 +32,6 @@ def get_models_by_owner(db: Session, owner: str, skip: int = 0, limit: int = 100
         .all()
     )
 
-
 def get_model_by_name(db: Session, name: str, skip: int = 0, limit: int = 1):
     return (
         db.query(models.Model)
@@ -42,11 +41,10 @@ def get_model_by_name(db: Session, name: str, skip: int = 0, limit: int = 1):
         .all()
     )
 
-
 def get_published_models(
-    db: Session, skip: int = 0, limit: int = 100
+    db: Session, skip: int = 0, limit: int = 100  
 ) -> List[models.Model]:
-    return (
+    return(
         db.query(models.Model)
         .filter(models.Model.public == True)
         .offset(skip)
@@ -55,16 +53,8 @@ def get_published_models(
     )
 
 
-def get_models_by_metadata_uri(
-    db: Session, skip: int = 0, limit: int = 100, uris: Array = []
-):
-    return (
-        db.query(models.Model)
-        .filter(models.Model.metadata_uri.in_(uris))
-        .offset(skip)
-        .limit(limit)
-        .all()
-    )
+def get_models_by_metadata_uri(db: Session, skip: int = 0, limit: int = 100, uris: Array = []):
+    return db.query(models.Model).filter(models.Model.metadata_uri.in_(uris)).offset(skip).limit(limit).all()
 
 
 def get_models(db: Session, skip: int = 0, limit: int = 100):
@@ -88,7 +78,7 @@ def create_model(
         last_modified=last_modified,
         bucket_name=bucket_name,
         file_size=file_size,
-        file_name=file_name,
+        file_name=file_name
     )
     db.add(db_model)
     db.commit()

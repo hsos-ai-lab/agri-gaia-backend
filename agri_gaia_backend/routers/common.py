@@ -147,7 +147,6 @@ def get_task_creator(request: Request) -> TaskCreator:
 
     return TaskCreator(initiator)
 
-
 def create_zip_file_response(files: Dict[str, bytes], filename: str) -> Response:
     """
     Creates an HTTP Resposnse with a ZIP arhcive containing all the files, that are passed to the function.
@@ -179,7 +178,6 @@ def extract_zip(input_zip):
     """
     input_zip = ZipFile(input_zip)
     return {name: input_zip.read(name) for name in input_zip.namelist()}
-
 
 def create_zip_file(files: Dict[str, bytes]) -> io.BytesIO:
     """
@@ -231,9 +229,7 @@ def create_single_file_response(
 
     return response
 
-
 T = TypeVar("T")
-
 
 def check_exists(obj: T, detail: str = None) -> T:
     """

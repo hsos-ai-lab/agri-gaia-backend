@@ -9,7 +9,6 @@
 #
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
-
 class JSONSchemaDefault:
     def __init__(self, schema: dict):
         self.schema = schema
@@ -71,7 +70,7 @@ class JSONSchemaDefault:
                 default = JSONSchemaDefault(schema).get_default_values()
             case "array":
                 default = []
-                # Get Default value in Array, else go through nested arrays
+                #Get Default value in Array, else go through nested arrays 
                 if "default" in schema:
                     default = schema["default"]
                 else:
@@ -84,9 +83,7 @@ class JSONSchemaDefault:
                             default.append(value)
                         elif key == "items":
                             if self.generate_default_values(name, value) is not None:
-                                default.append(
-                                    self.generate_default_values(name, value)
-                                )
+                                default.append(self.generate_default_values(name, value))
                         else:
                             pass
             case "integer":
@@ -107,10 +104,11 @@ class JSONSchemaDefault:
             case other:
                 print("{} is not a known type.".format({schema["type"]}))
                 raise RuntimeError("Type unknown.")
-
+            
         return default
 
     def get_type(self, schema):
         if "type" in schema:
             _type = schema["type"]
             return _type
+

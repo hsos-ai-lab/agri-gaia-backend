@@ -29,14 +29,14 @@ def create_application(
     db: Session,
     application_create: schemas.ApplicationCreate,
     edge_stack_id: int,
-    last_modified: datetime,
+    last_modified: datetime
 ) -> Application:
     db_application = Application(
-        name=application_create.name,
-        yaml=application_create.yaml,
+        name=application_create.name, 
+        yaml=application_create.yaml, 
         last_modified=last_modified,
         portainer_edge_stack_id=edge_stack_id,
-        portainer_edge_group_ids=application_create.group_ids,
+        portainer_edge_group_ids=application_create.group_ids
     )
     db.add(db_application)
     db.commit()

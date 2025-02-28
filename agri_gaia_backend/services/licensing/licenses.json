@@ -1,2118 +1,2538 @@
 [
-  {
-    "name": "Python Libraries",
-    "dependencies": [
-      {
-        "name": "fastapi",
-        "version": ["~=0.110.0"],
-        "url": "https://pypi.org/project/fastapi/",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "pydantic",
-        "version": ["~=1.10.2"],
-        "url": "https://pypi.org/project/pydantic/",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "uvicorn",
-        "version": ["~=0.27.1"],
-        "url": "https://pypi.org/project/uvicorn/",
-        "license": {
-          "name": "BSD 2-Clause \"Simplified\" License",
-          "key": "bsd-2-clause",
-          "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
-        }
-      },
-      {
-        "name": "python-dotenv",
-        "version": ["~=0.21.0"],
-        "url": "https://pypi.org/project/python-dotenv/",
-        "license": {
-          "name": "BSD 2-Clause \"Simplified\" License",
-          "key": "bsd-2-clause",
-          "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
-        }
-      },
-      {
-        "name": "itsdangerous",
-        "version": ["~=2.1.2"],
-        "url": "https://pypi.org/project/itsdangerous/",
-        "license": {
-          "name": "BSD 2-Clause \"Simplified\" License",
-          "key": "bsd-2-clause",
-          "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
-        }
-      },
-      {
-        "name": "python-keycloak",
-        "version": ["~=0.26.1"],
-        "url": "https://pypi.org/project/python-keycloak/",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "docker",
-        "version": ["~=6.1.0"],
-        "url": "https://pypi.org/project/docker/",
-        "license": {
-          "name": "Apache License 2.0",
-          "key": "apache-2.0",
-          "html_url": "http://choosealicense.com/licenses/apache-2.0/"
-        }
-      },
-      {
-        "name": "pyyaml",
-        "version": ["~=6.0.1"],
-        "url": "https://pypi.org/project/pyyaml/",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "rdflib",
-        "version": ["~=6.1.1"],
-        "url": "https://pypi.org/project/rdflib/",
-        "license": {
-          "name": "BSD 2-Clause \"Simplified\" License",
-          "key": "bsd-2-clause",
-          "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
-        }
-      },
-      {
-        "name": "minio",
-        "version": ["~=7.1.8"],
-        "url": "https://pypi.org/project/minio/",
-        "license": {
-          "name": "Apache License 2.0",
-          "key": "apache-2.0",
-          "html_url": "http://choosealicense.com/licenses/apache-2.0/"
-        }
-      },
-      {
-        "name": "python-multipart",
-        "version": ["~=0.0.5"],
-        "url": "https://pypi.org/project/python-multipart/",
-        "license": {
-          "name": "Apache License 2.0",
-          "key": "apache-2.0",
-          "html_url": "http://choosealicense.com/licenses/apache-2.0/"
-        }
-      },
-      {
-        "name": "sqlalchemy",
-        "version": ["~=1.4.42"],
-        "url": "https://pypi.org/project/sqlalchemy/",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "psycopg2-binary",
-        "version": ["~=2.9.3"],
-        "url": "https://pypi.org/project/psycopg2-binary/",
-        "license": {
-          "name": "GNU Lesser General Public License v2.1",
-          "key": "lgpl-2.1",
-          "html_url": "http://choosealicense.com/licenses/lgpl-2.1/"
-        }
-      },
-      {
-        "name": "alembic",
-        "version": ["~=1.8.1"],
-        "url": "https://pypi.org/project/alembic/",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "python-dxf",
-        "version": ["~=11.1.0"],
-        "url": "https://pypi.org/project/python-dxf/",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "tenacity",
-        "version": ["~=8.0.1"],
-        "url": "https://pypi.org/project/tenacity/",
-        "license": {
-          "name": "Apache License 2.0",
-          "key": "apache-2.0",
-          "html_url": "http://choosealicense.com/licenses/apache-2.0/"
-        }
-      },
-      {
-        "name": "python-dateutil",
-        "version": ["~=2.8.2"],
-        "url": "https://pypi.org/project/python-dateutil/",
-        "license": {
-          "name": "Apache License 2.0",
-          "key": "apache-2.0",
-          "html_url": "http://choosealicense.com/licenses/apache-2.0/"
-        }
-      },
-      {
-        "name": "python-on-whales",
-        "version": ["~=0.43.0"],
-        "url": "https://pypi.org/project/python-on-whales/",
-        "license": {
-          "name": "MIT License  Copyright (c) 2020 Gabriel de Marmiesse de Lussan  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:  The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.  THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. ",
-          "key": null,
-          "html_url": null
-        }
-      },
-      {
-        "name": "prometheus-fastapi-instrumentator",
-        "version": ["~=5.8.1,!=5.8.2"],
-        "url": "https://pypi.org/project/prometheus-fastapi-instrumentator/",
-        "license": {
-          "name": "ISC License",
-          "key": "isc",
-          "html_url": "http://choosealicense.com/licenses/isc/"
-        }
-      },
-      {
-        "name": "memory-profiler",
-        "version": ["~=0.60.0"],
-        "url": "https://pypi.org/project/memory-profiler/",
-        "license": {
-          "name": "BSD 2-Clause \"Simplified\" License",
-          "key": "bsd-2-clause",
-          "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
-        }
-      },
-      {
-        "name": "genson",
-        "version": ["~=1.2.2"],
-        "url": "https://pypi.org/project/genson/",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "jsonschema",
-        "version": ["~=4.17.3"],
-        "url": "https://pypi.org/project/jsonschema/",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "numpy",
-        "version": ["~=1.23.1"],
-        "url": "https://pypi.org/project/numpy/",
-        "license": {
-          "name": "BSD 2-Clause \"Simplified\" License",
-          "key": "bsd-2-clause",
-          "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
-        }
-      },
-      {
-        "name": "matplotlib",
-        "version": ["~=3.6.0"],
-        "url": "https://pypi.org/project/matplotlib/",
-        "license": {
-          "name": "Python Software Foundation License",
-          "key": null,
-          "html_url": null
-        }
-      },
-      {
-        "name": "xmltodict",
-        "version": ["~=0.13.0"],
-        "url": "https://pypi.org/project/xmltodict/",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "geoalchemy2",
-        "version": ["~=0.12.5"],
-        "url": "https://pypi.org/project/geoalchemy2/",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "fiftyone",
-        "version": ["~=0.23.5"],
-        "url": "https://pypi.org/project/fiftyone/",
-        "license": {
-          "name": "Apache License 2.0",
-          "key": "apache-2.0",
-          "html_url": "http://choosealicense.com/licenses/apache-2.0/"
-        }
-      },
-      {
-        "name": "pycocotools",
-        "version": ["~=2.0.6"],
-        "url": "https://pypi.org/project/pycocotools/",
-        "license": {
-          "name": "BSD 2-Clause \"Simplified\" License",
-          "key": "bsd-2-clause",
-          "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
-        }
-      },
-      {
-        "name": "requests",
-        "version": ["~=2.30.0"],
-        "url": "https://pypi.org/project/requests/",
-        "license": {
-          "name": "Apache License 2.0",
-          "key": "apache-2.0",
-          "html_url": "http://choosealicense.com/licenses/apache-2.0/"
-        }
-      },
-      {
-        "name": "requirements-parser",
-        "version": ["~=0.5.0"],
-        "url": "https://pypi.org/project/requirements-parser/",
-        "license": {
-          "name": "Apache License 2.0",
-          "key": "apache-2.0",
-          "html_url": "http://choosealicense.com/licenses/apache-2.0/"
-        }
-      },
-      {
-        "name": "validators",
-        "version": ["~=0.20.0"],
-        "url": "https://pypi.org/project/validators/",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "mistletoe",
-        "version": ["~=1.0.1"],
-        "url": "https://pypi.org/project/mistletoe/",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "jsonref",
-        "version": ["~=1.1.0"],
-        "url": "https://pypi.org/project/jsonref/",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "openapi-spec-validator",
-        "version": ["~=0.5.7"],
-        "url": "https://pypi.org/project/openapi-spec-validator/",
-        "license": {
-          "name": "Apache License 2.0",
-          "key": "apache-2.0",
-          "html_url": "http://choosealicense.com/licenses/apache-2.0/"
-        }
-      },
-      {
-        "name": "dockerfile-parse",
-        "version": ["~=2.0.1"],
-        "url": "https://pypi.org/project/dockerfile-parse/",
-        "license": {
-          "name": "BSD 2-Clause \"Simplified\" License",
-          "key": "bsd-2-clause",
-          "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
-        }
-      },
-      {
-        "name": "onnx",
-        "version": ["~=1.14.0"],
-        "url": "https://pypi.org/project/onnx/",
-        "license": {
-          "name": "Apache License v2.0",
-          "key": null,
-          "html_url": null
-        }
-      },
-      {
-        "name": "tritonclient",
-        "version": ["~=2.41.1"],
-        "url": "https://pypi.org/project/tritonclient/",
-        "license": {
-          "name": "BSD 2-Clause \"Simplified\" License",
-          "key": "bsd-2-clause",
-          "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
-        }
-      },
-      {
-        "name": "attrdict",
-        "version": ["~=2.0.1"],
-        "url": "https://pypi.org/project/attrdict/",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "python-dotenv",
-        "version": [""],
-        "url": "https://pypi.org/project/python-dotenv/",
-        "license": {
-          "name": "BSD 2-Clause \"Simplified\" License",
-          "key": "bsd-2-clause",
-          "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
-        }
-      },
-      {
-        "name": "pika",
-        "version": [""],
-        "url": "https://pypi.org/project/pika/",
-        "license": {
-          "name": "BSD 2-Clause \"Simplified\" License",
-          "key": "bsd-2-clause",
-          "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
-        }
-      },
-      {
-        "name": "minio",
-        "version": [""],
-        "url": "https://pypi.org/project/minio/",
-        "license": {
-          "name": "Apache License 2.0",
-          "key": "apache-2.0",
-          "html_url": "http://choosealicense.com/licenses/apache-2.0/"
-        }
-      },
-      {
-        "name": "uuid",
-        "version": [""],
-        "url": "https://pypi.org/project/uuid/",
-        "license": {
-          "name": "UNKNOWN",
-          "key": null,
-          "html_url": null
-        }
-      },
-      {
-        "name": "jsonschema",
-        "version": [""],
-        "url": "https://pypi.org/project/jsonschema/",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "fastapi",
-        "version": [""],
-        "url": "https://pypi.org/project/fastapi/",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "uvicorn",
-        "version": [""],
-        "url": "https://pypi.org/project/uvicorn/",
-        "license": {
-          "name": "BSD 2-Clause \"Simplified\" License",
-          "key": "bsd-2-clause",
-          "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
-        }
-      },
-      {
-        "name": "python-multipart",
-        "version": [""],
-        "url": "https://pypi.org/project/python-multipart/",
-        "license": {
-          "name": "Apache License 2.0",
-          "key": "apache-2.0",
-          "html_url": "http://choosealicense.com/licenses/apache-2.0/"
-        }
-      },
-      {
-        "name": "matplotlib",
-        "version": [">=3.2.2"],
-        "url": "https://pypi.org/project/matplotlib/",
-        "license": {
-          "name": "Python Software Foundation License",
-          "key": null,
-          "html_url": null
-        }
-      },
-      {
-        "name": "numpy",
-        "version": [">=1.18.5"],
-        "url": "https://pypi.org/project/numpy/",
-        "license": {
-          "name": "BSD 2-Clause \"Simplified\" License",
-          "key": "bsd-2-clause",
-          "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
-        }
-      },
-      {
-        "name": "opencv-python-headless",
-        "version": [""],
-        "url": "https://pypi.org/project/opencv-python-headless/",
-        "license": {
-          "name": "Apache License 2.0",
-          "key": "apache-2.0",
-          "html_url": "http://choosealicense.com/licenses/apache-2.0/"
-        }
-      },
-      {
-        "name": "pillow",
-        "version": [">=7.1.2"],
-        "url": "https://pypi.org/project/pillow/",
-        "license": {
-          "name": "Historical Permission Notice and Disclaimer (HPND)",
-          "key": null,
-          "html_url": null
-        }
-      },
-      {
-        "name": "pyyaml",
-        "version": [">=5.3.1"],
-        "url": "https://pypi.org/project/pyyaml/",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "requests",
-        "version": [">=2.23.0"],
-        "url": "https://pypi.org/project/requests/",
-        "license": {
-          "name": "Apache License 2.0",
-          "key": "apache-2.0",
-          "html_url": "http://choosealicense.com/licenses/apache-2.0/"
-        }
-      },
-      {
-        "name": "scipy",
-        "version": [">=1.4.1"],
-        "url": "https://pypi.org/project/scipy/",
-        "license": {
-          "name": "BSD 2-Clause \"Simplified\" License",
-          "key": "bsd-2-clause",
-          "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
-        }
-      },
-      {
-        "name": "torch",
-        "version": [">=1.7.0"],
-        "url": "https://pypi.org/project/torch/",
-        "license": {
-          "name": "BSD 2-Clause \"Simplified\" License",
-          "key": "bsd-2-clause",
-          "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
-        }
-      },
-      {
-        "name": "torchvision",
-        "version": [">=0.8.1"],
-        "url": "https://pypi.org/project/torchvision/",
-        "license": {
-          "name": "BSD 2-Clause \"Simplified\" License",
-          "key": "bsd-2-clause",
-          "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
-        }
-      },
-      {
-        "name": "tqdm",
-        "version": [">=4.41.0"],
-        "url": "https://pypi.org/project/tqdm/",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "tensorboard",
-        "version": [">=2.4.1"],
-        "url": "https://pypi.org/project/tensorboard/",
-        "license": {
-          "name": "Apache License 2.0",
-          "key": "apache-2.0",
-          "html_url": "http://choosealicense.com/licenses/apache-2.0/"
-        }
-      },
-      {
-        "name": "pandas",
-        "version": [">=1.1.4"],
-        "url": "https://pypi.org/project/pandas/",
-        "license": {
-          "name": "BSD 2-Clause \"Simplified\" License",
-          "key": "bsd-2-clause",
-          "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
-        }
-      },
-      {
-        "name": "seaborn",
-        "version": [">=0.11.0"],
-        "url": "https://pypi.org/project/seaborn/",
-        "license": {
-          "name": "BSD 2-Clause \"Simplified\" License",
-          "key": "bsd-2-clause",
-          "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
-        }
-      },
-      {
-        "name": "ipython",
-        "version": [""],
-        "url": "https://pypi.org/project/ipython/",
-        "license": {
-          "name": "BSD 2-Clause \"Simplified\" License",
-          "key": "bsd-2-clause",
-          "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
-        }
-      },
-      {
-        "name": "psutil",
-        "version": [""],
-        "url": "https://pypi.org/project/psutil/",
-        "license": {
-          "name": "BSD 2-Clause \"Simplified\" License",
-          "key": "bsd-2-clause",
-          "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
-        }
-      },
-      {
-        "name": "thop",
-        "version": [""],
-        "url": "https://pypi.org/project/thop/",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "protobuf",
-        "version": ["==3.20.1"],
-        "url": "https://pypi.org/project/protobuf/",
-        "license": {
-          "name": "3-Clause BSD License",
-          "key": null,
-          "html_url": null
-        }
-      },
-      {
-        "name": "matplotlib",
-        "version": [">=3.2.2"],
-        "url": "https://pypi.org/project/matplotlib/",
-        "license": {
-          "name": "Python Software Foundation License",
-          "key": null,
-          "html_url": null
-        }
-      },
-      {
-        "name": "numpy",
-        "version": [">=1.18.5"],
-        "url": "https://pypi.org/project/numpy/",
-        "license": {
-          "name": "BSD 2-Clause \"Simplified\" License",
-          "key": "bsd-2-clause",
-          "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
-        }
-      },
-      {
-        "name": "opencv-python",
-        "version": [">=4.1.1"],
-        "url": "https://pypi.org/project/opencv-python/",
-        "license": {
-          "name": "Apache License 2.0",
-          "key": "apache-2.0",
-          "html_url": "http://choosealicense.com/licenses/apache-2.0/"
-        }
-      },
-      {
-        "name": "pillow",
-        "version": [">=7.1.2"],
-        "url": "https://pypi.org/project/pillow/",
-        "license": {
-          "name": "Historical Permission Notice and Disclaimer (HPND)",
-          "key": null,
-          "html_url": null
-        }
-      },
-      {
-        "name": "pyyaml",
-        "version": [">=5.3.1"],
-        "url": "https://pypi.org/project/pyyaml/",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "requests",
-        "version": [">=2.23.0"],
-        "url": "https://pypi.org/project/requests/",
-        "license": {
-          "name": "Apache License 2.0",
-          "key": "apache-2.0",
-          "html_url": "http://choosealicense.com/licenses/apache-2.0/"
-        }
-      },
-      {
-        "name": "scipy",
-        "version": [">=1.4.1"],
-        "url": "https://pypi.org/project/scipy/",
-        "license": {
-          "name": "BSD 2-Clause \"Simplified\" License",
-          "key": "bsd-2-clause",
-          "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
-        }
-      },
-      {
-        "name": "torch",
-        "version": [">=1.7.0"],
-        "url": "https://pypi.org/project/torch/",
-        "license": {
-          "name": "BSD 2-Clause \"Simplified\" License",
-          "key": "bsd-2-clause",
-          "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
-        }
-      },
-      {
-        "name": "torchvision",
-        "version": [">=0.8.1"],
-        "url": "https://pypi.org/project/torchvision/",
-        "license": {
-          "name": "BSD 2-Clause \"Simplified\" License",
-          "key": "bsd-2-clause",
-          "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
-        }
-      },
-      {
-        "name": "tqdm",
-        "version": [">=4.41.0"],
-        "url": "https://pypi.org/project/tqdm/",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "protobuf",
-        "version": ["<=3.20.1"],
-        "url": "https://pypi.org/project/protobuf/",
-        "license": {
-          "name": "3-Clause BSD License",
-          "key": null,
-          "html_url": null
-        }
-      },
-      {
-        "name": "tensorboard",
-        "version": [">=2.4.1"],
-        "url": "https://pypi.org/project/tensorboard/",
-        "license": {
-          "name": "Apache License 2.0",
-          "key": "apache-2.0",
-          "html_url": "http://choosealicense.com/licenses/apache-2.0/"
-        }
-      },
-      {
-        "name": "pandas",
-        "version": [">=1.1.4"],
-        "url": "https://pypi.org/project/pandas/",
-        "license": {
-          "name": "BSD 2-Clause \"Simplified\" License",
-          "key": "bsd-2-clause",
-          "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
-        }
-      },
-      {
-        "name": "seaborn",
-        "version": [">=0.11.0"],
-        "url": "https://pypi.org/project/seaborn/",
-        "license": {
-          "name": "BSD 2-Clause \"Simplified\" License",
-          "key": "bsd-2-clause",
-          "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
-        }
-      },
-      {
-        "name": "ipython",
-        "version": [""],
-        "url": "https://pypi.org/project/ipython/",
-        "license": {
-          "name": "BSD 2-Clause \"Simplified\" License",
-          "key": "bsd-2-clause",
-          "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
-        }
-      },
-      {
-        "name": "psutil",
-        "version": [""],
-        "url": "https://pypi.org/project/psutil/",
-        "license": {
-          "name": "BSD 2-Clause \"Simplified\" License",
-          "key": "bsd-2-clause",
-          "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
-        }
-      },
-      {
-        "name": "thop",
-        "version": [""],
-        "url": "https://pypi.org/project/thop/",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "numpy",
-        "version": ["~=1.24.4"],
-        "url": "https://pypi.org/project/numpy/",
-        "license": {
-          "name": "BSD 2-Clause \"Simplified\" License",
-          "key": "bsd-2-clause",
-          "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
-        }
-      },
-      {
-        "name": "opencv-python",
-        "version": ["~=4.5.2.54"],
-        "url": "https://pypi.org/project/opencv-python/",
-        "license": {
-          "name": "Apache License 2.0",
-          "key": "apache-2.0",
-          "html_url": "http://choosealicense.com/licenses/apache-2.0/"
-        }
-      },
-      {
-        "name": "onnxruntime_gpu-1.12.1-cp38-cp38-linux_aarch64.whl",
-        "version": [""],
-        "url": null,
-        "license": null
-      },
-      {
-        "name": "torch",
-        "version": ["~=1.10.0"],
-        "url": "https://pypi.org/project/torch/",
-        "license": {
-          "name": "BSD 2-Clause \"Simplified\" License",
-          "key": "bsd-2-clause",
-          "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
-        }
-      },
-      {
-        "name": "torchvision",
-        "version": ["~=0.11.0"],
-        "url": "https://pypi.org/project/torchvision/",
-        "license": {
-          "name": "BSD 2-Clause \"Simplified\" License",
-          "key": "bsd-2-clause",
-          "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
-        }
-      },
-      {
-        "name": "scikit-learn",
-        "version": ["~=1.1.2"],
-        "url": "https://pypi.org/project/scikit-learn/",
-        "license": {
-          "name": "BSD 2-Clause \"Simplified\" License",
-          "key": "bsd-2-clause",
-          "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
-        }
-      },
-      {
-        "name": "xmltodict",
-        "version": ["~=0.13.0"],
-        "url": "https://pypi.org/project/xmltodict/",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "pyyaml",
-        "version": ["~=6.0"],
-        "url": "https://pypi.org/project/pyyaml/",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "shapely",
-        "version": ["~=1.8.4"],
-        "url": "https://pypi.org/project/shapely/",
-        "license": {
-          "name": "BSD 2-Clause \"Simplified\" License",
-          "key": "bsd-2-clause",
-          "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
-        }
-      },
-      {
-        "name": "numpy",
-        "version": ["~=1.23.3"],
-        "url": "https://pypi.org/project/numpy/",
-        "license": {
-          "name": "BSD 2-Clause \"Simplified\" License",
-          "key": "bsd-2-clause",
-          "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
-        }
-      },
-      {
-        "name": "xmltodict",
-        "version": ["~=0.13.0"],
-        "url": "https://pypi.org/project/xmltodict/",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "torch",
-        "version": ["==1.13.0"],
-        "url": "https://pypi.org/project/torch/",
-        "license": {
-          "name": "BSD 2-Clause \"Simplified\" License",
-          "key": "bsd-2-clause",
-          "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
-        }
-      },
-      {
-        "name": "torchvision",
-        "version": ["==0.14.0"],
-        "url": "https://pypi.org/project/torchvision/",
-        "license": {
-          "name": "BSD 2-Clause \"Simplified\" License",
-          "key": "bsd-2-clause",
-          "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
-        }
-      },
-      {
-        "name": "torchmetrics",
-        "version": ["~=0.10.3"],
-        "url": "https://pypi.org/project/torchmetrics/",
-        "license": {
-          "name": "Apache License 2.0",
-          "key": "apache-2.0",
-          "html_url": "http://choosealicense.com/licenses/apache-2.0/"
-        }
-      },
-      {
-        "name": "scikit-learn",
-        "version": ["~=1.1.2"],
-        "url": "https://pypi.org/project/scikit-learn/",
-        "license": {
-          "name": "BSD 2-Clause \"Simplified\" License",
-          "key": "bsd-2-clause",
-          "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
-        }
-      },
-      {
-        "name": "pytorch-lightning",
-        "version": ["~=1.7.7"],
-        "url": "https://pypi.org/project/pytorch-lightning/",
-        "license": {
-          "name": "Apache License 2.0",
-          "key": "apache-2.0",
-          "html_url": "http://choosealicense.com/licenses/apache-2.0/"
-        }
-      },
-      {
-        "name": "ujson",
-        "version": ["~=5.4.0"],
-        "url": "https://pypi.org/project/ujson/",
-        "license": {
-          "name": "BSD 2-Clause \"Simplified\" License",
-          "key": "bsd-2-clause",
-          "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
-        }
-      },
-      {
-        "name": "shapely",
-        "version": ["~=1.8.4"],
-        "url": "https://pypi.org/project/shapely/",
-        "license": {
-          "name": "BSD 2-Clause \"Simplified\" License",
-          "key": "bsd-2-clause",
-          "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
-        }
-      },
-      {
-        "name": "numpy",
-        "version": ["~=1.23.3"],
-        "url": "https://pypi.org/project/numpy/",
-        "license": {
-          "name": "BSD 2-Clause \"Simplified\" License",
-          "key": "bsd-2-clause",
-          "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
-        }
-      },
-      {
-        "name": "xmltodict",
-        "version": ["~=0.13.0"],
-        "url": "https://pypi.org/project/xmltodict/",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "torch",
-        "version": ["==1.13.0"],
-        "url": "https://pypi.org/project/torch/",
-        "license": {
-          "name": "BSD 2-Clause \"Simplified\" License",
-          "key": "bsd-2-clause",
-          "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
-        }
-      },
-      {
-        "name": "torchvision",
-        "version": ["==0.14.0"],
-        "url": "https://pypi.org/project/torchvision/",
-        "license": {
-          "name": "BSD 2-Clause \"Simplified\" License",
-          "key": "bsd-2-clause",
-          "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
-        }
-      },
-      {
-        "name": "torchmetrics",
-        "version": ["~=0.10.3"],
-        "url": "https://pypi.org/project/torchmetrics/",
-        "license": {
-          "name": "Apache License 2.0",
-          "key": "apache-2.0",
-          "html_url": "http://choosealicense.com/licenses/apache-2.0/"
-        }
-      },
-      {
-        "name": "scikit-learn",
-        "version": ["~=1.1.2"],
-        "url": "https://pypi.org/project/scikit-learn/",
-        "license": {
-          "name": "BSD 2-Clause \"Simplified\" License",
-          "key": "bsd-2-clause",
-          "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
-        }
-      },
-      {
-        "name": "pytorch-lightning",
-        "version": ["~=1.7.7"],
-        "url": "https://pypi.org/project/pytorch-lightning/",
-        "license": {
-          "name": "Apache License 2.0",
-          "key": "apache-2.0",
-          "html_url": "http://choosealicense.com/licenses/apache-2.0/"
-        }
-      },
-      {
-        "name": "ujson",
-        "version": ["~=5.4.0"],
-        "url": "https://pypi.org/project/ujson/",
-        "license": {
-          "name": "BSD 2-Clause \"Simplified\" License",
-          "key": "bsd-2-clause",
-          "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
-        }
-      },
-      {
-        "name": "shapely",
-        "version": ["~=1.8.4"],
-        "url": "https://pypi.org/project/shapely/",
-        "license": {
-          "name": "BSD 2-Clause \"Simplified\" License",
-          "key": "bsd-2-clause",
-          "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
-        }
-      },
-      {
-        "name": "dockerspawner",
-        "version": ["~=12.1.0"],
-        "url": "https://pypi.org/project/dockerspawner/",
-        "license": {
-          "name": "BSD 2-Clause \"Simplified\" License",
-          "key": "bsd-2-clause",
-          "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
-        }
-      },
-      {
-        "name": "keycloakauthenticator",
-        "version": ["~=3.3.0"],
-        "url": "https://pypi.org/project/keycloakauthenticator/",
-        "license": {
-          "name": "GNU Affero General Public License v3",
-          "key": null,
-          "html_url": null
-        }
-      }
-    ]
-  },
-  {
-    "name": "Node Packages",
-    "dependencies": [
-      {
-        "name": "@codemirror/legacy-modes",
-        "version": ["^6.1.0"],
-        "url": "https://www.npmjs.com/package/@codemirror/legacy-modes/",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "@emotion/react",
-        "version": ["^11.10.0"],
-        "url": "https://www.npmjs.com/package/@emotion/react/",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "@emotion/styled",
-        "version": ["^11.10.0"],
-        "url": "https://www.npmjs.com/package/@emotion/styled/",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "@material-ui/core",
-        "version": ["^4.12.4"],
-        "url": "https://www.npmjs.com/package/@material-ui/core/",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "@mui/icons-material",
-        "version": ["^5.8.4"],
-        "url": "https://www.npmjs.com/package/@mui/icons-material/",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "@mui/lab",
-        "version": ["^5.0.0-alpha.72"],
-        "url": "https://www.npmjs.com/package/@mui/lab/",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "@mui/material",
-        "version": ["^5.10.1"],
-        "url": "https://www.npmjs.com/package/@mui/material/",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "@mui/x-tree-view",
-        "version": ["^6.17.0"],
-        "url": "https://www.npmjs.com/package/@mui/x-tree-view/",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "@react-spring/web",
-        "version": ["^9.7.3"],
-        "url": "https://www.npmjs.com/package/@react-spring/web/",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "@rjsf/core",
-        "version": ["^4.2.0"],
-        "url": "https://www.npmjs.com/package/@rjsf/core/",
-        "license": {
-          "name": "Apache License 2.0",
-          "key": "apache-2.0",
-          "html_url": "http://choosealicense.com/licenses/apache-2.0/"
-        }
-      },
-      {
-        "name": "@rjsf/material-ui",
-        "version": ["^4.2.0"],
-        "url": "https://www.npmjs.com/package/@rjsf/material-ui/",
-        "license": {
-          "name": "Apache License 2.0",
-          "key": "apache-2.0",
-          "html_url": "http://choosealicense.com/licenses/apache-2.0/"
-        }
-      },
-      {
-        "name": "@uiw/react-codemirror",
-        "version": ["^4.11.4"],
-        "url": "https://www.npmjs.com/package/@uiw/react-codemirror/",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "@uiw/react-textarea-code-editor",
-        "version": ["^2.0.2"],
-        "url": "https://www.npmjs.com/package/@uiw/react-textarea-code-editor/",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "buffer",
-        "version": ["^6.0.3"],
-        "url": "https://www.npmjs.com/package/buffer/",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "classnames",
-        "version": ["^2.3.2"],
-        "url": "https://www.npmjs.com/package/classnames/",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "eslint-config-airbnb-typescript",
-        "version": ["^16.2.0"],
-        "url": "https://www.npmjs.com/package/eslint-config-airbnb-typescript/",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "eslint-config-prettier",
-        "version": ["^8.5.0"],
-        "url": "https://www.npmjs.com/package/eslint-config-prettier/",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "eslint-plugin-prettier",
-        "version": ["^4.0.0"],
-        "url": "https://www.npmjs.com/package/eslint-plugin-prettier/",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "gpxparser",
-        "version": ["^3.0.8"],
-        "url": "https://www.npmjs.com/package/gpxparser/",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "http-status-codes",
-        "version": ["^2.2.0"],
-        "url": "https://www.npmjs.com/package/http-status-codes/",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "keycloak-js",
-        "version": ["^16.1.1"],
-        "url": "https://www.npmjs.com/package/keycloak-js/",
-        "license": {
-          "name": "Apache License 2.0",
-          "key": "apache-2.0",
-          "html_url": "http://choosealicense.com/licenses/apache-2.0/"
-        }
-      },
-      {
-        "name": "leaflet",
-        "version": ["^1.8.0"],
-        "url": "https://www.npmjs.com/package/leaflet/",
-        "license": {
-          "name": "BSD 2-Clause \"Simplified\" License",
-          "key": "bsd-2-clause",
-          "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
-        }
-      },
-      {
-        "name": "luxon",
-        "version": ["^2.3.2"],
-        "url": "https://www.npmjs.com/package/luxon/",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "prettier",
-        "version": ["^2.6.2"],
-        "url": "https://www.npmjs.com/package/prettier/",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "pretty-bytes",
-        "version": ["^5.6.0"],
-        "url": "https://www.npmjs.com/package/pretty-bytes/",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "prototxt-parser",
-        "version": ["^0.1.5"],
-        "url": "https://www.npmjs.com/package/prototxt-parser/",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "react",
-        "version": ["^17.0.2"],
-        "url": "https://www.npmjs.com/package/react/",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "react-device-detect",
-        "version": ["^2.2.3"],
-        "url": "https://www.npmjs.com/package/react-device-detect/",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "react-dom",
-        "version": ["^17.0.2"],
-        "url": "https://www.npmjs.com/package/react-dom/",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "react-iframe",
-        "version": ["^1.8.0"],
-        "url": "https://www.npmjs.com/package/react-iframe/",
-        "license": {
-          "name": "ISC License",
-          "key": "isc",
-          "html_url": "http://choosealicense.com/licenses/isc/"
-        }
-      },
-      {
-        "name": "react-leaflet",
-        "version": ["^3.2.5"],
-        "url": "https://www.npmjs.com/package/react-leaflet/",
-        "license": {
-          "name": "Hippocratic-2.1",
-          "key": null,
-          "html_url": null
-        }
-      },
-      {
-        "name": "react-router-dom",
-        "version": ["~6.11.0"],
-        "url": "https://www.npmjs.com/package/react-router-dom/",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "recharts",
-        "version": ["^2.1.14"],
-        "url": "https://www.npmjs.com/package/recharts/",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "swagger-ui-react",
-        "version": ["5.10.5"],
-        "url": "https://www.npmjs.com/package/swagger-ui-react/",
-        "license": {
-          "name": "Apache License 2.0",
-          "key": "apache-2.0",
-          "html_url": "http://choosealicense.com/licenses/apache-2.0/"
-        }
-      },
-      {
-        "name": "typescript",
-        "version": ["^4.6.3"],
-        "url": "https://www.npmjs.com/package/typescript/",
-        "license": {
-          "name": "Apache License 2.0",
-          "key": "apache-2.0",
-          "html_url": "http://choosealicense.com/licenses/apache-2.0/"
-        }
-      },
-      {
-        "name": "uuid",
-        "version": ["^8.3.2"],
-        "url": "https://www.npmjs.com/package/uuid/",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "web-vitals",
-        "version": ["^2.1.4"],
-        "url": "https://www.npmjs.com/package/web-vitals/",
-        "license": {
-          "name": "Apache License 2.0",
-          "key": "apache-2.0",
-          "html_url": "http://choosealicense.com/licenses/apache-2.0/"
-        }
-      },
-      {
-        "name": "@testing-library/jest-dom",
-        "version": ["^5.16.4"],
-        "url": "https://www.npmjs.com/package/@testing-library/jest-dom/",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "@testing-library/react",
-        "version": ["^12.1.5"],
-        "url": "https://www.npmjs.com/package/@testing-library/react/",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "@testing-library/user-event",
-        "version": ["^13.5.0"],
-        "url": "https://www.npmjs.com/package/@testing-library/user-event/",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "@types/jest",
-        "version": ["^27.4.1"],
-        "url": "https://www.npmjs.com/package/@types/jest/",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "@types/leaflet",
-        "version": ["^1.7.11"],
-        "url": "https://www.npmjs.com/package/@types/leaflet/",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "@types/luxon",
-        "version": ["^2.3.1"],
-        "url": "https://www.npmjs.com/package/@types/luxon/",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "@types/node",
-        "version": ["^16.11.29"],
-        "url": "https://www.npmjs.com/package/@types/node/",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "@types/react",
-        "version": ["^17.0.44"],
-        "url": "https://www.npmjs.com/package/@types/react/",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "@types/react-dom",
-        "version": ["^17.0.16"],
-        "url": "https://www.npmjs.com/package/@types/react-dom/",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "@types/react-router-dom",
-        "version": ["^5.3.3"],
-        "url": "https://www.npmjs.com/package/@types/react-router-dom/",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "@types/recharts",
-        "version": ["^1.8.23"],
-        "url": "https://www.npmjs.com/package/@types/recharts/",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "@types/swagger-ui-react",
-        "version": ["^4.18.0"],
-        "url": "https://www.npmjs.com/package/@types/swagger-ui-react/",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "@types/uuid",
-        "version": ["^8.3.4"],
-        "url": "https://www.npmjs.com/package/@types/uuid/",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "@typescript-eslint/eslint-plugin",
-        "version": ["^5.21.0"],
-        "url": "https://www.npmjs.com/package/@typescript-eslint/eslint-plugin/",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "@typescript-eslint/parser",
-        "version": ["^5.21.0"],
-        "url": "https://www.npmjs.com/package/@typescript-eslint/parser/",
-        "license": {
-          "name": "BSD 2-Clause \"Simplified\" License",
-          "key": "bsd-2-clause",
-          "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
-        }
-      },
-      {
-        "name": "eslint",
-        "version": ["^8.14.0"],
-        "url": "https://www.npmjs.com/package/eslint/",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "eslint-config-airbnb",
-        "version": ["^19.0.4"],
-        "url": "https://www.npmjs.com/package/eslint-config-airbnb/",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "eslint-plugin-import",
-        "version": ["^2.26.0"],
-        "url": "https://www.npmjs.com/package/eslint-plugin-import/",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "eslint-plugin-jsx-a11y",
-        "version": ["^6.5.1"],
-        "url": "https://www.npmjs.com/package/eslint-plugin-jsx-a11y/",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "eslint-plugin-react",
-        "version": ["^7.29.4"],
-        "url": "https://www.npmjs.com/package/eslint-plugin-react/",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "eslint-plugin-react-hooks",
-        "version": ["^4.4.0"],
-        "url": "https://www.npmjs.com/package/eslint-plugin-react-hooks/",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "react-scripts",
-        "version": ["5.0.0"],
-        "url": "https://www.npmjs.com/package/react-scripts/",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      }
-    ]
-  },
-  {
-    "name": "Docker Images",
-    "dependencies": [
-      {
-        "name": "traefik",
-        "version": ["v2.10"],
-        "url": "https://hub.docker.com/_/traefik",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "alpine",
-        "version": ["latest"],
-        "url": "https://hub.docker.com/_/alpine",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "alpine",
-        "version": ["latest"],
-        "url": "https://hub.docker.com/_/alpine",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "python",
-        "version": ["3.11.3"],
-        "url": "https://hub.docker.com/_/python",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "node",
-        "version": ["16-alpine"],
-        "url": "https://hub.docker.com/_/node",
-        "license": {
-          "name": "Other",
-          "key": null,
-          "html_url": null
-        }
-      },
-      {
-        "name": "ubuntu",
-        "version": ["22.04"],
-        "url": "https://hub.docker.com/_/ubuntu",
-        "license": {
-          "name": "Apache License 2.0",
-          "key": "apache-2.0",
-          "html_url": "http://choosealicense.com/licenses/apache-2.0/"
-        }
-      },
-      {
-        "name": "httpd",
-        "version": ["2.4-alpine"],
-        "url": "https://hub.docker.com/_/httpd",
-        "license": {
-          "name": "Apache License 2.0",
-          "key": "apache-2.0",
-          "html_url": "http://choosealicense.com/licenses/apache-2.0/"
-        }
-      },
-      {
-        "name": "busybox",
-        "version": ["1.34.1-uclibc"],
-        "url": "https://hub.docker.com/_/busybox",
-        "license": {
-          "name": "Other",
-          "key": null,
-          "html_url": null
-        }
-      },
-      {
-        "name": "portainer/base",
-        "version": ["latest"],
-        "url": "https://hub.docker.com/r/portainer/base",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "amazoncorretto",
-        "version": ["17-alpine3.17-jdk"],
-        "url": "https://hub.docker.com/_/amazoncorretto",
-        "license": {
-          "name": "MIT No Attribution",
-          "key": null,
-          "html_url": null
-        }
-      },
-      {
-        "name": "alpine",
-        "version": ["3.17"],
-        "url": "https://hub.docker.com/_/alpine",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "tomcat",
-        "version": ["9.0-jre8-alpine"],
-        "url": "https://hub.docker.com/_/tomcat",
-        "license": {
-          "name": "Apache License 2.0",
-          "key": "apache-2.0",
-          "html_url": "http://choosealicense.com/licenses/apache-2.0/"
-        }
-      },
-      {
-        "name": "minio/minio",
-        "version": ["\"RELEASE.2023-08-16T20-17-30Z\""],
-        "url": "https://hub.docker.com/r/minio/minio",
-        "license": {
-          "name": "GNU Affero General Public License v3.0",
-          "key": "agpl-3.0",
-          "html_url": "http://choosealicense.com/licenses/agpl-3.0/"
-        }
-      },
-      {
-        "name": "postgis/postgis",
-        "version": ["14-3.3"],
-        "url": "https://hub.docker.com/r/postgis/postgis",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "postgres",
-        "version": ["14"],
-        "url": "https://hub.docker.com/_/postgres",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "postgres",
-        "version": ["14"],
-        "url": "https://hub.docker.com/_/postgres",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "maven",
-        "version": ["3.9.2-eclipse-temurin-11"],
-        "url": "https://hub.docker.com/_/maven",
-        "license": {
-          "name": "Apache License 2.0",
-          "key": "apache-2.0",
-          "html_url": "http://choosealicense.com/licenses/apache-2.0/"
-        }
-      },
-      {
-        "name": "quay.io/keycloak/keycloak",
-        "version": ["17.0.1-legacy"],
-        "url": "https://quay.io/keycloak/keycloak",
-        "license": {
-          "name": "Apache License 2.0",
-          "key": "apache-2.0",
-          "html_url": "http://choosealicense.com/licenses/apache-2.0/"
-        }
-      },
-      {
-        "name": "registry",
-        "version": ["2"],
-        "url": "https://hub.docker.com/_/registry",
-        "license": {
-          "name": "Apache License 2.0",
-          "key": "apache-2.0",
-          "html_url": "http://choosealicense.com/licenses/apache-2.0/"
-        }
-      },
-      {
-        "name": "alpine",
-        "version": ["latest"],
-        "url": "https://hub.docker.com/_/alpine",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "docker",
-        "version": ["24-dind"],
-        "url": "https://hub.docker.com/_/docker",
-        "license": {
-          "name": "Apache License 2.0",
-          "key": "apache-2.0",
-          "html_url": "http://choosealicense.com/licenses/apache-2.0/"
-        }
-      },
-      {
-        "name": "jupyterhub/jupyterhub",
-        "version": ["4.0.0"],
-        "url": "https://hub.docker.com/r/jupyterhub/jupyterhub",
-        "license": {
-          "name": "Other",
-          "key": null,
-          "html_url": null
-        }
-      },
-      {
-        "name": "cvat/server",
-        "version": ["v2.4.2"],
-        "url": "https://hub.docker.com/r/cvat/server",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "cvat/ui",
-        "version": ["v2.4.2"],
-        "url": "https://hub.docker.com/r/cvat/ui",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "postgres",
-        "version": ["15-alpine"],
-        "url": "https://hub.docker.com/_/postgres",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      },
-      {
-        "name": "redis",
-        "version": ["4.0-alpine"],
-        "url": "https://hub.docker.com/_/redis",
-        "license": {
-          "name": "BSD 3-Clause \"New\" or \"Revised\" License",
-          "key": "bsd-3-clause",
-          "html_url": "http://choosealicense.com/licenses/bsd-3-clause/"
-        }
-      },
-      {
-        "name": "openpolicyagent/opa",
-        "version": ["0.45.0-rootless"],
-        "url": "https://hub.docker.com/r/openpolicyagent/opa",
-        "license": {
-          "name": "Apache License 2.0",
-          "key": "apache-2.0",
-          "html_url": "http://choosealicense.com/licenses/apache-2.0/"
-        }
-      },
-      {
-        "name": "quay.io/nuclio/dashboard",
-        "version": ["1.8.18-amd64"],
-        "url": "https://quay.io/nuclio/dashboard",
-        "license": {
-          "name": "Apache License 2.0",
-          "key": "apache-2.0",
-          "html_url": "http://choosealicense.com/licenses/apache-2.0/"
-        }
-      },
-      {
-        "name": "prom/prometheus",
-        "version": ["latest"],
-        "url": "https://hub.docker.com/r/prom/prometheus",
-        "license": {
-          "name": "Apache License 2.0",
-          "key": "apache-2.0",
-          "html_url": "http://choosealicense.com/licenses/apache-2.0/"
-        }
-      },
-      {
-        "name": "prom/node-exporter",
-        "version": ["latest"],
-        "url": "https://hub.docker.com/r/prom/node-exporter",
-        "license": {
-          "name": "Apache License 2.0",
-          "key": "apache-2.0",
-          "html_url": "http://choosealicense.com/licenses/apache-2.0/"
-        }
-      },
-      {
-        "name": "gcr.io/cadvisor/cadvisor",
-        "version": ["v0.45.0"],
-        "url": "https://gcr.io/cadvisor/cadvisor",
-        "license": {
-          "name": "Other",
-          "key": null,
-          "html_url": null
-        }
-      },
-      {
-        "name": "grafana/grafana-oss",
-        "version": ["latest"],
-        "url": "https://hub.docker.com/r/grafana/grafana-oss",
-        "license": {
-          "name": "GNU Affero General Public License v3.0",
-          "key": "agpl-3.0",
-          "html_url": "http://choosealicense.com/licenses/agpl-3.0/"
-        }
-      },
-      {
-        "name": "eclipse-temurin",
-        "version": ["17"],
-        "url": "https://hub.docker.com/_/eclipse-temurin",
-        "license": {
-          "name": "Apache License 2.0",
-          "key": "apache-2.0",
-          "html_url": "http://choosealicense.com/licenses/apache-2.0/"
-        }
-      },
-      {
-        "name": "nvcr.io/nvidia/tritonserver",
-        "version": ["23.12-py3"],
-        "url": "https://nvcr.io/nvidia/tritonserver",
-        "license": {
-          "name": "Apache License 2.0",
-          "key": "apache-2.0",
-          "html_url": "http://choosealicense.com/licenses/apache-2.0/"
-        }
-      },
-      {
-        "name": "nuclio",
-        "version": ["1.8.18"],
-        "url": "https://github.com/nuclio/nuclio",
-        "license": {
-          "name": "Apache License 2.0",
-          "key": "apache-2.0",
-          "html_url": "http://choosealicense.com/licenses/apache-2.0/"
-        }
-      },
-      {
-        "name": "yolov5",
-        "version": ["latest"],
-        "url": "https://github.com/ultralytics/yolov5",
-        "license": {
-          "name": "GNU Affero General Public License v3.0",
-          "key": "agpl-3.0",
-          "html_url": "http://choosealicense.com/licenses/agpl-3.0/"
-        }
-      },
-      {
-        "name": "buildkit",
-        "version": ["v0.11.2"],
-        "url": "https://github.com/moby/buildkit",
-        "license": {
-          "name": "Apache License 2.0",
-          "key": "apache-2.0",
-          "html_url": "http://choosealicense.com/licenses/apache-2.0/"
-        }
-      },
-      {
-        "name": "portainer",
-        "version": ["latest"],
-        "url": "https://github.com/portainer/portainer",
-        "license": {
-          "name": "zlib License",
-          "key": "zlib",
-          "html_url": "http://choosealicense.com/licenses/zlib/"
-        }
-      },
-      {
-        "name": "s3fs-fuse",
-        "version": ["latest"],
-        "url": "https://github.com/s3fs-fuse/s3fs-fuse",
-        "license": {
-          "name": "GNU General Public License v2.0",
-          "key": "gpl-2.0",
-          "html_url": "http://choosealicense.com/licenses/gpl-2.0/"
-        }
-      }
-    ]
-  },
-  {
-    "name": "Java Packages",
-    "dependencies": [
-      {
-        "name": "Connector",
-        "version": ["v0.0.1-milestone-6"],
-        "url": "https://github.com/eclipse-edc/Connector",
-        "license": {
-          "name": "Apache License 2.0",
-          "key": "apache-2.0",
-          "html_url": "http://choosealicense.com/licenses/apache-2.0/"
-        }
-      },
-      {
-        "name": "apache-jena-fuseki",
-        "version": ["4.6.0"],
-        "url": "https://github.com/apache/jena",
-        "license": {
-          "name": "Apache License 2.0",
-          "key": "apache-2.0",
-          "html_url": "http://choosealicense.com/licenses/apache-2.0/"
-        }
-      },
-      {
-        "name": "WebVOWL",
-        "version": ["1.1.6"],
-        "url": "https://github.com/VisualDataWeb/WebVOWL",
-        "license": {
-          "name": "MIT License",
-          "key": "mit",
-          "html_url": "http://choosealicense.com/licenses/mit/"
-        }
-      }
-    ]
-  }
+    {
+        "name": "Python Libraries",
+        "dependencies": [
+            {
+                "name": "fastapi",
+                "version": [
+                    "~=0.110.0"
+                ],
+                "url": "https://pypi.org/project/fastapi/",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "pydantic",
+                "version": [
+                    "~=1.10.2"
+                ],
+                "url": "https://pypi.org/project/pydantic/",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "uvicorn",
+                "version": [
+                    "~=0.27.1"
+                ],
+                "url": "https://pypi.org/project/uvicorn/",
+                "license": {
+                    "name": "BSD 2-Clause \"Simplified\" License",
+                    "key": "bsd-2-clause",
+                    "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
+                }
+            },
+            {
+                "name": "python-dotenv",
+                "version": [
+                    "~=0.21.0"
+                ],
+                "url": "https://pypi.org/project/python-dotenv/",
+                "license": {
+                    "name": "BSD 2-Clause \"Simplified\" License",
+                    "key": "bsd-2-clause",
+                    "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
+                }
+            },
+            {
+                "name": "itsdangerous",
+                "version": [
+                    "~=2.1.2"
+                ],
+                "url": "https://pypi.org/project/itsdangerous/",
+                "license": {
+                    "name": "BSD 2-Clause \"Simplified\" License",
+                    "key": "bsd-2-clause",
+                    "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
+                }
+            },
+            {
+                "name": "python-keycloak",
+                "version": [
+                    "~=0.26.1"
+                ],
+                "url": "https://pypi.org/project/python-keycloak/",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "docker",
+                "version": [
+                    "~=6.1.0"
+                ],
+                "url": "https://pypi.org/project/docker/",
+                "license": {
+                    "name": "Apache License 2.0",
+                    "key": "apache-2.0",
+                    "html_url": "http://choosealicense.com/licenses/apache-2.0/"
+                }
+            },
+            {
+                "name": "pyyaml",
+                "version": [
+                    "~=6.0.1"
+                ],
+                "url": "https://pypi.org/project/pyyaml/",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "rdflib",
+                "version": [
+                    "~=6.1.1"
+                ],
+                "url": "https://pypi.org/project/rdflib/",
+                "license": {
+                    "name": "BSD 2-Clause \"Simplified\" License",
+                    "key": "bsd-2-clause",
+                    "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
+                }
+            },
+            {
+                "name": "minio",
+                "version": [
+                    "~=7.1.8"
+                ],
+                "url": "https://pypi.org/project/minio/",
+                "license": {
+                    "name": "Apache License 2.0",
+                    "key": "apache-2.0",
+                    "html_url": "http://choosealicense.com/licenses/apache-2.0/"
+                }
+            },
+            {
+                "name": "python-multipart",
+                "version": [
+                    "~=0.0.5"
+                ],
+                "url": "https://pypi.org/project/python-multipart/",
+                "license": {
+                    "name": "Apache License 2.0",
+                    "key": "apache-2.0",
+                    "html_url": "http://choosealicense.com/licenses/apache-2.0/"
+                }
+            },
+            {
+                "name": "sqlalchemy",
+                "version": [
+                    "~=1.4.42"
+                ],
+                "url": "https://pypi.org/project/sqlalchemy/",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "psycopg2-binary",
+                "version": [
+                    "~=2.9.3"
+                ],
+                "url": "https://pypi.org/project/psycopg2-binary/",
+                "license": {
+                    "name": "GNU Lesser General Public License v2.1",
+                    "key": "lgpl-2.1",
+                    "html_url": "http://choosealicense.com/licenses/lgpl-2.1/"
+                }
+            },
+            {
+                "name": "alembic",
+                "version": [
+                    "~=1.8.1"
+                ],
+                "url": "https://pypi.org/project/alembic/",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "python-dxf",
+                "version": [
+                    "~=11.1.0"
+                ],
+                "url": "https://pypi.org/project/python-dxf/",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "tenacity",
+                "version": [
+                    "~=8.0.1"
+                ],
+                "url": "https://pypi.org/project/tenacity/",
+                "license": {
+                    "name": "Apache License 2.0",
+                    "key": "apache-2.0",
+                    "html_url": "http://choosealicense.com/licenses/apache-2.0/"
+                }
+            },
+            {
+                "name": "python-dateutil",
+                "version": [
+                    "~=2.8.2"
+                ],
+                "url": "https://pypi.org/project/python-dateutil/",
+                "license": {
+                    "name": "Apache License 2.0",
+                    "key": "apache-2.0",
+                    "html_url": "http://choosealicense.com/licenses/apache-2.0/"
+                }
+            },
+            {
+                "name": "python-on-whales",
+                "version": [
+                    "~=0.43.0"
+                ],
+                "url": "https://pypi.org/project/python-on-whales/",
+                "license": {
+                    "name": "MIT License  Copyright (c) 2020 Gabriel de Marmiesse de Lussan  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:  The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.  THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. ",
+                    "key": null,
+                    "html_url": null
+                }
+            },
+            {
+                "name": "prometheus-fastapi-instrumentator",
+                "version": [
+                    "~=5.8.1,!=5.8.2"
+                ],
+                "url": "https://pypi.org/project/prometheus-fastapi-instrumentator/",
+                "license": {
+                    "name": "ISC License",
+                    "key": "isc",
+                    "html_url": "http://choosealicense.com/licenses/isc/"
+                }
+            },
+            {
+                "name": "memory-profiler",
+                "version": [
+                    "~=0.60.0"
+                ],
+                "url": "https://pypi.org/project/memory-profiler/",
+                "license": {
+                    "name": "BSD 2-Clause \"Simplified\" License",
+                    "key": "bsd-2-clause",
+                    "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
+                }
+            },
+            {
+                "name": "genson",
+                "version": [
+                    "~=1.2.2"
+                ],
+                "url": "https://pypi.org/project/genson/",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "jsonschema",
+                "version": [
+                    "~=4.17.3"
+                ],
+                "url": "https://pypi.org/project/jsonschema/",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "numpy",
+                "version": [
+                    "~=1.23.1"
+                ],
+                "url": "https://pypi.org/project/numpy/",
+                "license": {
+                    "name": "BSD 2-Clause \"Simplified\" License",
+                    "key": "bsd-2-clause",
+                    "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
+                }
+            },
+            {
+                "name": "matplotlib",
+                "version": [
+                    "~=3.6.0"
+                ],
+                "url": "https://pypi.org/project/matplotlib/",
+                "license": {
+                    "name": "Python Software Foundation License",
+                    "key": null,
+                    "html_url": null
+                }
+            },
+            {
+                "name": "xmltodict",
+                "version": [
+                    "~=0.13.0"
+                ],
+                "url": "https://pypi.org/project/xmltodict/",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "geoalchemy2",
+                "version": [
+                    "~=0.12.5"
+                ],
+                "url": "https://pypi.org/project/geoalchemy2/",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "fiftyone",
+                "version": [
+                    "~=0.23.5"
+                ],
+                "url": "https://pypi.org/project/fiftyone/",
+                "license": {
+                    "name": "Apache License 2.0",
+                    "key": "apache-2.0",
+                    "html_url": "http://choosealicense.com/licenses/apache-2.0/"
+                }
+            },
+            {
+                "name": "pycocotools",
+                "version": [
+                    "~=2.0.6"
+                ],
+                "url": "https://pypi.org/project/pycocotools/",
+                "license": {
+                    "name": "BSD 2-Clause \"Simplified\" License",
+                    "key": "bsd-2-clause",
+                    "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
+                }
+            },
+            {
+                "name": "requests",
+                "version": [
+                    "~=2.30.0"
+                ],
+                "url": "https://pypi.org/project/requests/",
+                "license": {
+                    "name": "Apache License 2.0",
+                    "key": "apache-2.0",
+                    "html_url": "http://choosealicense.com/licenses/apache-2.0/"
+                }
+            },
+            {
+                "name": "requirements-parser",
+                "version": [
+                    "~=0.5.0"
+                ],
+                "url": "https://pypi.org/project/requirements-parser/",
+                "license": {
+                    "name": "Apache License 2.0",
+                    "key": "apache-2.0",
+                    "html_url": "http://choosealicense.com/licenses/apache-2.0/"
+                }
+            },
+            {
+                "name": "validators",
+                "version": [
+                    "~=0.20.0"
+                ],
+                "url": "https://pypi.org/project/validators/",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "mistletoe",
+                "version": [
+                    "~=1.0.1"
+                ],
+                "url": "https://pypi.org/project/mistletoe/",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "jsonref",
+                "version": [
+                    "~=1.1.0"
+                ],
+                "url": "https://pypi.org/project/jsonref/",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "openapi-spec-validator",
+                "version": [
+                    "~=0.5.7"
+                ],
+                "url": "https://pypi.org/project/openapi-spec-validator/",
+                "license": {
+                    "name": "Apache License 2.0",
+                    "key": "apache-2.0",
+                    "html_url": "http://choosealicense.com/licenses/apache-2.0/"
+                }
+            },
+            {
+                "name": "dockerfile-parse",
+                "version": [
+                    "~=2.0.1"
+                ],
+                "url": "https://pypi.org/project/dockerfile-parse/",
+                "license": {
+                    "name": "BSD 2-Clause \"Simplified\" License",
+                    "key": "bsd-2-clause",
+                    "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
+                }
+            },
+            {
+                "name": "onnx",
+                "version": [
+                    "~=1.14.0"
+                ],
+                "url": "https://pypi.org/project/onnx/",
+                "license": {
+                    "name": "Apache License v2.0",
+                    "key": null,
+                    "html_url": null
+                }
+            },
+            {
+                "name": "tritonclient",
+                "version": [
+                    "~=2.41.1"
+                ],
+                "url": "https://pypi.org/project/tritonclient/",
+                "license": {
+                    "name": "BSD 2-Clause \"Simplified\" License",
+                    "key": "bsd-2-clause",
+                    "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
+                }
+            },
+            {
+                "name": "attrdict",
+                "version": [
+                    "~=2.0.1"
+                ],
+                "url": "https://pypi.org/project/attrdict/",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "python-dotenv",
+                "version": [
+                    ""
+                ],
+                "url": "https://pypi.org/project/python-dotenv/",
+                "license": {
+                    "name": "BSD 2-Clause \"Simplified\" License",
+                    "key": "bsd-2-clause",
+                    "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
+                }
+            },
+            {
+                "name": "pika",
+                "version": [
+                    ""
+                ],
+                "url": "https://pypi.org/project/pika/",
+                "license": {
+                    "name": "BSD 2-Clause \"Simplified\" License",
+                    "key": "bsd-2-clause",
+                    "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
+                }
+            },
+            {
+                "name": "minio",
+                "version": [
+                    ""
+                ],
+                "url": "https://pypi.org/project/minio/",
+                "license": {
+                    "name": "Apache License 2.0",
+                    "key": "apache-2.0",
+                    "html_url": "http://choosealicense.com/licenses/apache-2.0/"
+                }
+            },
+            {
+                "name": "uuid",
+                "version": [
+                    ""
+                ],
+                "url": "https://pypi.org/project/uuid/",
+                "license": {
+                    "name": "UNKNOWN",
+                    "key": null,
+                    "html_url": null
+                }
+            },
+            {
+                "name": "jsonschema",
+                "version": [
+                    ""
+                ],
+                "url": "https://pypi.org/project/jsonschema/",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "fastapi",
+                "version": [
+                    ""
+                ],
+                "url": "https://pypi.org/project/fastapi/",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "uvicorn",
+                "version": [
+                    ""
+                ],
+                "url": "https://pypi.org/project/uvicorn/",
+                "license": {
+                    "name": "BSD 2-Clause \"Simplified\" License",
+                    "key": "bsd-2-clause",
+                    "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
+                }
+            },
+            {
+                "name": "python-multipart",
+                "version": [
+                    ""
+                ],
+                "url": "https://pypi.org/project/python-multipart/",
+                "license": {
+                    "name": "Apache License 2.0",
+                    "key": "apache-2.0",
+                    "html_url": "http://choosealicense.com/licenses/apache-2.0/"
+                }
+            },
+            {
+                "name": "matplotlib",
+                "version": [
+                    ">=3.2.2"
+                ],
+                "url": "https://pypi.org/project/matplotlib/",
+                "license": {
+                    "name": "Python Software Foundation License",
+                    "key": null,
+                    "html_url": null
+                }
+            },
+            {
+                "name": "numpy",
+                "version": [
+                    ">=1.18.5"
+                ],
+                "url": "https://pypi.org/project/numpy/",
+                "license": {
+                    "name": "BSD 2-Clause \"Simplified\" License",
+                    "key": "bsd-2-clause",
+                    "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
+                }
+            },
+            {
+                "name": "opencv-python-headless",
+                "version": [
+                    ""
+                ],
+                "url": "https://pypi.org/project/opencv-python-headless/",
+                "license": {
+                    "name": "Apache License 2.0",
+                    "key": "apache-2.0",
+                    "html_url": "http://choosealicense.com/licenses/apache-2.0/"
+                }
+            },
+            {
+                "name": "pillow",
+                "version": [
+                    ">=7.1.2"
+                ],
+                "url": "https://pypi.org/project/pillow/",
+                "license": {
+                    "name": "Historical Permission Notice and Disclaimer (HPND)",
+                    "key": null,
+                    "html_url": null
+                }
+            },
+            {
+                "name": "pyyaml",
+                "version": [
+                    ">=5.3.1"
+                ],
+                "url": "https://pypi.org/project/pyyaml/",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "requests",
+                "version": [
+                    ">=2.23.0"
+                ],
+                "url": "https://pypi.org/project/requests/",
+                "license": {
+                    "name": "Apache License 2.0",
+                    "key": "apache-2.0",
+                    "html_url": "http://choosealicense.com/licenses/apache-2.0/"
+                }
+            },
+            {
+                "name": "scipy",
+                "version": [
+                    ">=1.4.1"
+                ],
+                "url": "https://pypi.org/project/scipy/",
+                "license": {
+                    "name": "BSD 2-Clause \"Simplified\" License",
+                    "key": "bsd-2-clause",
+                    "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
+                }
+            },
+            {
+                "name": "torch",
+                "version": [
+                    ">=1.7.0"
+                ],
+                "url": "https://pypi.org/project/torch/",
+                "license": {
+                    "name": "BSD 2-Clause \"Simplified\" License",
+                    "key": "bsd-2-clause",
+                    "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
+                }
+            },
+            {
+                "name": "torchvision",
+                "version": [
+                    ">=0.8.1"
+                ],
+                "url": "https://pypi.org/project/torchvision/",
+                "license": {
+                    "name": "BSD 2-Clause \"Simplified\" License",
+                    "key": "bsd-2-clause",
+                    "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
+                }
+            },
+            {
+                "name": "tqdm",
+                "version": [
+                    ">=4.41.0"
+                ],
+                "url": "https://pypi.org/project/tqdm/",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "tensorboard",
+                "version": [
+                    ">=2.4.1"
+                ],
+                "url": "https://pypi.org/project/tensorboard/",
+                "license": {
+                    "name": "Apache License 2.0",
+                    "key": "apache-2.0",
+                    "html_url": "http://choosealicense.com/licenses/apache-2.0/"
+                }
+            },
+            {
+                "name": "pandas",
+                "version": [
+                    ">=1.1.4"
+                ],
+                "url": "https://pypi.org/project/pandas/",
+                "license": {
+                    "name": "BSD 2-Clause \"Simplified\" License",
+                    "key": "bsd-2-clause",
+                    "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
+                }
+            },
+            {
+                "name": "seaborn",
+                "version": [
+                    ">=0.11.0"
+                ],
+                "url": "https://pypi.org/project/seaborn/",
+                "license": {
+                    "name": "BSD 2-Clause \"Simplified\" License",
+                    "key": "bsd-2-clause",
+                    "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
+                }
+            },
+            {
+                "name": "ipython",
+                "version": [
+                    ""
+                ],
+                "url": "https://pypi.org/project/ipython/",
+                "license": {
+                    "name": "BSD 2-Clause \"Simplified\" License",
+                    "key": "bsd-2-clause",
+                    "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
+                }
+            },
+            {
+                "name": "psutil",
+                "version": [
+                    ""
+                ],
+                "url": "https://pypi.org/project/psutil/",
+                "license": {
+                    "name": "BSD 2-Clause \"Simplified\" License",
+                    "key": "bsd-2-clause",
+                    "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
+                }
+            },
+            {
+                "name": "thop",
+                "version": [
+                    ""
+                ],
+                "url": "https://pypi.org/project/thop/",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "protobuf",
+                "version": [
+                    "==3.20.1"
+                ],
+                "url": "https://pypi.org/project/protobuf/",
+                "license": {
+                    "name": "3-Clause BSD License",
+                    "key": null,
+                    "html_url": null
+                }
+            },
+            {
+                "name": "matplotlib",
+                "version": [
+                    ">=3.2.2"
+                ],
+                "url": "https://pypi.org/project/matplotlib/",
+                "license": {
+                    "name": "Python Software Foundation License",
+                    "key": null,
+                    "html_url": null
+                }
+            },
+            {
+                "name": "numpy",
+                "version": [
+                    ">=1.18.5"
+                ],
+                "url": "https://pypi.org/project/numpy/",
+                "license": {
+                    "name": "BSD 2-Clause \"Simplified\" License",
+                    "key": "bsd-2-clause",
+                    "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
+                }
+            },
+            {
+                "name": "opencv-python",
+                "version": [
+                    ">=4.1.1"
+                ],
+                "url": "https://pypi.org/project/opencv-python/",
+                "license": {
+                    "name": "Apache License 2.0",
+                    "key": "apache-2.0",
+                    "html_url": "http://choosealicense.com/licenses/apache-2.0/"
+                }
+            },
+            {
+                "name": "pillow",
+                "version": [
+                    ">=7.1.2"
+                ],
+                "url": "https://pypi.org/project/pillow/",
+                "license": {
+                    "name": "Historical Permission Notice and Disclaimer (HPND)",
+                    "key": null,
+                    "html_url": null
+                }
+            },
+            {
+                "name": "pyyaml",
+                "version": [
+                    ">=5.3.1"
+                ],
+                "url": "https://pypi.org/project/pyyaml/",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "requests",
+                "version": [
+                    ">=2.23.0"
+                ],
+                "url": "https://pypi.org/project/requests/",
+                "license": {
+                    "name": "Apache License 2.0",
+                    "key": "apache-2.0",
+                    "html_url": "http://choosealicense.com/licenses/apache-2.0/"
+                }
+            },
+            {
+                "name": "scipy",
+                "version": [
+                    ">=1.4.1"
+                ],
+                "url": "https://pypi.org/project/scipy/",
+                "license": {
+                    "name": "BSD 2-Clause \"Simplified\" License",
+                    "key": "bsd-2-clause",
+                    "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
+                }
+            },
+            {
+                "name": "torch",
+                "version": [
+                    ">=1.7.0"
+                ],
+                "url": "https://pypi.org/project/torch/",
+                "license": {
+                    "name": "BSD 2-Clause \"Simplified\" License",
+                    "key": "bsd-2-clause",
+                    "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
+                }
+            },
+            {
+                "name": "torchvision",
+                "version": [
+                    ">=0.8.1"
+                ],
+                "url": "https://pypi.org/project/torchvision/",
+                "license": {
+                    "name": "BSD 2-Clause \"Simplified\" License",
+                    "key": "bsd-2-clause",
+                    "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
+                }
+            },
+            {
+                "name": "tqdm",
+                "version": [
+                    ">=4.41.0"
+                ],
+                "url": "https://pypi.org/project/tqdm/",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "protobuf",
+                "version": [
+                    "<=3.20.1"
+                ],
+                "url": "https://pypi.org/project/protobuf/",
+                "license": {
+                    "name": "3-Clause BSD License",
+                    "key": null,
+                    "html_url": null
+                }
+            },
+            {
+                "name": "tensorboard",
+                "version": [
+                    ">=2.4.1"
+                ],
+                "url": "https://pypi.org/project/tensorboard/",
+                "license": {
+                    "name": "Apache License 2.0",
+                    "key": "apache-2.0",
+                    "html_url": "http://choosealicense.com/licenses/apache-2.0/"
+                }
+            },
+            {
+                "name": "pandas",
+                "version": [
+                    ">=1.1.4"
+                ],
+                "url": "https://pypi.org/project/pandas/",
+                "license": {
+                    "name": "BSD 2-Clause \"Simplified\" License",
+                    "key": "bsd-2-clause",
+                    "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
+                }
+            },
+            {
+                "name": "seaborn",
+                "version": [
+                    ">=0.11.0"
+                ],
+                "url": "https://pypi.org/project/seaborn/",
+                "license": {
+                    "name": "BSD 2-Clause \"Simplified\" License",
+                    "key": "bsd-2-clause",
+                    "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
+                }
+            },
+            {
+                "name": "ipython",
+                "version": [
+                    ""
+                ],
+                "url": "https://pypi.org/project/ipython/",
+                "license": {
+                    "name": "BSD 2-Clause \"Simplified\" License",
+                    "key": "bsd-2-clause",
+                    "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
+                }
+            },
+            {
+                "name": "psutil",
+                "version": [
+                    ""
+                ],
+                "url": "https://pypi.org/project/psutil/",
+                "license": {
+                    "name": "BSD 2-Clause \"Simplified\" License",
+                    "key": "bsd-2-clause",
+                    "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
+                }
+            },
+            {
+                "name": "thop",
+                "version": [
+                    ""
+                ],
+                "url": "https://pypi.org/project/thop/",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "numpy",
+                "version": [
+                    "~=1.24.4"
+                ],
+                "url": "https://pypi.org/project/numpy/",
+                "license": {
+                    "name": "BSD 2-Clause \"Simplified\" License",
+                    "key": "bsd-2-clause",
+                    "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
+                }
+            },
+            {
+                "name": "opencv-python",
+                "version": [
+                    "~=4.5.2.54"
+                ],
+                "url": "https://pypi.org/project/opencv-python/",
+                "license": {
+                    "name": "Apache License 2.0",
+                    "key": "apache-2.0",
+                    "html_url": "http://choosealicense.com/licenses/apache-2.0/"
+                }
+            },
+            {
+                "name": "onnxruntime_gpu-1.12.1-cp38-cp38-linux_aarch64.whl",
+                "version": [
+                    ""
+                ],
+                "url": null,
+                "license": null
+            },
+            {
+                "name": "torch",
+                "version": [
+                    "~=1.10.0"
+                ],
+                "url": "https://pypi.org/project/torch/",
+                "license": {
+                    "name": "BSD 2-Clause \"Simplified\" License",
+                    "key": "bsd-2-clause",
+                    "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
+                }
+            },
+            {
+                "name": "torchvision",
+                "version": [
+                    "~=0.11.0"
+                ],
+                "url": "https://pypi.org/project/torchvision/",
+                "license": {
+                    "name": "BSD 2-Clause \"Simplified\" License",
+                    "key": "bsd-2-clause",
+                    "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
+                }
+            },
+            {
+                "name": "scikit-learn",
+                "version": [
+                    "~=1.1.2"
+                ],
+                "url": "https://pypi.org/project/scikit-learn/",
+                "license": {
+                    "name": "BSD 2-Clause \"Simplified\" License",
+                    "key": "bsd-2-clause",
+                    "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
+                }
+            },
+            {
+                "name": "xmltodict",
+                "version": [
+                    "~=0.13.0"
+                ],
+                "url": "https://pypi.org/project/xmltodict/",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "pyyaml",
+                "version": [
+                    "~=6.0"
+                ],
+                "url": "https://pypi.org/project/pyyaml/",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "shapely",
+                "version": [
+                    "~=1.8.4"
+                ],
+                "url": "https://pypi.org/project/shapely/",
+                "license": {
+                    "name": "BSD 2-Clause \"Simplified\" License",
+                    "key": "bsd-2-clause",
+                    "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
+                }
+            },
+            {
+                "name": "numpy",
+                "version": [
+                    "~=1.23.3"
+                ],
+                "url": "https://pypi.org/project/numpy/",
+                "license": {
+                    "name": "BSD 2-Clause \"Simplified\" License",
+                    "key": "bsd-2-clause",
+                    "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
+                }
+            },
+            {
+                "name": "xmltodict",
+                "version": [
+                    "~=0.13.0"
+                ],
+                "url": "https://pypi.org/project/xmltodict/",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "torch",
+                "version": [
+                    "==1.13.0"
+                ],
+                "url": "https://pypi.org/project/torch/",
+                "license": {
+                    "name": "BSD 2-Clause \"Simplified\" License",
+                    "key": "bsd-2-clause",
+                    "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
+                }
+            },
+            {
+                "name": "torchvision",
+                "version": [
+                    "==0.14.0"
+                ],
+                "url": "https://pypi.org/project/torchvision/",
+                "license": {
+                    "name": "BSD 2-Clause \"Simplified\" License",
+                    "key": "bsd-2-clause",
+                    "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
+                }
+            },
+            {
+                "name": "torchmetrics",
+                "version": [
+                    "~=0.10.3"
+                ],
+                "url": "https://pypi.org/project/torchmetrics/",
+                "license": {
+                    "name": "Apache License 2.0",
+                    "key": "apache-2.0",
+                    "html_url": "http://choosealicense.com/licenses/apache-2.0/"
+                }
+            },
+            {
+                "name": "scikit-learn",
+                "version": [
+                    "~=1.1.2"
+                ],
+                "url": "https://pypi.org/project/scikit-learn/",
+                "license": {
+                    "name": "BSD 2-Clause \"Simplified\" License",
+                    "key": "bsd-2-clause",
+                    "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
+                }
+            },
+            {
+                "name": "pytorch-lightning",
+                "version": [
+                    "~=1.7.7"
+                ],
+                "url": "https://pypi.org/project/pytorch-lightning/",
+                "license": {
+                    "name": "Apache License 2.0",
+                    "key": "apache-2.0",
+                    "html_url": "http://choosealicense.com/licenses/apache-2.0/"
+                }
+            },
+            {
+                "name": "ujson",
+                "version": [
+                    "~=5.4.0"
+                ],
+                "url": "https://pypi.org/project/ujson/",
+                "license": {
+                    "name": "BSD 2-Clause \"Simplified\" License",
+                    "key": "bsd-2-clause",
+                    "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
+                }
+            },
+            {
+                "name": "shapely",
+                "version": [
+                    "~=1.8.4"
+                ],
+                "url": "https://pypi.org/project/shapely/",
+                "license": {
+                    "name": "BSD 2-Clause \"Simplified\" License",
+                    "key": "bsd-2-clause",
+                    "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
+                }
+            },
+            {
+                "name": "numpy",
+                "version": [
+                    "~=1.23.3"
+                ],
+                "url": "https://pypi.org/project/numpy/",
+                "license": {
+                    "name": "BSD 2-Clause \"Simplified\" License",
+                    "key": "bsd-2-clause",
+                    "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
+                }
+            },
+            {
+                "name": "xmltodict",
+                "version": [
+                    "~=0.13.0"
+                ],
+                "url": "https://pypi.org/project/xmltodict/",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "torch",
+                "version": [
+                    "==1.13.0"
+                ],
+                "url": "https://pypi.org/project/torch/",
+                "license": {
+                    "name": "BSD 2-Clause \"Simplified\" License",
+                    "key": "bsd-2-clause",
+                    "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
+                }
+            },
+            {
+                "name": "torchvision",
+                "version": [
+                    "==0.14.0"
+                ],
+                "url": "https://pypi.org/project/torchvision/",
+                "license": {
+                    "name": "BSD 2-Clause \"Simplified\" License",
+                    "key": "bsd-2-clause",
+                    "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
+                }
+            },
+            {
+                "name": "torchmetrics",
+                "version": [
+                    "~=0.10.3"
+                ],
+                "url": "https://pypi.org/project/torchmetrics/",
+                "license": {
+                    "name": "Apache License 2.0",
+                    "key": "apache-2.0",
+                    "html_url": "http://choosealicense.com/licenses/apache-2.0/"
+                }
+            },
+            {
+                "name": "scikit-learn",
+                "version": [
+                    "~=1.1.2"
+                ],
+                "url": "https://pypi.org/project/scikit-learn/",
+                "license": {
+                    "name": "BSD 2-Clause \"Simplified\" License",
+                    "key": "bsd-2-clause",
+                    "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
+                }
+            },
+            {
+                "name": "pytorch-lightning",
+                "version": [
+                    "~=1.7.7"
+                ],
+                "url": "https://pypi.org/project/pytorch-lightning/",
+                "license": {
+                    "name": "Apache License 2.0",
+                    "key": "apache-2.0",
+                    "html_url": "http://choosealicense.com/licenses/apache-2.0/"
+                }
+            },
+            {
+                "name": "ujson",
+                "version": [
+                    "~=5.4.0"
+                ],
+                "url": "https://pypi.org/project/ujson/",
+                "license": {
+                    "name": "BSD 2-Clause \"Simplified\" License",
+                    "key": "bsd-2-clause",
+                    "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
+                }
+            },
+            {
+                "name": "shapely",
+                "version": [
+                    "~=1.8.4"
+                ],
+                "url": "https://pypi.org/project/shapely/",
+                "license": {
+                    "name": "BSD 2-Clause \"Simplified\" License",
+                    "key": "bsd-2-clause",
+                    "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
+                }
+            },
+            {
+                "name": "dockerspawner",
+                "version": [
+                    "~=12.1.0"
+                ],
+                "url": "https://pypi.org/project/dockerspawner/",
+                "license": {
+                    "name": "BSD 2-Clause \"Simplified\" License",
+                    "key": "bsd-2-clause",
+                    "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
+                }
+            },
+            {
+                "name": "keycloakauthenticator",
+                "version": [
+                    "~=3.3.0"
+                ],
+                "url": "https://pypi.org/project/keycloakauthenticator/",
+                "license": {
+                    "name": "GNU Affero General Public License v3",
+                    "key": null,
+                    "html_url": null
+                }
+            }
+        ]
+    },
+    {
+        "name": "Node Packages",
+        "dependencies": [
+            {
+                "name": "@codemirror/legacy-modes",
+                "version": [
+                    "^6.1.0"
+                ],
+                "url": "https://www.npmjs.com/package/@codemirror/legacy-modes/",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "@emotion/react",
+                "version": [
+                    "^11.10.0"
+                ],
+                "url": "https://www.npmjs.com/package/@emotion/react/",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "@emotion/styled",
+                "version": [
+                    "^11.10.0"
+                ],
+                "url": "https://www.npmjs.com/package/@emotion/styled/",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "@material-ui/core",
+                "version": [
+                    "^4.12.4"
+                ],
+                "url": "https://www.npmjs.com/package/@material-ui/core/",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "@mui/icons-material",
+                "version": [
+                    "^5.8.4"
+                ],
+                "url": "https://www.npmjs.com/package/@mui/icons-material/",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "@mui/lab",
+                "version": [
+                    "^5.0.0-alpha.72"
+                ],
+                "url": "https://www.npmjs.com/package/@mui/lab/",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "@mui/material",
+                "version": [
+                    "^5.10.1"
+                ],
+                "url": "https://www.npmjs.com/package/@mui/material/",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "@mui/x-tree-view",
+                "version": [
+                    "^6.17.0"
+                ],
+                "url": "https://www.npmjs.com/package/@mui/x-tree-view/",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "@react-spring/web",
+                "version": [
+                    "^9.7.3"
+                ],
+                "url": "https://www.npmjs.com/package/@react-spring/web/",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "@rjsf/core",
+                "version": [
+                    "^4.2.0"
+                ],
+                "url": "https://www.npmjs.com/package/@rjsf/core/",
+                "license": {
+                    "name": "Apache License 2.0",
+                    "key": "apache-2.0",
+                    "html_url": "http://choosealicense.com/licenses/apache-2.0/"
+                }
+            },
+            {
+                "name": "@rjsf/material-ui",
+                "version": [
+                    "^4.2.0"
+                ],
+                "url": "https://www.npmjs.com/package/@rjsf/material-ui/",
+                "license": {
+                    "name": "Apache License 2.0",
+                    "key": "apache-2.0",
+                    "html_url": "http://choosealicense.com/licenses/apache-2.0/"
+                }
+            },
+            {
+                "name": "@uiw/react-codemirror",
+                "version": [
+                    "^4.11.4"
+                ],
+                "url": "https://www.npmjs.com/package/@uiw/react-codemirror/",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "@uiw/react-textarea-code-editor",
+                "version": [
+                    "^2.0.2"
+                ],
+                "url": "https://www.npmjs.com/package/@uiw/react-textarea-code-editor/",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "buffer",
+                "version": [
+                    "^6.0.3"
+                ],
+                "url": "https://www.npmjs.com/package/buffer/",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "classnames",
+                "version": [
+                    "^2.3.2"
+                ],
+                "url": "https://www.npmjs.com/package/classnames/",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "eslint-config-airbnb-typescript",
+                "version": [
+                    "^16.2.0"
+                ],
+                "url": "https://www.npmjs.com/package/eslint-config-airbnb-typescript/",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "eslint-config-prettier",
+                "version": [
+                    "^8.5.0"
+                ],
+                "url": "https://www.npmjs.com/package/eslint-config-prettier/",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "eslint-plugin-prettier",
+                "version": [
+                    "^4.0.0"
+                ],
+                "url": "https://www.npmjs.com/package/eslint-plugin-prettier/",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "gpxparser",
+                "version": [
+                    "^3.0.8"
+                ],
+                "url": "https://www.npmjs.com/package/gpxparser/",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "http-status-codes",
+                "version": [
+                    "^2.2.0"
+                ],
+                "url": "https://www.npmjs.com/package/http-status-codes/",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "keycloak-js",
+                "version": [
+                    "^16.1.1"
+                ],
+                "url": "https://www.npmjs.com/package/keycloak-js/",
+                "license": {
+                    "name": "Apache License 2.0",
+                    "key": "apache-2.0",
+                    "html_url": "http://choosealicense.com/licenses/apache-2.0/"
+                }
+            },
+            {
+                "name": "leaflet",
+                "version": [
+                    "^1.8.0"
+                ],
+                "url": "https://www.npmjs.com/package/leaflet/",
+                "license": {
+                    "name": "BSD 2-Clause \"Simplified\" License",
+                    "key": "bsd-2-clause",
+                    "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
+                }
+            },
+            {
+                "name": "luxon",
+                "version": [
+                    "^2.3.2"
+                ],
+                "url": "https://www.npmjs.com/package/luxon/",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "prettier",
+                "version": [
+                    "^2.6.2"
+                ],
+                "url": "https://www.npmjs.com/package/prettier/",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "pretty-bytes",
+                "version": [
+                    "^5.6.0"
+                ],
+                "url": "https://www.npmjs.com/package/pretty-bytes/",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "prototxt-parser",
+                "version": [
+                    "^0.1.5"
+                ],
+                "url": "https://www.npmjs.com/package/prototxt-parser/",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "react",
+                "version": [
+                    "^17.0.2"
+                ],
+                "url": "https://www.npmjs.com/package/react/",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "react-device-detect",
+                "version": [
+                    "^2.2.3"
+                ],
+                "url": "https://www.npmjs.com/package/react-device-detect/",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "react-dom",
+                "version": [
+                    "^17.0.2"
+                ],
+                "url": "https://www.npmjs.com/package/react-dom/",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "react-iframe",
+                "version": [
+                    "^1.8.0"
+                ],
+                "url": "https://www.npmjs.com/package/react-iframe/",
+                "license": {
+                    "name": "ISC License",
+                    "key": "isc",
+                    "html_url": "http://choosealicense.com/licenses/isc/"
+                }
+            },
+            {
+                "name": "react-leaflet",
+                "version": [
+                    "^3.2.5"
+                ],
+                "url": "https://www.npmjs.com/package/react-leaflet/",
+                "license": {
+                    "name": "Hippocratic-2.1",
+                    "key": null,
+                    "html_url": null
+                }
+            },
+            {
+                "name": "react-router-dom",
+                "version": [
+                    "~6.11.0"
+                ],
+                "url": "https://www.npmjs.com/package/react-router-dom/",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "recharts",
+                "version": [
+                    "^2.1.14"
+                ],
+                "url": "https://www.npmjs.com/package/recharts/",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "swagger-ui-react",
+                "version": [
+                    "5.10.5"
+                ],
+                "url": "https://www.npmjs.com/package/swagger-ui-react/",
+                "license": {
+                    "name": "Apache License 2.0",
+                    "key": "apache-2.0",
+                    "html_url": "http://choosealicense.com/licenses/apache-2.0/"
+                }
+            },
+            {
+                "name": "typescript",
+                "version": [
+                    "^4.6.3"
+                ],
+                "url": "https://www.npmjs.com/package/typescript/",
+                "license": {
+                    "name": "Apache License 2.0",
+                    "key": "apache-2.0",
+                    "html_url": "http://choosealicense.com/licenses/apache-2.0/"
+                }
+            },
+            {
+                "name": "uuid",
+                "version": [
+                    "^8.3.2"
+                ],
+                "url": "https://www.npmjs.com/package/uuid/",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "web-vitals",
+                "version": [
+                    "^2.1.4"
+                ],
+                "url": "https://www.npmjs.com/package/web-vitals/",
+                "license": {
+                    "name": "Apache License 2.0",
+                    "key": "apache-2.0",
+                    "html_url": "http://choosealicense.com/licenses/apache-2.0/"
+                }
+            },
+            {
+                "name": "@testing-library/jest-dom",
+                "version": [
+                    "^5.16.4"
+                ],
+                "url": "https://www.npmjs.com/package/@testing-library/jest-dom/",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "@testing-library/react",
+                "version": [
+                    "^12.1.5"
+                ],
+                "url": "https://www.npmjs.com/package/@testing-library/react/",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "@testing-library/user-event",
+                "version": [
+                    "^13.5.0"
+                ],
+                "url": "https://www.npmjs.com/package/@testing-library/user-event/",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "@types/jest",
+                "version": [
+                    "^27.4.1"
+                ],
+                "url": "https://www.npmjs.com/package/@types/jest/",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "@types/leaflet",
+                "version": [
+                    "^1.7.11"
+                ],
+                "url": "https://www.npmjs.com/package/@types/leaflet/",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "@types/luxon",
+                "version": [
+                    "^2.3.1"
+                ],
+                "url": "https://www.npmjs.com/package/@types/luxon/",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "@types/node",
+                "version": [
+                    "^16.11.29"
+                ],
+                "url": "https://www.npmjs.com/package/@types/node/",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "@types/react",
+                "version": [
+                    "^17.0.44"
+                ],
+                "url": "https://www.npmjs.com/package/@types/react/",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "@types/react-dom",
+                "version": [
+                    "^17.0.16"
+                ],
+                "url": "https://www.npmjs.com/package/@types/react-dom/",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "@types/react-router-dom",
+                "version": [
+                    "^5.3.3"
+                ],
+                "url": "https://www.npmjs.com/package/@types/react-router-dom/",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "@types/recharts",
+                "version": [
+                    "^1.8.23"
+                ],
+                "url": "https://www.npmjs.com/package/@types/recharts/",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "@types/swagger-ui-react",
+                "version": [
+                    "^4.18.0"
+                ],
+                "url": "https://www.npmjs.com/package/@types/swagger-ui-react/",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "@types/uuid",
+                "version": [
+                    "^8.3.4"
+                ],
+                "url": "https://www.npmjs.com/package/@types/uuid/",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "@typescript-eslint/eslint-plugin",
+                "version": [
+                    "^5.21.0"
+                ],
+                "url": "https://www.npmjs.com/package/@typescript-eslint/eslint-plugin/",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "@typescript-eslint/parser",
+                "version": [
+                    "^5.21.0"
+                ],
+                "url": "https://www.npmjs.com/package/@typescript-eslint/parser/",
+                "license": {
+                    "name": "BSD 2-Clause \"Simplified\" License",
+                    "key": "bsd-2-clause",
+                    "html_url": "http://choosealicense.com/licenses/bsd-2-clause/"
+                }
+            },
+            {
+                "name": "eslint",
+                "version": [
+                    "^8.14.0"
+                ],
+                "url": "https://www.npmjs.com/package/eslint/",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "eslint-config-airbnb",
+                "version": [
+                    "^19.0.4"
+                ],
+                "url": "https://www.npmjs.com/package/eslint-config-airbnb/",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "eslint-plugin-import",
+                "version": [
+                    "^2.26.0"
+                ],
+                "url": "https://www.npmjs.com/package/eslint-plugin-import/",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "eslint-plugin-jsx-a11y",
+                "version": [
+                    "^6.5.1"
+                ],
+                "url": "https://www.npmjs.com/package/eslint-plugin-jsx-a11y/",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "eslint-plugin-react",
+                "version": [
+                    "^7.29.4"
+                ],
+                "url": "https://www.npmjs.com/package/eslint-plugin-react/",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "eslint-plugin-react-hooks",
+                "version": [
+                    "^4.4.0"
+                ],
+                "url": "https://www.npmjs.com/package/eslint-plugin-react-hooks/",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "react-scripts",
+                "version": [
+                    "5.0.0"
+                ],
+                "url": "https://www.npmjs.com/package/react-scripts/",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            }
+        ]
+    },
+    {
+        "name": "Docker Images",
+        "dependencies": [
+            {
+                "name": "traefik",
+                "version": [
+                    "v2.10"
+                ],
+                "url": "https://hub.docker.com/_/traefik",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "alpine",
+                "version": [
+                    "latest"
+                ],
+                "url": "https://hub.docker.com/_/alpine",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "alpine",
+                "version": [
+                    "latest"
+                ],
+                "url": "https://hub.docker.com/_/alpine",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "python",
+                "version": [
+                    "3.11.3"
+                ],
+                "url": "https://hub.docker.com/_/python",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "node",
+                "version": [
+                    "16-alpine"
+                ],
+                "url": "https://hub.docker.com/_/node",
+                "license": {
+                    "name": "Other",
+                    "key": null,
+                    "html_url": null
+                }
+            },
+            {
+                "name": "ubuntu",
+                "version": [
+                    "22.04"
+                ],
+                "url": "https://hub.docker.com/_/ubuntu",
+                "license": {
+                    "name": "Apache License 2.0",
+                    "key": "apache-2.0",
+                    "html_url": "http://choosealicense.com/licenses/apache-2.0/"
+                }
+            },
+            {
+                "name": "httpd",
+                "version": [
+                    "2.4-alpine"
+                ],
+                "url": "https://hub.docker.com/_/httpd",
+                "license": {
+                    "name": "Apache License 2.0",
+                    "key": "apache-2.0",
+                    "html_url": "http://choosealicense.com/licenses/apache-2.0/"
+                }
+            },
+            {
+                "name": "busybox",
+                "version": [
+                    "1.34.1-uclibc"
+                ],
+                "url": "https://hub.docker.com/_/busybox",
+                "license": {
+                    "name": "Other",
+                    "key": null,
+                    "html_url": null
+                }
+            },
+            {
+                "name": "portainer/base",
+                "version": [
+                    "latest"
+                ],
+                "url": "https://hub.docker.com/r/portainer/base",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "amazoncorretto",
+                "version": [
+                    "17-alpine3.17-jdk"
+                ],
+                "url": "https://hub.docker.com/_/amazoncorretto",
+                "license": {
+                    "name": "MIT No Attribution",
+                    "key": null,
+                    "html_url": null
+                }
+            },
+            {
+                "name": "alpine",
+                "version": [
+                    "3.17"
+                ],
+                "url": "https://hub.docker.com/_/alpine",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "tomcat",
+                "version": [
+                    "9.0-jre8-alpine"
+                ],
+                "url": "https://hub.docker.com/_/tomcat",
+                "license": {
+                    "name": "Apache License 2.0",
+                    "key": "apache-2.0",
+                    "html_url": "http://choosealicense.com/licenses/apache-2.0/"
+                }
+            },
+            {
+                "name": "minio/minio",
+                "version": [
+                    "\"RELEASE.2023-08-16T20-17-30Z\""
+                ],
+                "url": "https://hub.docker.com/r/minio/minio",
+                "license": {
+                    "name": "GNU Affero General Public License v3.0",
+                    "key": "agpl-3.0",
+                    "html_url": "http://choosealicense.com/licenses/agpl-3.0/"
+                }
+            },
+            {
+                "name": "postgis/postgis",
+                "version": [
+                    "14-3.3"
+                ],
+                "url": "https://hub.docker.com/r/postgis/postgis",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "postgres",
+                "version": [
+                    "14"
+                ],
+                "url": "https://hub.docker.com/_/postgres",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "postgres",
+                "version": [
+                    "14"
+                ],
+                "url": "https://hub.docker.com/_/postgres",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "maven",
+                "version": [
+                    "3.9.2-eclipse-temurin-11"
+                ],
+                "url": "https://hub.docker.com/_/maven",
+                "license": {
+                    "name": "Apache License 2.0",
+                    "key": "apache-2.0",
+                    "html_url": "http://choosealicense.com/licenses/apache-2.0/"
+                }
+            },
+            {
+                "name": "quay.io/keycloak/keycloak",
+                "version": [
+                    "17.0.1-legacy"
+                ],
+                "url": "https://quay.io/keycloak/keycloak",
+                "license": {
+                    "name": "Apache License 2.0",
+                    "key": "apache-2.0",
+                    "html_url": "http://choosealicense.com/licenses/apache-2.0/"
+                }
+            },
+            {
+                "name": "registry",
+                "version": [
+                    "2"
+                ],
+                "url": "https://hub.docker.com/_/registry",
+                "license": {
+                    "name": "Apache License 2.0",
+                    "key": "apache-2.0",
+                    "html_url": "http://choosealicense.com/licenses/apache-2.0/"
+                }
+            },
+            {
+                "name": "alpine",
+                "version": [
+                    "latest"
+                ],
+                "url": "https://hub.docker.com/_/alpine",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "docker",
+                "version": [
+                    "24-dind"
+                ],
+                "url": "https://hub.docker.com/_/docker",
+                "license": {
+                    "name": "Apache License 2.0",
+                    "key": "apache-2.0",
+                    "html_url": "http://choosealicense.com/licenses/apache-2.0/"
+                }
+            },
+            {
+                "name": "jupyterhub/jupyterhub",
+                "version": [
+                    "4.0.0"
+                ],
+                "url": "https://hub.docker.com/r/jupyterhub/jupyterhub",
+                "license": {
+                    "name": "Other",
+                    "key": null,
+                    "html_url": null
+                }
+            },
+            {
+                "name": "cvat/server",
+                "version": [
+                    "v2.4.2"
+                ],
+                "url": "https://hub.docker.com/r/cvat/server",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "cvat/ui",
+                "version": [
+                    "v2.4.2"
+                ],
+                "url": "https://hub.docker.com/r/cvat/ui",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "postgres",
+                "version": [
+                    "15-alpine"
+                ],
+                "url": "https://hub.docker.com/_/postgres",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            },
+            {
+                "name": "redis",
+                "version": [
+                    "4.0-alpine"
+                ],
+                "url": "https://hub.docker.com/_/redis",
+                "license": {
+                    "name": "BSD 3-Clause \"New\" or \"Revised\" License",
+                    "key": "bsd-3-clause",
+                    "html_url": "http://choosealicense.com/licenses/bsd-3-clause/"
+                }
+            },
+            {
+                "name": "openpolicyagent/opa",
+                "version": [
+                    "0.45.0-rootless"
+                ],
+                "url": "https://hub.docker.com/r/openpolicyagent/opa",
+                "license": {
+                    "name": "Apache License 2.0",
+                    "key": "apache-2.0",
+                    "html_url": "http://choosealicense.com/licenses/apache-2.0/"
+                }
+            },
+            {
+                "name": "quay.io/nuclio/dashboard",
+                "version": [
+                    "1.8.18-amd64"
+                ],
+                "url": "https://quay.io/nuclio/dashboard",
+                "license": {
+                    "name": "Apache License 2.0",
+                    "key": "apache-2.0",
+                    "html_url": "http://choosealicense.com/licenses/apache-2.0/"
+                }
+            },
+            {
+                "name": "prom/prometheus",
+                "version": [
+                    "latest"
+                ],
+                "url": "https://hub.docker.com/r/prom/prometheus",
+                "license": {
+                    "name": "Apache License 2.0",
+                    "key": "apache-2.0",
+                    "html_url": "http://choosealicense.com/licenses/apache-2.0/"
+                }
+            },
+            {
+                "name": "prom/node-exporter",
+                "version": [
+                    "latest"
+                ],
+                "url": "https://hub.docker.com/r/prom/node-exporter",
+                "license": {
+                    "name": "Apache License 2.0",
+                    "key": "apache-2.0",
+                    "html_url": "http://choosealicense.com/licenses/apache-2.0/"
+                }
+            },
+            {
+                "name": "gcr.io/cadvisor/cadvisor",
+                "version": [
+                    "v0.45.0"
+                ],
+                "url": "https://gcr.io/cadvisor/cadvisor",
+                "license": {
+                    "name": "Other",
+                    "key": null,
+                    "html_url": null
+                }
+            },
+            {
+                "name": "grafana/grafana-oss",
+                "version": [
+                    "latest"
+                ],
+                "url": "https://hub.docker.com/r/grafana/grafana-oss",
+                "license": {
+                    "name": "GNU Affero General Public License v3.0",
+                    "key": "agpl-3.0",
+                    "html_url": "http://choosealicense.com/licenses/agpl-3.0/"
+                }
+            },
+            {
+                "name": "eclipse-temurin",
+                "version": [
+                    "17"
+                ],
+                "url": "https://hub.docker.com/_/eclipse-temurin",
+                "license": {
+                    "name": "Apache License 2.0",
+                    "key": "apache-2.0",
+                    "html_url": "http://choosealicense.com/licenses/apache-2.0/"
+                }
+            },
+            {
+                "name": "nvcr.io/nvidia/tritonserver",
+                "version": [
+                    "23.12-py3"
+                ],
+                "url": "https://nvcr.io/nvidia/tritonserver",
+                "license": {
+                    "name": "Apache License 2.0",
+                    "key": "apache-2.0",
+                    "html_url": "http://choosealicense.com/licenses/apache-2.0/"
+                }
+            },
+            {
+                "name": "nuclio",
+                "version": [
+                    "1.8.18"
+                ],
+                "url": "https://github.com/nuclio/nuclio",
+                "license": {
+                    "name": "Apache License 2.0",
+                    "key": "apache-2.0",
+                    "html_url": "http://choosealicense.com/licenses/apache-2.0/"
+                }
+            },
+            {
+                "name": "yolov5",
+                "version": [
+                    "latest"
+                ],
+                "url": "https://github.com/ultralytics/yolov5",
+                "license": {
+                    "name": "GNU Affero General Public License v3.0",
+                    "key": "agpl-3.0",
+                    "html_url": "http://choosealicense.com/licenses/agpl-3.0/"
+                }
+            },
+            {
+                "name": "buildkit",
+                "version": [
+                    "v0.11.2"
+                ],
+                "url": "https://github.com/moby/buildkit",
+                "license": {
+                    "name": "Apache License 2.0",
+                    "key": "apache-2.0",
+                    "html_url": "http://choosealicense.com/licenses/apache-2.0/"
+                }
+            },
+            {
+                "name": "portainer",
+                "version": [
+                    "latest"
+                ],
+                "url": "https://github.com/portainer/portainer",
+                "license": {
+                    "name": "zlib License",
+                    "key": "zlib",
+                    "html_url": "http://choosealicense.com/licenses/zlib/"
+                }
+            },
+            {
+                "name": "s3fs-fuse",
+                "version": [
+                    "latest"
+                ],
+                "url": "https://github.com/s3fs-fuse/s3fs-fuse",
+                "license": {
+                    "name": "GNU General Public License v2.0",
+                    "key": "gpl-2.0",
+                    "html_url": "http://choosealicense.com/licenses/gpl-2.0/"
+                }
+            }
+        ]
+    },
+    {
+        "name": "Java Packages",
+        "dependencies": [
+            {
+                "name": "Connector",
+                "version": [
+                    "v0.0.1-milestone-6"
+                ],
+                "url": "https://github.com/eclipse-edc/Connector",
+                "license": {
+                    "name": "Apache License 2.0",
+                    "key": "apache-2.0",
+                    "html_url": "http://choosealicense.com/licenses/apache-2.0/"
+                }
+            },
+            {
+                "name": "apache-jena-fuseki",
+                "version": [
+                    "4.6.0"
+                ],
+                "url": "https://github.com/apache/jena",
+                "license": {
+                    "name": "Apache License 2.0",
+                    "key": "apache-2.0",
+                    "html_url": "http://choosealicense.com/licenses/apache-2.0/"
+                }
+            },
+            {
+                "name": "WebVOWL",
+                "version": [
+                    "1.1.6"
+                ],
+                "url": "https://github.com/VisualDataWeb/WebVOWL",
+                "license": {
+                    "name": "MIT License",
+                    "key": "mit",
+                    "html_url": "http://choosealicense.com/licenses/mit/"
+                }
+            }
+        ]
+    }
 ]

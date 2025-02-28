@@ -16,7 +16,6 @@ from pydantic import BaseModel, Field
 from agri_gaia_backend.db.models import ContainerDeploymentStatus, PortBindingProtocol
 from agri_gaia_backend.schemas.container_image import ContainerImage
 
-
 class PortBinding(BaseModel):
     host_port: str
     container_port: str
@@ -38,7 +37,6 @@ class ContainerDeploymentBase(BaseModel):
 
 class ContainerDeploymentCreate(ContainerDeploymentBase):
     pass
-
 
 class ContainerDeployment(ContainerDeploymentBase):
     id: int

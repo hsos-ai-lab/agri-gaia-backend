@@ -22,11 +22,9 @@ class ApplicationBase(BaseModel):
 class ApplicationCreate(ApplicationBase):
     group_ids: List[int]
 
-
 class ApplicationUpdate(BaseModel):
     group_ids: List[int]
     yaml: str
-
 
 class Application(ApplicationBase):
     id: int
