@@ -43,6 +43,8 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
 
 COPY . .
+ARG KEYCLOAK_REALM_NAME
+RUN sed -i "s/test-realm/${KEYCLOAK_REALM_NAME}/g" agri_gaia_backend/services/portainer/portainer_api.py
 
 RUN mkdir -p /root/.docker
 COPY --from=docker_config_stage /root/config.json /root/.docker/config.json

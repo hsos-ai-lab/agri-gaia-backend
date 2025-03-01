@@ -367,9 +367,16 @@ def get_train_containers(
     skip: int = 0, limit: int = 100, db: Session = Depends(get_db)
 ):
     train_containers = sql_api.get_train_containers(db, skip=skip, limit=limit)
-    for train_container in train_containers:
-        train_container.status = get_container_status(train_container.container_id)
-        sql_api.update_train_container(db, train_container)
+    for train_container in train_containers[:]:
+        try:
+            train_container.status = get_container_status(train_container.container_id)
+            sql_api.update_train_container(db, train_container)
+        # if get_container_status raises a "not found" exception, the container was removed from the host
+        # consequently, it needs to be deleted from the database because it cannot be started again.
+        except HTTPException as e: 
+            sql_api.delete_train_container(db, train_container)
+            train_containers.remove(train_container)
+
     return train_containers
 
 
