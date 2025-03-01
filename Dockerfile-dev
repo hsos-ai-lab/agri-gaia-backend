@@ -50,4 +50,5 @@ COPY . .
 RUN mkdir -p /root/.docker
 COPY --from=docker_config_stage /root/config.json /root/.docker/config.json
 
-CMD ["uvicorn", "agri_gaia_backend.main:app", "--proxy-headers", "--host", "0.0.0.0", "--port", "8000", "--reload", "--reload-dir", "/code/agri_gaia_backend"]
+CMD ["python3", "-m", "debugpy", "--listen", "0.0.0.0:5678", "-m", "uvicorn", "agri_gaia_backend.main:app", "--reload", "--proxy-headers", "--host", "0.0.0.0", "--port", "8000"]
+# CMD ["uvicorn", "agri_gaia_backend.main:app", "--proxy-headers", "--host", "0.0.0.0", "--port", "8000", "--reload", "--reload-dir", "/code/agri_gaia_backend"]

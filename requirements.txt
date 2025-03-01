@@ -48,3 +48,4 @@ onnx~=1.14.0
 tritonclient[all]~=2.41.1
 attrdict~=2.0.1
 gitpython~=3.1.43
+debugpy
