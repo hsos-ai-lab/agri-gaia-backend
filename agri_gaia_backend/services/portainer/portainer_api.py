@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# SPDX-FileCopyrightText: 2024 University of Applied Sciences Osnabrück
+# SPDX-FileCopyrightText: 2024 Osnabrück University of Applied Sciences
 # SPDX-FileContributor: Andreas Schliebitz
 # SPDX-FileContributor: Henri Graf
 # SPDX-FileContributor: Jonas Tüpker
@@ -9,7 +9,7 @@
 # SPDX-FileContributor: Prof. Dr.-Ing. Heiko Tapken
 # SPDX-FileContributor: Tobias Wamhof
 #
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: MIT
 
 # -*- coding: utf-8 -*-
 
@@ -306,8 +306,8 @@ class PortainerAPI:
             "LogoutURI": "",
             "OAuthAutoCreateUsers": True,
             "SSO": True,
-            "Scopes": "email",
-            "UserIdentifier": "email",
+            "Scopes": "openid",
+            "UserIdentifier": "preferred_username",
         }
 
         response = requests.put(
@@ -464,7 +464,7 @@ class PortainerAPI:
             json={
                 "Image": image,
                 "ExposedPorts": exposed_ports,
-                "HostConfig": {"AutoRemove": False, "PortBindings": host_port_bindings},
+                "HostConfig": {"AutoRemove": False, "PortBindings": host_port_bindings, "RestartPolicy": { "Name": "unless-stopped", "MaximumRetryCount": 0 } },
             },
         )
         if not response.ok:
@@ -475,6 +475,38 @@ class PortainerAPI:
         create_container_response = response.json()
         container_id = create_container_response["Id"]
 
+        # get resource control ID of container just created
+        rc_id = create_container_response["Portainer"]["ResourceControl"]["Id"]
+
+        # extract already-set user and team IDs
+        user_ids = [
+            user.get("UserId")
+            for user in create_container_response["Portainer"]["ResourceControl"]["UserAccesses"]
+        ]
+        team_ids = [
+            team.get("TeamId")
+            for team in create_container_response["Portainer"]["ResourceControl"]["TeamAccesses"]
+        ]
+        # append team ID of platform_users
+        team_ids.append(self.team_id)
+
+        # update resource control to allow access from platform_users
+        rc_response = requests.put(
+            url=f"{PORTAINER_API_URL}/resource_controls/{rc_id}",
+            verify=VERIFY_SSL,
+            headers=auth_header,
+            json={
+                "administratorsOnly": False,
+                "public": False,
+                "teams": team_ids,
+                "users": user_ids
+            },
+        )
+        if not rc_response.ok:
+            msg = rc_response.json().get("message", "Error setting resource control")
+            logger.error(rc_response)
+            raise HTTPException(400, msg)
+        
         # start
         response = requests.post(
             url=f"{PORTAINER_API_URL}/endpoints/{edge_device.portainer_id}/docker/containers/{container_id}/start",
