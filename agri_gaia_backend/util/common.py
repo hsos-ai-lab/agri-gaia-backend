@@ -106,7 +106,7 @@ def gpu_available() -> bool:
 
 def is_valid_json(filepath: str) -> Tuple[bool, Optional[str]]:
     try:
-        with open(filepath, "r") as fh:
+        with open(filepath, "r", encoding="utf-8") as fh:
             json.load(fh)
         return True, None
     except JSONDecodeError as e:

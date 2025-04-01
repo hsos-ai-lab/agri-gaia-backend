@@ -11,19 +11,26 @@
 
 import os
 import json
+import time
 import logging
 import datetime
 import requests
+import traceback
 
-from enum import Enum
 from io import BytesIO
-from typing import List
+from typing import List, Any
 from dotenv import load_dotenv
 from sqlalchemy.orm import Session
-from google.protobuf import json_format
-from tritonclient.grpc import model_config_pb2
+from requests.auth import HTTPBasicAuth
 from agri_gaia_backend.services import minio_api
+from agri_gaia_backend.db import model_api as sql_api
+from agri_gaia_backend.schemas.benchmark import Benchmark
+from agri_gaia_backend.db import dataset_api as dataset_sql_api
+from agri_gaia_backend.schemas.keycloak_user import KeycloakUser
+from edge_benchmarking_client.client import EdgeBenchmarkingClient
+from agri_gaia_backend.db import benchmark_api as sql_benchmark_api
 from agri_gaia_backend.schemas.benchmark_device import BenchmarkDevice
+from edge_benchmarking_types.edge_farm.models import TritonDenseNetClient
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from agri_gaia_backend.routers.common import (
     TaskCreator,
@@ -31,313 +38,208 @@ from agri_gaia_backend.routers.common import (
     get_db,
     get_task_creator,
 )
-from agri_gaia_backend.db import model_api as sql_api
-from agri_gaia_backend.util.common import get_stacktrace
-from agri_gaia_backend.schemas.benchmark import Benchmark
-from agri_gaia_backend.util.benchmark import get_all_datasets
-from agri_gaia_backend.db import dataset_api as dataset_sql_api
-from agri_gaia_backend.schemas.keycloak_user import KeycloakUser
-from agri_gaia_backend.db import benchmark_api as sql_benchmark_api
-from edge_benchmarking_client.client import EdgeBenchmarkingClient
-from edge_benchmarking_types.edge_farm.models import TritonDenseNetClient
 
+load_dotenv()
 
 ROOT_PATH = "/edge-benchmark"
 
+EDGE_FARM_API_BASIC_AUTH_USERNAME = os.getenv("EDGE_BENCHMARKING_USER")
+EDGE_FARM_API_BASIC_AUTH_PASSWORD = os.getenv("EDGE_BENCHMARKING_PASSWORD")
+EDGE_FARM_API_BASIC_AUTH = HTTPBasicAuth(
+    EDGE_FARM_API_BASIC_AUTH_USERNAME, EDGE_FARM_API_BASIC_AUTH_PASSWORD
+)
+
+EDGE_FARM_API_PROTOCOL = "https"
+EDGE_FARM_API_HOST = os.getenv("EDGE_BENCHMARKING_URL")
+
 logger = logging.getLogger("api-logger")
 router = APIRouter(prefix=ROOT_PATH)
-load_dotenv()
-
-
-class Datatypes(Enum):
-    float16 = "TYPE_FP16"
-    float32 = "TYPE_FP32"
-    float64 = "TYPE_FP64"
-    int8 = "TYPE_INT8"
-    int16 = "TYPE_INT16"
-    int32 = "TYPE_INT32"
-    int64 = "TYPE_INT64"
-    uint8 = "TYPE_UINT8"
-    uint16 = "TYPE_UINT16"
-    uint32 = "TYPE_UINT32"
-    uint64 = "TYPE_UINT64"
-    bool = "TYPE_BOOL"
-    string = "TYPE_STRING"
 
 
 @router.get("", response_model=List[Benchmark])
-def get_all_benchmarks(
+def get_all_benchmark_jobs(
     skip: int = 0, limit: int = 10000, db: Session = Depends(get_db)
 ):
     return sql_benchmark_api.get_benchmarks(skip=skip, limit=limit, db=db)
 
 
-@router.get("/devices", response_model=List[BenchmarkDevice])
-def get_all_devices():
-    """
-    Fetches all Benchmarking Devices from the edge farm manager
-
-    Returns:
-        A list of all devices, which are stored by the edge farm.
-    """
-
-    json = requests.get(
+@router.get("/device/header", response_model=List[BenchmarkDevice])
+def get_all_edge_benchmark_device_headers():
+    return requests.get(
         f"https://{os.getenv("EDGE_BENCHMARKING_URL")}/device/header",
-        auth=(os.getenv("EDGE_BENCHMARKING_USER"), os.getenv("EDGE_BENCHMARKING_PASSWORD")),
+        auth=EDGE_FARM_API_BASIC_AUTH,
     ).json()
-    return json
 
 
-@router.post("")
-def run_benchmark(
+@router.get("/device/{hostname}/info")
+def get_edge_benchmark_device_info(hostname: str) -> dict[str, Any]:
+    return requests.get(
+        f"https://{os.getenv("EDGE_BENCHMARKING_URL")}/device/{hostname}/info",
+        auth=EDGE_FARM_API_BASIC_AUTH,
+    ).json()
+
+
+@router.post("/start")
+# TODO: Create pydantic model for edge_device
+# TODO: Create pydantic model for benchmark_config
+def edge_benchmark_start(
     request: Request,
-    models: List[int],
-    datasets: List[int],
-    devices: List[BenchmarkDevice],
+    edge_device: dict,
+    dataset_id: int,
+    model_id: int,
+    benchmark_config: dict,
     db: Session = Depends(get_db),
     task_creator: TaskCreator = Depends(get_task_creator),
 ) -> None:
     user: KeycloakUser = request.user
 
-    def benchmark(
+    minio_token = user.minio_token
+    bucket_name = user.minio_bucket_name
+
+    model = load_model(model_id, minio_token, db)
+    dataset, labels = load_dataset(dataset_id, minio_token, db)
+
+    def _run_benchmark(
         on_error,
         on_progress_change,
         db: Session,
         user: KeycloakUser,
-        models,
-        datasets,
-    ) -> dict:
-        # Connection information
-        PROTOCOL = "https"
-        HOST = os.getenv("EDGE_BENCHMARKING_URL")
+        model,
+        dataset,
+    ) -> None:
 
-        # Basic API authentication
-        BASIC_AUTH_USERNAME = os.getenv("EDGE_BENCHMARKING_USER")
-        BASIC_AUTH_PASSWORD = os.getenv("EDGE_BENCHMARKING_PASSWORD")
+        client = EdgeBenchmarkingClient(
+            protocol=EDGE_FARM_API_PROTOCOL,
+            host=EDGE_FARM_API_HOST,
+            username=EDGE_FARM_API_BASIC_AUTH_USERNAME,
+            password=EDGE_FARM_API_BASIC_AUTH_PASSWORD,
+        )
 
-        token = user.minio_token
-        bucket = user.minio_bucket_name
+        # TODO: Map benchmark_config onto inference_client
+        inference_client = TritonDenseNetClient(
+            host=edge_device.hostname,
+            model_name="densenet_onnx",
+            num_classes=1,
+            scaling="inception",
+        )
 
-        # loading all model configs and model files into dicts
-        model_files, model_configs = load_models(models, token, db, user)
+        # TODO: Map benchmark_config onto benchmark_job
+        benchmark_job = client.benchmark(
+            edge_device=edge_device.hostname,
+            dataset=dataset,
+            model=model,
+            inference_client=inference_client,
+            model_metadata=None,
+            labels=labels,
+            cleanup=True,
+        )
 
-        for dataset_id in datasets:
-            dataset_files, annotations = load_dataset(dataset_id, db, user)
+        minio_api.upload_data(
+            bucket_name,
+            prefix=f"benchmark/{benchmark_job.id}",
+            token=minio_token,
+            data=json.dumps(benchmark_job.benchmark_results).encode("utf-8"),
+            objectname="benchmark.json",
+        )
 
-            for key in model_files:
-                for device in devices:
-                    client = EdgeBenchmarkingClient(
-                        protocol=PROTOCOL,
-                        host=HOST,
-                        username=BASIC_AUTH_USERNAME,
-                        password=BASIC_AUTH_PASSWORD,
-                    )
+        minio_api.upload_data(
+            bucket_name,
+            prefix=f"benchmark/{benchmark_job.id}",
+            token=minio_token,
+            data=json.dumps(benchmark_job.inference_results).encode("utf-8"),
+            objectname="inference.json",
+        )
 
-                    # TODO Inference client not complete
-                    inference_client = TritonDenseNetClient(
-                        host=device.hostname,
-                        model_name="densenet_onnx",
-                        num_classes=1,
-                        scaling="inception",
-                    )
+        # TODO: Create pydantic model for metadata
+        metadata = {
+            "time": time.time(),
+            "dataset": dataset_id,
+            "edge_device": {
+                "device_ip": edge_device["ip"],
+                "device_name": edge_device["hostname"],
+            },
+            "job_id": benchmark_job.id,
+        }
 
-                    benchmark_job = client.benchmark(
-                        edge_device=device.hostname,
-                        dataset=dataset_files,
-                        model=model_files[key],
-                        inference_client=inference_client,
-                        model_metadata=None,
-                        labels=annotations,
-                        cleanup=True,
-                    )
+        minio_api.upload_data(
+            bucket_name,
+            prefix=f"benchmark/{benchmark_job.id}",
+            token=minio_token,
+            data=json.dumps(metadata).encode("utf-8"),
+            objectname="metadata.json",
+        )
 
-                    time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
-                    minio_api.upload_data(
-                        bucket,
-                        prefix=f"benchmark/{benchmark_job.id}",
-                        token=token,
-                        data=json.dumps(benchmark_job.benchmark_results).encode(
-                            "utf-8"
-                        ),
-                        objectname="benchmark.json",
-                    )
-
-                    minio_api.upload_data(
-                        bucket,
-                        prefix=f"benchmark/{benchmark_job.id}",
-                        token=token,
-                        data=json.dumps(benchmark_job.inference_results).encode(
-                            "utf-8"
-                        ),
-                        objectname="inference.json",
-                    )
-
-                    metadata = {
-                        "time": time,
-                        "dataset": dataset_id,
-                        "edge_device": {
-                            "device_ip": device.ip,
-                            "device_name": device.hostname,
-                        },
-                        "job_id": benchmark_job.id,
-                    }
-
-                    minio_api.upload_data(
-                        bucket,
-                        prefix=f"benchmark/{benchmark_job.id}",
-                        token=token,
-                        data=json.dumps(metadata).encode("utf-8"),
-                        objectname="metadata.json",
-                    )
-
-                    created_benchmark = _create_initial_entry_postgres(
-                        db=db,
-                        user=user,
-                        benchmark_name=f"{benchmark_job.id}",
-                        dataset_id=dataset_id,
-                        job_id=benchmark_job.id,
-                        device_ip=device.ip,
-                        device_name=device.name,
-                    )
-
-        return
-
-    # response = client.upload_benchmark_data()
+        _create_initial_entry_postgres(
+            db=db,
+            user=user,
+            benchmark_name=f"{benchmark_job.id}",
+            dataset_id=dataset_id,
+            job_id=benchmark_job.id,
+            device_ip=edge_device["ip"],
+            device_name=edge_device["hostname"],
+        )
 
     _, task_location_url, _ = task_creator.create_background_task(
-        func=benchmark,
-        task_title=f"Inference for Model(s) {models} and Dataset(s) {datasets}.",
+        func=_run_benchmark,
+        task_title=f"Started benchmark job on device '{edge_device["hostname"]}' with dataset '{dataset.name}' and model '{model.name}'.",
         db=db,
         user=user,
-        models=models,
-        datasets=datasets,
+        model=model,
+        dataset=dataset,
     )
 
     headers = {"Location": task_location_url}
     return Response(status_code=status.HTTP_202_ACCEPTED, headers=headers)
 
 
-@router.get("/{hostname}/info")
-def get_benchmarking_info(hostname: str):
-    """
-    Fetches Benchmarking Info for one Device from the edge farm manager
-    """
-    json = requests.get(
-        f"https://{os.getenv("EDGE_BENCHMARKING_URL")}/device/{hostname}/info",
-        auth=(os.getenv("EDGE_BENCHMARKING_USER"), os.getenv("EDGE_BENCHMARKING_PASSWORD")),
-    ).json()
+def load_model(model_id: int, token: str, db) -> tuple[str, BytesIO]:
+    model = check_exists(sql_api.get_model(db, model_id))
+    _validate_parameters(model.bucket_name, token)
 
-    return json
+    minio_item = f"models/{model_id}/{model.name}"
+    model_bytes = minio_api.download_file(model.bucket_name, token, minio_item).read()
+
+    return model.name, BytesIO(model_bytes)
 
 
-def load_models(models, token, db, user):
-    model_files = {}
-    model_configs = {}
-    for model_id in models:
-        model = check_exists(sql_api.get_model(db, model_id))
-
-        bucket_name = model.bucket_name
-        token = user.minio_token
-        model_prefix = f"models/{model.id}"
-
-        _validate_parameters(bucket_name, token)
-
-        for item in minio_api.get_all_objects(
-            bucket_name, prefix=model_prefix, token=token
-        ):
-            if item.is_dir is False:
-                # TODO filenames hardcoded
-                model_files[item.object_name] = (
-                    "densenet_onnx.onnx",
-                    BytesIO(minio_api.download_file(bucket_name, token, item).read()),
-                )
-
-                # currently only using Tritons autoconfig feature
-                # model_configs[item.object_name] = None
-
-                model_configs[item.object_name] = load_config(model, item.object_name)
-    return model_files, model_configs
-
-
-def load_config(model, name):
-    # create the actual config as protobuf
-    # TODO: currently only onnx
-    # TODO: fix dims when batchsize is given
-    config = {
-        "platform": "onnxruntime_onnx",
-        "name": "densenet_onnx",
-        "max_batch_size": 1,
-        "input": [
-            {
-                "name": model.input_name,
-                "data_type": Datatypes[model.input_datatype.value].value,
-                "dims": model.input_shape[1:],
-                "reshape": {"shape": [1, 3, 244, 244]},
-                "format": "FORMAT_" + model.input_semantics.value,
-            }
-        ],
-        "output": [
-            {
-                "name": model.output_name,
-                "data_type": Datatypes[model.output_datatype.value].value,
-                "dims": [model.output_shape[1]],
-                "reshape": {"shape": [1, 1000, 1, 1]},
-                "label_filename": "label.txt",
-            }
-        ],
-    }
-
-    logger.info(config)
-    cf = model_config_pb2.ModelConfig()
-    cf = json_format.ParseDict(config, cf)
-    logger.info(str(cf))
-
-    return ("config.pbtxt", BytesIO(str(cf).encode()))
-
-
-def load_dataset(dataset_id, db, user):
+def load_dataset(dataset_id: int, minio_token: str, db):
     dataset = check_exists(dataset_sql_api.get_dataset(db, dataset_id))
+    _validate_parameters(dataset.bucket_name, minio_token)
 
-    bucket_name = dataset.bucket_name
-    token = user.minio_token
     dataset_prefix = f"datasets/{dataset.id}"
 
-    _validate_parameters(bucket_name, token)
-
-    dataset_files = []
-    for item in minio_api.get_all_objects(
-        bucket_name, prefix=dataset_prefix, token=token
+    dataset_files: list[tuple[str, BytesIO]] = []
+    for dataset_entry in minio_api.get_all_objects(
+        dataset.bucket_name, prefix=dataset_prefix, token=minio_token
     ):
-        if item.is_dir is False and "annotations" not in item.object_name:
-            dataset_files.append(
-                (
-                    item.object_name.split("/")[-1],
-                    BytesIO(minio_api.download_file(bucket_name, token, item).read()),
-                )
-            )
+        if not dataset_entry.is_dir and "annotations" not in dataset_entry.object_name:
+            sample_filename = os.path.basename(dataset_entry.object_name)
+            sample_bytes = minio_api.download_file(
+                dataset.bucket_name, minio_token, dataset_entry
+            ).read()
 
-    annotation_files = minio_api.get_all_objects(
-        bucket_name, f"{dataset_prefix}/annotations", token
+            dataset_files.append((sample_filename, BytesIO(sample_bytes)))
+
+    label_files = minio_api.get_all_objects(
+        dataset.bucket_name, f"{dataset_prefix}/annotations", minio_token
     )
-    if len(annotation_files) != 1:
-        annotations = None
-    else:
-        annotations = (
-            "label.txt",
-            BytesIO(
-                minio_api.download_file(bucket_name, token, annotation_files[0]).read()
-            ),
-        )
 
-    return dataset_files, annotations
+    labels = None
+    if len(label_files) == 1:
+        label_file = label_files[0]
+        label_bytes = minio_api.download_file(
+            dataset.bucket_name, minio_token, label_file
+        ).read()
+        labels = ("labels.txt", BytesIO(label_bytes))
+
+    return dataset_files, labels
 
 
 def _validate_parameters(bucket, token):
     try:
         minio_api.valid_params(bucket, token)
     except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e)) from e
 
 
 def _create_initial_entry_postgres(
@@ -349,21 +251,7 @@ def _create_initial_entry_postgres(
     device_ip: str,
     device_name: str,
 ):
-    """Created an initial entry for the Inference Result in the Postgres database.
-
-    Args:
-        db: Database Session.
-        user: Information on the user, who wants to create the Inference Result.
-        name: The name of the Inference Result.
-
-    Returns:
-        The instance of the created Inference Result.
-
-    Raises:
-        HTTPException: If there are problems during creation of the Inference Result.
-    """
     try:
-        # Replace Inference Result name by name(2), (3)... if name already exist
         if sql_benchmark_api.get_benchmark_by_name(db=db, name=benchmark_name):
             count = 2
             while sql_benchmark_api.get_benchmark_by_name(
@@ -388,8 +276,8 @@ def _create_initial_entry_postgres(
 
         return created_inference
     except Exception as e:
-        logger.error("Saving into Postgres failed. Stacktrace:\n" + get_stacktrace(e))
+        traceback.print_exc()
         raise HTTPException(
             status_code=500,
-            detail="Initial Creation of Service failed. Please try again.",
-        )
+            detail="Initial creation of benchmark job entry failed. Please try again.",
+        ) from e
