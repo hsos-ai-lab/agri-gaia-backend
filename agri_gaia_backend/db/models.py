@@ -10,7 +10,6 @@
 # SPDX-License-Identifier: MIT
 
 import enum
-from typing import ClassVar
 from sqlalchemy import (
     ARRAY,
     BigInteger,
@@ -80,21 +79,98 @@ class Inference(Base):
     minio_location = Column(String, nullable=True)
 
 
-class Benchmark(Base):
-    __tablename__ = "benchmarks"
+class BenchmarkEdgeDevice(Base):
+    __tablename__ = "benchmark_edge_devices"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    protocol = Column(String, default="http")
+    host = Column(String, nullable=False)
+    port = Column(Integer, nullable=True)
+
+
+class InferenceClient(Base):
+    __tablename__ = "inference_clients"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    protocol = Column(String, default="http")
+    host = Column(String, nullable=False)
+    num_workers = Column(Integer, default=1)
+    samples_per_second = Column(Float, nullable=True)
+
+    __mapper_args__ = {"polymorphic_identity": "inference_client"}
+
+
+class TritonInferenceClient(InferenceClient):
+    __tablename__ = "triton_inference_clients"
+
+    id = Column(Integer, ForeignKey("inference_clients.id"), primary_key=True)
+    model_name = Column(String, nullable=True)
+    model_version = Column(String, default="1")
+    batch_size = Column(Integer, default=1)
+    warm_up = Column(Boolean, default=False)
+
+    __mapper_args__ = {"polymorphic_identity": "triton_inference_client"}
+
+
+class TritonDenseNetClient(TritonInferenceClient):
+    __tablename__ = "triton_densenet_clients"
+
+    id = Column(Integer, ForeignKey("triton_inference_clients.id"), primary_key=True)
+    num_classes = Column(Integer, default=0)
+    scaling = Column(String, nullable=True)
+
+    __mapper_args__ = {"polymorphic_identity": "triton_densenet_client"}
+
+
+class TritonYoloClient(TritonInferenceClient):
+    __tablename__ = "triton_yolo_clients"
+
+    id = Column(Integer, ForeignKey("triton_inference_clients.id"), primary_key=True)
+    num_classes = Column(Integer, default=0)
+    scaling = Column(String, nullable=True)
+    confidence_thres = Column(Float, default=0.2)
+    iou_thres = Column(Float, default=0.2)
+    input_width = Column(Integer, nullable=False)
+    input_height = Column(Integer, nullable=False)
+
+    __mapper_args__ = {"polymorphic_identity": "triton_yolo_client"}
+
+
+class BenchmarkConfig(Base):
+    __tablename__ = "benchmark_configs"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    edge_device_id = Column(
+        Integer, ForeignKey("benchmark_edge_devices.id"), nullable=False
+    )
+    inference_client_id = Column(
+        Integer, ForeignKey("inference_clients.id"), nullable=False
+    )
+    cpu_only = Column(Boolean, default=False)
+
+    edge_device = relationship("BenchmarkEdgeDevice", backref="benchmark_configs")
+    inference_client = relationship("InferenceClient")
+    benchmark_job = relationship(
+        "BenchmarkJob", uselist=False, back_populates="benchmark_config"
+    )
+
+
+class BenchmarkJob(Base):
+    __tablename__ = "benchmark_jobs"
 
     id = Column(Integer, primary_key=True, index=True)
     owner = Column(String)
-    name = Column(String)
-    last_modified = Column(DateTime)
     bucket_name = Column(String)
-    metadata_uri = Column(String, nullable=True)
     minio_location = Column(String, nullable=True)
     timestamp = Column(DateTime)
+    last_modified = Column(DateTime)
+    model_id = Column(Integer)
     dataset_id = Column(Integer)
-    job_id = Column(String)
-    device_ip = Column(String)
-    device_name = Column(String)
+    benchmark_config_id = Column(
+        Integer, ForeignKey("benchmark_configs.id"), unique=True
+    )
+
+    benchmark_config = relationship("BenchmarkConfig", back_populates="benchmark_job")
 
 
 class Connector(Base):

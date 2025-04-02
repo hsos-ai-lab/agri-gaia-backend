@@ -44,7 +44,7 @@ from agri_gaia_backend.routers import (
     network,
     triton,
     edge_benchmark,
-    edge_benchmark_overview,
+    #    edge_benchmark_overview,
 )
 from agri_gaia_backend.util.auth.bearer_token_auth_backend import BearerTokenAuthBackend
 from prometheus_fastapi_instrumentator import Instrumentator
@@ -193,7 +193,7 @@ app.include_router(licenses.router)
 app.include_router(network.router)
 app.include_router(triton.router)
 app.include_router(edge_benchmark.router)
-app.include_router(edge_benchmark_overview.router)
+# app.include_router(edge_benchmark_overview.router)
 
 app.exception_handler(image_builder.MissingInputDataException)(
     _missing_input_data_exception_handler

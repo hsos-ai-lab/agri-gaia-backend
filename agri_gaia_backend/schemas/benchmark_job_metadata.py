@@ -10,12 +10,12 @@
 # SPDX-License-Identifier: MIT
 
 from pydantic import BaseModel
+from edge_benchmarking_types.edge_farm.models import BenchmarkConfig
+from edge_benchmarking_types.edge_device.models import BenchmarkJob
 
 
-class BenchmarkDevice(BaseModel):
-    ip: str
-    name: str
-    hostname: str
-    heartbeat_interval: int
-    timestamp: str
-    online: bool
+class BenchmarkJobMetadata(BaseModel):
+    model_id: int
+    dataset_id: int
+    benchmark_config: BenchmarkConfig
+    benchmark_job: BenchmarkJob

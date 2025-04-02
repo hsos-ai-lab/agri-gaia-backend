@@ -10,12 +10,9 @@
 # SPDX-License-Identifier: MIT
 
 import os
-import json
-import time
 import logging
 import datetime
 import requests
-import traceback
 
 from io import BytesIO
 from typing import List, Any
@@ -29,15 +26,25 @@ from agri_gaia_backend.db import dataset_api as dataset_sql_api
 from agri_gaia_backend.schemas.keycloak_user import KeycloakUser
 from edge_benchmarking_client.client import EdgeBenchmarkingClient
 from agri_gaia_backend.db import benchmark_api as sql_benchmark_api
-from agri_gaia_backend.schemas.benchmark_device import BenchmarkDevice
-from edge_benchmarking_types.edge_farm.models import TritonDenseNetClient
-from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
+from edge_benchmarking_types.edge_farm.models import BenchmarkConfig
+from edge_benchmarking_types.edge_device.models import DeviceHeader, BenchmarkJob
+from fastapi import (
+    APIRouter,
+    Depends,
+    HTTPException,
+    Request,
+    Response,
+    status,
+    File,
+    UploadFile,
+)
 from agri_gaia_backend.routers.common import (
     TaskCreator,
     check_exists,
     get_db,
     get_task_creator,
 )
+from agri_gaia_backend.schemas.benchmark_job_metadata import BenchmarkJobMetadata
 
 load_dotenv()
 
@@ -63,7 +70,7 @@ def get_all_benchmark_jobs(
     return sql_benchmark_api.get_benchmarks(skip=skip, limit=limit, db=db)
 
 
-@router.get("/device/header", response_model=List[BenchmarkDevice])
+@router.get("/device/header", response_model=List[DeviceHeader])
 def get_all_edge_benchmark_device_headers():
     return requests.get(
         f"https://{os.getenv("EDGE_BENCHMARKING_URL")}/device/header",
@@ -80,14 +87,13 @@ def get_edge_benchmark_device_info(hostname: str) -> dict[str, Any]:
 
 
 @router.post("/start")
-# TODO: Create pydantic model for edge_device
-# TODO: Create pydantic model for benchmark_config
-def edge_benchmark_start(
+async def edge_benchmark_start(
     request: Request,
-    edge_device: dict,
     dataset_id: int,
     model_id: int,
-    benchmark_config: dict,
+    chunk_size: int,
+    benchmark_config: BenchmarkConfig,
+    model_metadata: UploadFile = File(...),
     db: Session = Depends(get_db),
     task_creator: TaskCreator = Depends(get_task_creator),
 ) -> None:
@@ -96,8 +102,9 @@ def edge_benchmark_start(
     minio_token = user.minio_token
     bucket_name = user.minio_bucket_name
 
-    model = load_model(model_id, minio_token, db)
-    dataset, labels = load_dataset(dataset_id, minio_token, db)
+    model_name, model = load_model(model_id, minio_token, db)
+    dataset_name, dataset, labels = load_dataset(dataset_id, minio_token, db)
+    model_metadata = model_metadata.filename, BytesIO(await model_metadata.read())
 
     def _run_benchmark(
         on_error,
@@ -106,6 +113,7 @@ def edge_benchmark_start(
         user: KeycloakUser,
         model,
         dataset,
+        model_metadata: tuple[str, BytesIO],
     ) -> None:
 
         client = EdgeBenchmarkingClient(
@@ -115,22 +123,17 @@ def edge_benchmark_start(
             password=EDGE_FARM_API_BASIC_AUTH_PASSWORD,
         )
 
-        # TODO: Map benchmark_config onto inference_client
-        inference_client = TritonDenseNetClient(
-            host=edge_device.hostname,
-            model_name="densenet_onnx",
-            num_classes=1,
-            scaling="inception",
-        )
-
-        # TODO: Map benchmark_config onto benchmark_job
-        benchmark_job = client.benchmark(
-            edge_device=edge_device.hostname,
+        # TODO: Receive model_metadata via Frontend file upload
+        # TODO: Add input field for chunk_size in Frontend form
+        benchmark_job: BenchmarkJob = client.benchmark(
+            edge_device=benchmark_config.edge_device,
             dataset=dataset,
             model=model,
-            inference_client=inference_client,
-            model_metadata=None,
+            inference_client=benchmark_config.inference_client,
+            model_metadata=model_metadata,
             labels=labels,
+            chunk_size=chunk_size,
+            cpu_only=benchmark_config.cpu_only,
             cleanup=True,
         )
 
@@ -138,7 +141,7 @@ def edge_benchmark_start(
             bucket_name,
             prefix=f"benchmark/{benchmark_job.id}",
             token=minio_token,
-            data=json.dumps(benchmark_job.benchmark_results).encode("utf-8"),
+            data=benchmark_job.benchmark_results.model_dump_json().encode("utf-8"),
             objectname="benchmark.json",
         )
 
@@ -146,46 +149,45 @@ def edge_benchmark_start(
             bucket_name,
             prefix=f"benchmark/{benchmark_job.id}",
             token=minio_token,
-            data=json.dumps(benchmark_job.inference_results).encode("utf-8"),
+            data=benchmark_job.inference_results.model_dump_json().encode("utf-8"),
             objectname="inference.json",
         )
 
-        # TODO: Create pydantic model for metadata
-        metadata = {
-            "time": time.time(),
-            "dataset": dataset_id,
-            "edge_device": {
-                "device_ip": edge_device["ip"],
-                "device_name": edge_device["hostname"],
-            },
-            "job_id": benchmark_job.id,
-        }
+        benchmark_job_metadata = BenchmarkJobMetadata(
+            dataset_id=dataset_id,
+            model_id=model_id,
+            benchmark_job=benchmark_job,
+            benchmark_config=benchmark_config,
+        )
 
         minio_api.upload_data(
             bucket_name,
             prefix=f"benchmark/{benchmark_job.id}",
             token=minio_token,
-            data=json.dumps(metadata).encode("utf-8"),
+            data=benchmark_job_metadata.model_dump_json().encode("utf-8"),
             objectname="metadata.json",
         )
 
-        _create_initial_entry_postgres(
-            db=db,
-            user=user,
-            benchmark_name=f"{benchmark_job.id}",
-            dataset_id=dataset_id,
-            job_id=benchmark_job.id,
-            device_ip=edge_device["ip"],
-            device_name=edge_device["hostname"],
+        job_id = benchmark_job_metadata.benchmark_job.id
+        timestamp = datetime.datetime.now()
+        sql_benchmark_api.create_benchmark_job(
+            db,
+            owner=user.username,
+            bucket_name=user.minio_bucket_name,
+            minio_location=f"benchmark/{job_id}",
+            timestamp=timestamp,
+            last_modified=timestamp,
+            benchmark_job_metadata=benchmark_job_metadata,
         )
 
     _, task_location_url, _ = task_creator.create_background_task(
         func=_run_benchmark,
-        task_title=f"Started benchmark job on device '{edge_device["hostname"]}' with dataset '{dataset.name}' and model '{model.name}'.",
+        task_title=f"Started benchmark job on device '{benchmark_config.edge_device.host}' with dataset '{dataset_name}' and model '{model_name}'.",
         db=db,
         user=user,
         model=model,
         dataset=dataset,
+        model_metadata=model_metadata,
     )
 
     headers = {"Location": task_location_url}
@@ -232,7 +234,7 @@ def load_dataset(dataset_id: int, minio_token: str, db):
         ).read()
         labels = ("labels.txt", BytesIO(label_bytes))
 
-    return dataset_files, labels
+    return dataset.name, dataset_files, labels
 
 
 def _validate_parameters(bucket, token):
@@ -240,44 +242,3 @@ def _validate_parameters(bucket, token):
         minio_api.valid_params(bucket, token)
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e)) from e
-
-
-def _create_initial_entry_postgres(
-    db: Session,
-    user: KeycloakUser,
-    benchmark_name: str,
-    dataset_id: int,
-    job_id: int,
-    device_ip: str,
-    device_name: str,
-):
-    try:
-        if sql_benchmark_api.get_benchmark_by_name(db=db, name=benchmark_name):
-            count = 2
-            while sql_benchmark_api.get_benchmark_by_name(
-                db=db, name=f"{benchmark_name}({count})"
-            ):
-                count += 1
-            inference_name = f"{inference_name}({count})"
-
-        created_inference = sql_benchmark_api.create_benchmark(
-            db,
-            name=benchmark_name,
-            owner=user.username,
-            last_modified=datetime.datetime.now(),
-            bucket_name=user.minio_bucket_name,
-            minio_location=f"benchmark/{job_id}",
-            timestamp=datetime.datetime.now(),
-            dataset_id=dataset_id,
-            job_id=job_id,
-            device_ip=device_ip,
-            device_name=device_name,
-        )
-
-        return created_inference
-    except Exception as e:
-        traceback.print_exc()
-        raise HTTPException(
-            status_code=500,
-            detail="Initial creation of benchmark job entry failed. Please try again.",
-        ) from e

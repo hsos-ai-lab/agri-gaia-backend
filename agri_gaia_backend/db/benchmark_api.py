@@ -15,26 +15,33 @@ from sqlalchemy.orm import Session
 import datetime
 
 from agri_gaia_backend.db import models
+from agri_gaia_backend.schemas.benchmark_job_metadata import BenchmarkJobMetadata
 
 
-def get_benchmark_result(db: Session, benchmark_id: int) -> Optional[models.Benchmark]:
+def get_benchmark_result(
+    db: Session, benchmark_id: int
+) -> Optional[models.BenchmarkJob]:
     return (
-        db.query(models.Benchmark).filter(models.Benchmark.id == benchmark_id).first()
+        db.query(models.BenchmarkJob)
+        .filter(models.Benchmark.id == benchmark_id)
+        .first()
     )
 
 
 def get_benchmark_result_by_job_id(
     db: Session, job_id: int
-) -> Optional[models.Benchmark]:
-    return db.query(models.Benchmark).filter(models.Benchmark.job_id == job_id).first()
+) -> Optional[models.BenchmarkJob]:
+    return (
+        db.query(models.BenchmarkJob).filter(models.Benchmark.job_id == job_id).first()
+    )
 
 
 def get_benchmarks_by_owner(
     db: Session, owner: str, skip: int = 0, limit: int = 100
-) -> List[models.Benchmark]:
+) -> List[models.BenchmarkJob]:
     return (
-        db.query(models.Benchmark)
-        .filter(models.Benchmark.owner == owner)
+        db.query(models.BenchmarkJob)
+        .filter(models.BenchmarkJob.owner == owner)
         .offset(skip)
         .limit(limit)
         .all()
@@ -43,10 +50,10 @@ def get_benchmarks_by_owner(
 
 def get_benchmarks_by_dataset(
     db: Session, dataset_id: int, skip: int = 0, limit: int = 100
-) -> List[models.Benchmark]:
+) -> List[models.BenchmarkJob]:
     return (
-        db.query(models.Benchmark)
-        .filter(models.Benchmark.dataset_id == dataset_id)
+        db.query(models.BenchmarkJob)
+        .filter(models.BenchmarkJob.dataset_id == dataset_id)
         .offset(skip)
         .limit(limit)
         .all()
@@ -55,10 +62,10 @@ def get_benchmarks_by_dataset(
 
 def get_benchmarks_by_device_ip(
     db: Session, device_ip: str, skip: int = 0, limit: int = 100
-) -> List[models.Benchmark]:
+) -> List[models.BenchmarkJob]:
     return (
-        db.query(models.Benchmark)
-        .filter(models.Benchmark.device_ip == device_ip)
+        db.query(models.BenchmarkJob)
+        .filter(models.BenchmarkJob.device_ip == device_ip)
         .offset(skip)
         .limit(limit)
         .all()
@@ -67,10 +74,10 @@ def get_benchmarks_by_device_ip(
 
 def get_benchmarks_by_device_name(
     db: Session, device_name: str, skip: int = 0, limit: int = 100
-) -> List[models.Benchmark]:
+) -> List[models.BenchmarkJob]:
     return (
-        db.query(models.Benchmark)
-        .filter(models.Benchmark.device_name == device_name)
+        db.query(models.BenchmarkJob)
+        .filter(models.BenchmarkJob.device_name == device_name)
         .offset(skip)
         .limit(limit)
         .all()
@@ -79,10 +86,10 @@ def get_benchmarks_by_device_name(
 
 def get_benchmark_by_name(
     db: Session, name: str, skip: int = 0, limit: int = 1
-) -> models.Benchmark:
+) -> models.BenchmarkJob:
     return (
-        db.query(models.Benchmark)
-        .filter(models.Benchmark.name == name)
+        db.query(models.BenchmarkJob)
+        .filter(models.BenchmarkJob.name == name)
         .offset(skip)
         .limit(limit)
         .all()
@@ -91,10 +98,10 @@ def get_benchmark_by_name(
 
 def get_benchmarks_by_metadata_uri(
     db: Session, skip: int = 0, limit: int = 100, uris: Array = []
-) -> List[models.Benchmark]:
+) -> List[models.BenchmarkJob]:
     return (
-        db.query(models.Benchmark)
-        .filter(models.Benchmark.metadata_uri.in_(uris))
+        db.query(models.BenchmarkJob)
+        .filter(models.BenchmarkJob.metadata_uri.in_(uris))
         .offset(skip)
         .limit(limit)
         .all()
@@ -103,49 +110,44 @@ def get_benchmarks_by_metadata_uri(
 
 def get_benchmarks(
     db: Session, skip: int = 0, limit: int = 100
-) -> List[models.Benchmark]:
-    return db.query(models.Benchmark).offset(skip).limit(limit).all()
+) -> List[models.BenchmarkJob]:
+    return db.query(models.BenchmarkJob).offset(skip).limit(limit).all()
 
 
-def create_benchmark(
+def create_benchmark_job(
     db: Session,
-    name: str,
     owner: str,
-    last_modified: datetime.datetime,
     bucket_name: str,
     minio_location: str,
     timestamp: datetime.datetime,
-    dataset_id=int,
-    job_id=str,
-    device_ip=str,
-    device_name=str,
-) -> models.Benchmark:
-    db_benchmark = models.Benchmark(
-        name=name,
+    last_modified: datetime.datetime,
+    benchmark_job_metadata: BenchmarkJobMetadata,
+) -> models.BenchmarkJob:
+    # TODO: Adjust Benchmark SQL model to match Pydantic model
+    db_benchmark_job = models.BenchmarkJob(
         owner=owner,
-        last_modified=last_modified,
         bucket_name=bucket_name,
         minio_location=minio_location,
         timestamp=timestamp,
-        dataset_id=dataset_id,
-        job_id=job_id,
-        device_ip=device_ip,
-        device_name=device_name,
+        last_modified=last_modified,
+        **benchmark_job_metadata.model_dump()
     )
-    db.add(db_benchmark)
+    db.add(db_benchmark_job)
     db.commit()
-    db.refresh(db_benchmark)
-    return db_benchmark
+    db.refresh(db_benchmark_job)
+    return db_benchmark_job
 
 
-def update_benchmark(db: Session, benchmark: models.Benchmark) -> models.Benchmark:
+def update_benchmark(
+    db: Session, benchmark: models.BenchmarkJob
+) -> models.BenchmarkJob:
     db.add(benchmark)
     db.commit()
     db.refresh(benchmark)
     return benchmark
 
 
-def delete_benchmark(db: Session, benchmark: models.Benchmark) -> bool:
+def delete_benchmark(db: Session, benchmark: models.BenchmarkJob) -> bool:
     db.delete(benchmark)
     db.commit()
     return True
