@@ -16,6 +16,7 @@ import datetime
 import requests
 
 from io import BytesIO
+from pathlib import Path
 from dotenv import load_dotenv
 from sqlalchemy.orm import Session
 from typing import List, Any, Optional
@@ -27,8 +28,11 @@ from agri_gaia_backend.db import dataset_api as dataset_sql_api
 from agri_gaia_backend.schemas.keycloak_user import KeycloakUser
 from edge_benchmarking_client.client import EdgeBenchmarkingClient
 from agri_gaia_backend.db import benchmark_api as sql_benchmark_api
-from edge_benchmarking_types.edge_farm.models import BenchmarkConfig
 from edge_benchmarking_types.edge_device.models import DeviceHeader, BenchmarkJob
+from edge_benchmarking_types.edge_farm.models import (
+    BenchmarkConfig,
+    TritonInferenceClient,
+)
 from fastapi import (
     APIRouter,
     Depends,
@@ -97,6 +101,8 @@ async def edge_benchmark_start(
     task_creator: TaskCreator = Depends(get_task_creator),
 ) -> None:
     user: KeycloakUser = request.user
+    minio_token = user.minio_token
+    bucket_name = user.minio_bucket_name
 
     payload = json.loads(payload)
 
@@ -105,13 +111,15 @@ async def edge_benchmark_start(
     chunk_size = payload["chunk_size"]
     benchmark_config = payload["benchmark_config"]
 
+    model_name, model = load_model(model_id, minio_token, db)
+    (dataset_name, dataset), labels = load_dataset(dataset_id, minio_token, db)
+
     benchmark_config = BenchmarkConfig(**payload["benchmark_config"])
 
-    minio_token = user.minio_token
-    bucket_name = user.minio_bucket_name
-
-    model = load_model(model_id, minio_token, db)
-    (dataset_name, dataset), labels = load_dataset(dataset_id, minio_token, db)
+    if isinstance(benchmark_config.inference_client, TritonInferenceClient):
+        model_filename, _ = model
+        benchmark_config.inference_client.model_name = Path(model_filename).stem
+        benchmark_config.inference_client.model_version = "1"
 
     model_metadata = (
         (model_metadata.filename, BytesIO(await model_metadata.read()))
@@ -142,7 +150,7 @@ async def edge_benchmark_start(
             labels=labels,
             chunk_size=chunk_size,
             cpu_only=benchmark_config.cpu_only,
-            cleanup=True,
+            cleanup=False,
         )
 
         minio_api.upload_data(
@@ -188,7 +196,6 @@ async def edge_benchmark_start(
             benchmark_job_metadata=benchmark_job_metadata,
         )
 
-    model_name, _ = model
     _, task_location_url, _ = task_creator.create_background_task(
         func=_run_benchmark,
         task_title=f"Started benchmark job on device '{benchmark_config.edge_device.host}' with dataset '{dataset_name}' and model '{model_name}'.",
@@ -200,7 +207,7 @@ async def edge_benchmark_start(
     return Response(status_code=status.HTTP_202_ACCEPTED, headers=headers)
 
 
-def load_model(model_id: int, minio_token: str, db) -> tuple[str, BytesIO]:
+def load_model(model_id: int, minio_token: str, db) -> tuple[str, str, BytesIO]:
     model = check_exists(sql_api.get_model(db, model_id))
     _validate_parameters(bucket=model.bucket_name, token=minio_token)
 
@@ -208,7 +215,7 @@ def load_model(model_id: int, minio_token: str, db) -> tuple[str, BytesIO]:
     model_bytes = minio_api.get_object(
         bucket=model.bucket_name, object_name=model_name, token=minio_token
     ).read()
-    return model.name, BytesIO(model_bytes)
+    return model.name, (model.file_name, BytesIO(model_bytes))
 
 
 def load_dataset(dataset_id: int, minio_token: str, db):
@@ -222,7 +229,7 @@ def load_dataset(dataset_id: int, minio_token: str, db):
         bucket=dataset.bucket_name, prefix=dataset_prefix, token=minio_token
     ):
         if not dataset_entry.is_dir and "annotations" not in dataset_entry.object_name:
-            sample_filename = os.path.basename(dataset_entry.object_name)
+            sample_filename = Path(dataset_entry.object_name).name
             sample_bytes = minio_api.download_file(
                 bucket=dataset.bucket_name, minio_item=dataset_entry, token=minio_token
             ).read()
@@ -239,7 +246,8 @@ def load_dataset(dataset_id: int, minio_token: str, db):
         label_bytes = minio_api.download_file(
             dataset.bucket_name, minio_token, label_file
         ).read()
-        labels = ("labels.txt", BytesIO(label_bytes))
+        label_filename = Path(label_file.object_name).name
+        labels = (label_filename, BytesIO(label_bytes))
 
     return (dataset.name, dataset_files), labels
 
