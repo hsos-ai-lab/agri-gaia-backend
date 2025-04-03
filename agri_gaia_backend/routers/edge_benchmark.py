@@ -111,10 +111,10 @@ async def edge_benchmark_start(
     chunk_size = payload["chunk_size"]
     benchmark_config = payload["benchmark_config"]
 
+    benchmark_config = BenchmarkConfig(**payload["benchmark_config"])
+
     model_name, model = load_model(model_id, minio_token, db)
     (dataset_name, dataset), labels = load_dataset(dataset_id, minio_token, db)
-
-    benchmark_config = BenchmarkConfig(**payload["benchmark_config"])
 
     if isinstance(benchmark_config.inference_client, TritonInferenceClient):
         model_filename, _ = model
