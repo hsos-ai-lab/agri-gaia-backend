@@ -121,16 +121,19 @@ def create_benchmark_job(
     minio_location: str,
     timestamp: datetime.datetime,
     last_modified: datetime.datetime,
-    benchmark_job_metadata: BenchmarkJobMetadata,
+    metadata: BenchmarkJobMetadata,
 ) -> models.BenchmarkJob:
-    # TODO: Adjust Benchmark SQL model to match Pydantic model
     db_benchmark_job = models.BenchmarkJob(
         owner=owner,
         bucket_name=bucket_name,
         minio_location=minio_location,
         timestamp=timestamp,
         last_modified=last_modified,
-        **benchmark_job_metadata.model_dump()
+        dataset_id=metadata.dataset_id,
+        model_id=metadata.model_id,
+        cpu_only=metadata.benchmark_config.cpu_only,
+        edge_device=metadata.benchmark_config.edge_device.host,
+        inference_client=metadata.benchmark_config.inference_client.__class__.__name__,
     )
     db.add(db_benchmark_job)
     db.commit()

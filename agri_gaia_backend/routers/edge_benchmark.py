@@ -15,6 +15,7 @@ import logging
 import datetime
 import requests
 
+from pprint import pprint
 from io import BytesIO
 from pathlib import Path
 from dotenv import load_dotenv
@@ -109,7 +110,6 @@ async def edge_benchmark_start(
     dataset_id = payload["dataset_id"]
     model_id = payload["model_id"]
     chunk_size = payload["chunk_size"]
-    benchmark_config = payload["benchmark_config"]
 
     benchmark_config = BenchmarkConfig(**payload["benchmark_config"])
 
@@ -153,17 +153,18 @@ async def edge_benchmark_start(
             cleanup=False,
         )
 
+        minio_location = f"{Path(ROOT_PATH).name}/{benchmark_job.id}"
         minio_api.upload_data(
             bucket_name,
-            prefix=f"benchmark/{benchmark_job.id}",
+            prefix=minio_location,
             token=minio_token,
-            data=benchmark_job.benchmark_results.model_dump_json().encode("utf-8"),
+            data=json.dumps(benchmark_job.benchmark_results).encode("utf-8"),
             objectname="benchmark.json",
         )
 
         minio_api.upload_data(
             bucket_name,
-            prefix=f"benchmark/{benchmark_job.id}",
+            prefix=minio_location,
             token=minio_token,
             data=benchmark_job.inference_results.model_dump_json().encode("utf-8"),
             objectname="inference.json",
@@ -178,27 +179,26 @@ async def edge_benchmark_start(
 
         minio_api.upload_data(
             bucket_name,
-            prefix=f"benchmark/{benchmark_job.id}",
+            prefix=minio_location,
             token=minio_token,
             data=benchmark_job_metadata.model_dump_json().encode("utf-8"),
             objectname="metadata.json",
         )
 
-        job_id = benchmark_job_metadata.benchmark_job.id
         timestamp = datetime.datetime.now()
         sql_benchmark_api.create_benchmark_job(
             db,
             owner=user.username,
             bucket_name=user.minio_bucket_name,
-            minio_location=f"benchmark/{job_id}",
+            minio_location=minio_location,
             timestamp=timestamp,
             last_modified=timestamp,
-            benchmark_job_metadata=benchmark_job_metadata,
+            metadata=benchmark_job_metadata,
         )
 
     _, task_location_url, _ = task_creator.create_background_task(
         func=_run_benchmark,
-        task_title=f"Started benchmark job on device '{benchmark_config.edge_device.host}' with dataset '{dataset_name}' and model '{model_name}'.",
+        task_title=f"Benchmark job on device '{benchmark_config.edge_device.host}' with dataset '{dataset_name}' and model '{model_name}'.",
         db=db,
         user=user,
     )
