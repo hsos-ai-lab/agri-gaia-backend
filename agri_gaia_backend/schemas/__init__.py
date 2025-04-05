@@ -25,4 +25,4 @@ from agri_gaia_backend.schemas.application import *
 from agri_gaia_backend.schemas.task import *
 from agri_gaia_backend.schemas.service_input import *
 from agri_gaia_backend.schemas.inference import *
-from agri_gaia_backend.schemas.benchmark import *
+from agri_gaia_backend.schemas.edge_benchmark import *

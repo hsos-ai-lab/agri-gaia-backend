@@ -15,7 +15,6 @@ import logging
 import datetime
 import requests
 
-from pprint import pprint
 from io import BytesIO
 from pathlib import Path
 from dotenv import load_dotenv
@@ -24,12 +23,15 @@ from typing import List, Any, Optional
 from requests.auth import HTTPBasicAuth
 from agri_gaia_backend.services import minio_api
 from agri_gaia_backend.db import model_api as sql_api
-from agri_gaia_backend.schemas.benchmark import Benchmark
 from agri_gaia_backend.db import dataset_api as dataset_sql_api
 from agri_gaia_backend.schemas.keycloak_user import KeycloakUser
 from edge_benchmarking_client.client import EdgeBenchmarkingClient
-from agri_gaia_backend.db import benchmark_api as sql_benchmark_api
-from edge_benchmarking_types.edge_device.models import DeviceHeader, BenchmarkJob
+from agri_gaia_backend.db import edge_benchmark_api as sql_benchmark_api
+from edge_benchmarking_types.edge_device.models import (
+    DeviceHeader as TDeviceHeader,
+    BenchmarkJob as TBenchmarkJob,
+)
+from agri_gaia_backend.schemas.edge_benchmark import BenchmarkJobRun, BenchmarkJob
 from edge_benchmarking_types.edge_farm.models import (
     BenchmarkConfig,
     TritonInferenceClient,
@@ -51,7 +53,6 @@ from agri_gaia_backend.routers.common import (
     get_db,
     get_task_creator,
 )
-from agri_gaia_backend.schemas.benchmark_job_metadata import BenchmarkJobMetadata
 
 load_dotenv()
 
@@ -65,31 +66,30 @@ EDGE_FARM_API_BASIC_AUTH = HTTPBasicAuth(
 
 EDGE_FARM_API_PROTOCOL = "https"
 EDGE_FARM_API_HOST = os.getenv("EDGE_BENCHMARKING_URL")
+EDGE_FARM_API_URL = f"{EDGE_FARM_API_PROTOCOL}://{EDGE_FARM_API_HOST}"
 
 logger = logging.getLogger("api-logger")
 router = APIRouter(prefix=ROOT_PATH)
 
 
-@router.get("", response_model=List[Benchmark])
+@router.get("/jobs", response_model=List[BenchmarkJob])
 def get_all_benchmark_jobs(
     skip: int = 0, limit: int = 10000, db: Session = Depends(get_db)
 ):
-    return sql_benchmark_api.get_benchmarks(skip=skip, limit=limit, db=db)
+    return sql_benchmark_api.get_all_benchmark_jobs(skip=skip, limit=limit, db=db)
 
 
-@router.get("/device/header", response_model=List[DeviceHeader])
+@router.get("/device/header", response_model=List[TDeviceHeader])
 def get_all_edge_benchmark_device_headers():
     return requests.get(
-        f"https://{os.getenv("EDGE_BENCHMARKING_URL")}/device/header",
-        auth=EDGE_FARM_API_BASIC_AUTH,
+        f"{EDGE_FARM_API_URL}/device/header", auth=EDGE_FARM_API_BASIC_AUTH
     ).json()
 
 
 @router.get("/device/{hostname}/info")
 def get_edge_benchmark_device_info(hostname: str) -> dict[str, Any]:
     return requests.get(
-        f"https://{os.getenv("EDGE_BENCHMARKING_URL")}/device/{hostname}/info",
-        auth=EDGE_FARM_API_BASIC_AUTH,
+        f"{EDGE_FARM_API_URL}/device/{hostname}/info", auth=EDGE_FARM_API_BASIC_AUTH
     ).json()
 
 
@@ -141,7 +141,7 @@ async def edge_benchmark_start(
             password=EDGE_FARM_API_BASIC_AUTH_PASSWORD,
         )
 
-        benchmark_job: BenchmarkJob = client.benchmark(
+        benchmark_job: TBenchmarkJob = client.benchmark(
             edge_device=benchmark_config.edge_device.host,
             dataset=dataset,
             model=model,
@@ -153,36 +153,22 @@ async def edge_benchmark_start(
             cleanup=False,
         )
 
-        minio_location = f"{Path(ROOT_PATH).name}/{benchmark_job.id}"
-        minio_api.upload_data(
-            bucket_name,
-            prefix=minio_location,
-            token=minio_token,
-            data=json.dumps(benchmark_job.benchmark_results).encode("utf-8"),
-            objectname="benchmark.json",
-        )
-
-        minio_api.upload_data(
-            bucket_name,
-            prefix=minio_location,
-            token=minio_token,
-            data=benchmark_job.inference_results.model_dump_json().encode("utf-8"),
-            objectname="inference.json",
-        )
-
-        benchmark_job_metadata = BenchmarkJobMetadata(
+        benchmark_job_run = BenchmarkJobRun(
             dataset_id=dataset_id,
             model_id=model_id,
             benchmark_job=benchmark_job,
             benchmark_config=benchmark_config,
         )
 
+        minio_prefix = f"{Path(ROOT_PATH).name}"
+        minio_filepath = f"{minio_prefix}/{benchmark_job.id}.json"
+
         minio_api.upload_data(
             bucket_name,
-            prefix=minio_location,
+            prefix=minio_prefix,
             token=minio_token,
-            data=benchmark_job_metadata.model_dump_json().encode("utf-8"),
-            objectname="metadata.json",
+            data=benchmark_job_run.model_dump_json().encode("utf-8"),
+            objectname=Path(minio_filepath).name,
         )
 
         timestamp = datetime.datetime.now()
@@ -190,10 +176,10 @@ async def edge_benchmark_start(
             db,
             owner=user.username,
             bucket_name=user.minio_bucket_name,
-            minio_location=minio_location,
+            minio_location=minio_filepath,
             timestamp=timestamp,
             last_modified=timestamp,
-            metadata=benchmark_job_metadata,
+            run=benchmark_job_run,
         )
 
     _, task_location_url, _ = task_creator.create_background_task(

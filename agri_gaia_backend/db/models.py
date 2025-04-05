@@ -54,6 +54,8 @@ class Dataset(Base):
     # https://github.com/sqlalchemy/alembic/issues/278
     dataset_type = Column(String, nullable=False)
 
+    benchmark_jobs = relationship("BenchmarkJob", back_populates="dataset")
+
 
 class Service(Base):
     __tablename__ = "services"
@@ -94,11 +96,14 @@ class BenchmarkJob(Base):
     timestamp = Column(DateTime)
     last_modified = Column(DateTime)
 
-    dataset_id = Column(Integer)
-    model_id = Column(Integer)
+    dataset_id = Column(Integer, ForeignKey("datasets.id"))
+    model_id = Column(Integer, ForeignKey("models.id"))
     cpu_only = Column(Boolean)
     edge_device = Column(String)
     inference_client = Column(Enum(InferenceClient))
+
+    dataset = relationship("Dataset", back_populates="benchmark_jobs")
+    model = relationship("Model", back_populates="benchmark_jobs")
 
 
 class Connector(Base):
@@ -161,7 +166,6 @@ class Model(Base):
     bucket_name = Column(String)
     file_name = Column(String, nullable=True)
     metadata_uri = Column(String, nullable=True)
-    deployments = relationship("ModelDeployment", back_populates="model")
 
     format = Column(Enum(ModelFormat), nullable=True)
     input_name = Column(String, nullable=True)
@@ -172,6 +176,9 @@ class Model(Base):
     output_datatype = Column(Enum(TensorDatatype), nullable=True)
     output_shape = Column(ARRAY(Integer), nullable=True)
     output_labels = Column(ARRAY(String), nullable=True)
+
+    deployments = relationship("ModelDeployment", back_populates="model")
+    benchmark_jobs = relationship("BenchmarkJob", back_populates="model")
 
 
 class DeploymentType(enum.Enum):
