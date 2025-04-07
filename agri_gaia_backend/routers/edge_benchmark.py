@@ -150,7 +150,7 @@ async def edge_benchmark_start(
             labels=labels,
             chunk_size=chunk_size,
             cpu_only=benchmark_config.cpu_only,
-            cleanup=False,
+            cleanup=True,
         )
 
         benchmark_job_run = BenchmarkJobRun(
