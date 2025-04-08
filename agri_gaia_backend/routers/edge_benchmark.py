@@ -21,12 +21,13 @@ from dotenv import load_dotenv
 from sqlalchemy.orm import Session
 from typing import List, Any, Optional
 from requests.auth import HTTPBasicAuth
+from fastapi.responses import FileResponse
 from agri_gaia_backend.services import minio_api
 from agri_gaia_backend.db import model_api as sql_api
 from agri_gaia_backend.db import dataset_api as dataset_sql_api
 from agri_gaia_backend.schemas.keycloak_user import KeycloakUser
 from edge_benchmarking_client.client import EdgeBenchmarkingClient
-from agri_gaia_backend.db import edge_benchmark_api as sql_benchmark_api
+from agri_gaia_backend.db import edge_benchmark_api as sql_api
 from edge_benchmarking_types.edge_device.models import (
     DeviceHeader as TDeviceHeader,
     BenchmarkJob as TBenchmarkJob,
@@ -52,6 +53,7 @@ from agri_gaia_backend.routers.common import (
     check_exists,
     get_db,
     get_task_creator,
+    create_single_file_response,
 )
 
 load_dotenv()
@@ -76,7 +78,53 @@ router = APIRouter(prefix=ROOT_PATH)
 def get_all_benchmark_jobs(
     skip: int = 0, limit: int = 10000, db: Session = Depends(get_db)
 ):
-    return sql_benchmark_api.get_all_benchmark_jobs(skip=skip, limit=limit, db=db)
+    return sql_api.get_all_benchmark_jobs(skip=skip, limit=limit, db=db)
+
+
+@router.delete("/jobs/{job_id}")
+def delete_train_container(
+    request: Request, job_id: int, db: Session = Depends(get_db)
+) -> Response:
+    user: KeycloakUser = request.user
+    minio_token = user.minio_token
+
+    benchmark_job: BenchmarkJob = check_exists(
+        sql_api.get_benchmark_job_by_id(db=db, job_id=job_id)
+    )
+    sql_api.delete_benchmark_job(db=db, benchmark_job=benchmark_job)
+
+    if minio_api.exists(
+        bucket=benchmark_job.bucket_name,
+        object_name=benchmark_job.minio_location,
+        token=minio_token,
+    ):
+        minio_api.delete_object(
+            bucket=benchmark_job.bucket_name,
+            object_name=benchmark_job.minio_location,
+            token=minio_token,
+        )
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+@router.get("/results/{job_id}")
+def get_benchmark_job_results(
+    request: Request, job_id: int, db: Session = Depends(get_db)
+) -> dict[str, Any]:
+    _, results = _get_benchmark_job_results(job_id=job_id, request=request, db=db)
+    return results
+
+
+@router.get("/results/{job_id}/download")
+def download_benchmark_job_results(
+    request: Request, job_id: int, db: Session = Depends(get_db)
+) -> FileResponse:
+    job, results = _get_benchmark_job_results(job_id=job_id, request=request, db=db)
+
+    return create_single_file_response(
+        file=json.dumps(results).encode("utf-8"),
+        filename=Path(job.minio_location).name,
+        content_type="application/json",
+    )
 
 
 @router.get("/device/header", response_model=List[TDeviceHeader])
@@ -113,8 +161,8 @@ async def edge_benchmark_start(
 
     benchmark_config = BenchmarkConfig(**payload["benchmark_config"])
 
-    model_name, model = load_model(model_id, minio_token, db)
-    (dataset_name, dataset), labels = load_dataset(dataset_id, minio_token, db)
+    model_name, model = _load_model(model_id, minio_token, db)
+    (dataset_name, dataset), labels = _load_dataset(dataset_id, minio_token, db)
 
     if isinstance(benchmark_config.inference_client, TritonInferenceClient):
         model_filename, _ = model
@@ -172,7 +220,7 @@ async def edge_benchmark_start(
         )
 
         timestamp = datetime.datetime.now()
-        sql_benchmark_api.create_benchmark_job(
+        sql_api.create_benchmark_job(
             db,
             owner=user.username,
             bucket_name=user.minio_bucket_name,
@@ -193,7 +241,7 @@ async def edge_benchmark_start(
     return Response(status_code=status.HTTP_202_ACCEPTED, headers=headers)
 
 
-def load_model(model_id: int, minio_token: str, db) -> tuple[str, str, BytesIO]:
+def _load_model(model_id: int, minio_token: str, db) -> tuple[str, str, BytesIO]:
     model = check_exists(sql_api.get_model(db, model_id))
     _validate_parameters(bucket=model.bucket_name, token=minio_token)
 
@@ -204,7 +252,7 @@ def load_model(model_id: int, minio_token: str, db) -> tuple[str, str, BytesIO]:
     return model.name, (model.file_name, BytesIO(model_bytes))
 
 
-def load_dataset(dataset_id: int, minio_token: str, db):
+def _load_dataset(dataset_id: int, minio_token: str, db):
     dataset = check_exists(dataset_sql_api.get_dataset(db, dataset_id))
     _validate_parameters(dataset.bucket_name, minio_token)
 
@@ -236,6 +284,26 @@ def load_dataset(dataset_id: int, minio_token: str, db):
         labels = (label_filename, BytesIO(label_bytes))
 
     return (dataset.name, dataset_files), labels
+
+
+def _get_benchmark_job_results(
+    request: Request, db: Session, job_id: int
+) -> tuple[BenchmarkJob, dict]:
+    user: KeycloakUser = request.user
+    minio_token = user.minio_token
+
+    benchmark_job: BenchmarkJob = check_exists(
+        sql_api.get_benchmark_job_by_id(db=db, job_id=job_id)
+    )
+    return benchmark_job, json.loads(
+        minio_api.get_object(
+            bucket=benchmark_job.bucket_name,
+            object_name=benchmark_job.minio_location,
+            token=minio_token,
+        )
+        .read()
+        .decode()
+    )
 
 
 def _validate_parameters(bucket, token):

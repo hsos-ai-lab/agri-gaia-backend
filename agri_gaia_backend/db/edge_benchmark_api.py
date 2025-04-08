@@ -23,8 +23,14 @@ def get_all_benchmark_jobs(
     return db.query(BenchmarkJob).offset(skip).limit(limit).all()
 
 
-def get_benchmark_job_by_id(db: Session, benchmark_id: int) -> Optional[BenchmarkJob]:
-    return db.query(BenchmarkJob).filter(BenchmarkJob.id == benchmark_id).first()
+def get_benchmark_job_by_id(db: Session, job_id: int) -> Optional[BenchmarkJob]:
+    return db.query(BenchmarkJob).filter(BenchmarkJob.id == job_id).first()
+
+
+def delete_benchmark_job(db: Session, benchmark_job: BenchmarkJob) -> bool:
+    db.delete(benchmark_job)
+    db.commit()
+    return True
 
 
 def create_benchmark_job(
