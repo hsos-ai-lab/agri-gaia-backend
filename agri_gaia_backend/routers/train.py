@@ -122,12 +122,14 @@ def build_train_image(
             with open(
                 os.path.join(context_directory, "train_config.json"),
                 "w",
+                encoding="utf-8",
             ) as fh:
                 json.dump(train_config, fh)
 
             with open(
                 os.path.join(context_directory, "export_config.json"),
                 "w",
+                encoding="utf-8",
             ) as fh:
                 if not export_config:
                     export_config = {}
@@ -152,7 +154,7 @@ def build_train_image(
         image_id = f"{repository_url}:{image_tag}"
 
         custom_config_filepath = os.path.join(train_configs_path, "custom.json")
-        with open(custom_config_filepath, "r") as fh:
+        with open(custom_config_filepath, "r", encoding="utf-8") as fh:
             model_filepath, score_name, score_regexp = itemgetter(
                 "model_filepath", "score_name", "score_regexp"
             )(json.load(fh))
@@ -306,14 +308,14 @@ def update_train_container_score(
         )
 
     try:
-        if type(score_matches[0]) is not str:
+        if not isinstance(score_matches[0], str):
             score_matches = chain.from_iterable(score_matches)
 
         score = round(
             float(
                 list(
                     filter(
-                        lambda s: is_float(s),
+                        is_float,
                         map(lambda s: s.strip(), score_matches),
                     )
                 )[-1]
@@ -324,7 +326,7 @@ def update_train_container_score(
         raise HTTPException(
             status_code=500,
             detail=f"Unable to extract score for Train Container #{train_container_id}: {str(e)}",
-        )
+        ) from e
 
     train_container.score = score
     sql_api.update_train_container(db, train_container)
@@ -373,7 +375,7 @@ def get_train_containers(
             sql_api.update_train_container(db, train_container)
         # if get_container_status raises a "not found" exception, the container was removed from the host
         # consequently, it needs to be deleted from the database because it cannot be started again.
-        except HTTPException as e: 
+        except HTTPException:
             sql_api.delete_train_container(db, train_container)
             train_containers.remove(train_container)
 
@@ -447,7 +449,7 @@ async def get_train_container_model(
     except HTTPException as e:
         raise e
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e)) from e
 
 
 @router.get("/containers/{train_container_id}/status")
@@ -545,6 +547,9 @@ def get_train_container_config(
             )
         elif config_key == "export":
             schema_with_values = get_export_config()
+        else:
+            raise KeyError(f"Unsupported configuration schema type '{config_key}'.")
+
         schema, config = itemgetter("schema", "values")(schema_with_values)
 
         config_obj[config_key] = {
@@ -729,18 +734,18 @@ def upload_train_config(
         )
         if ext != ".jsonschema":
             raise RuntimeError
-    except:
+    except Exception as e:
         raise HTTPException(
             status_code=500,
             detail="Unable to verify schema of configuration file.",
-        )
+        ) from e
 
     try:
         train_config_values = json.loads(config_file.file.read().decode("utf-8"))
         train_config_schema = jsonfile2dict(config_filepath)
         validate(train_config_values, train_config_schema)
     except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e)) from e
 
     return train_config_values
 
@@ -787,7 +792,7 @@ def upload_train_container_template(
                 "architecture": {"category": category, "name": architecture},
             }
     except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e)) from e
 
 
 @router.delete("/template")
