@@ -46,3 +46,4 @@ class BenchmarkJobRun(BaseModel):
     dataset_id: int
     benchmark_config: TBenchmarkConfig
     benchmark_job: TBenchmarkJob
+    created_at: datetime

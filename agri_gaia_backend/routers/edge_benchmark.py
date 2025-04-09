@@ -12,11 +12,11 @@
 import os
 import json
 import logging
-import datetime
 import requests
 
 from io import BytesIO
 from pathlib import Path
+from datetime import datetime
 from dotenv import load_dotenv
 from sqlalchemy.orm import Session
 from typing import List, Any, Optional
@@ -119,7 +119,6 @@ def download_benchmark_job_results(
     request: Request, job_id: int, db: Session = Depends(get_db)
 ) -> FileResponse:
     job, results = _get_benchmark_job_results(job_id=job_id, request=request, db=db)
-
     return create_single_file_response(
         file=json.dumps(results).encode("utf-8"),
         filename=Path(job.minio_location).name,
@@ -158,6 +157,7 @@ async def edge_benchmark_start(
     dataset_id = payload["dataset_id"]
     model_id = payload["model_id"]
     chunk_size = payload["chunk_size"]
+    created_at = datetime.fromisoformat(payload["created_at"].replace("Z", "+00:00"))
 
     benchmark_config = BenchmarkConfig(**payload["benchmark_config"])
 
@@ -206,27 +206,27 @@ async def edge_benchmark_start(
             model_id=model_id,
             benchmark_job=benchmark_job,
             benchmark_config=benchmark_config,
+            created_at=created_at,
         )
 
         minio_prefix = f"{Path(ROOT_PATH).name}"
         minio_filepath = f"{minio_prefix}/{benchmark_job.id}.json"
 
         minio_api.upload_data(
-            bucket_name,
+            bucket=bucket_name,
             prefix=minio_prefix,
             token=minio_token,
             data=benchmark_job_run.model_dump_json().encode("utf-8"),
             objectname=Path(minio_filepath).name,
         )
 
-        timestamp = datetime.datetime.now()
         sql_benchmark_api.create_benchmark_job(
             db,
             owner=user.username,
             bucket_name=user.minio_bucket_name,
             minio_location=minio_filepath,
-            timestamp=timestamp,
-            last_modified=timestamp,
+            timestamp=created_at,
+            last_modified=created_at,
             run=benchmark_job_run,
         )
 
