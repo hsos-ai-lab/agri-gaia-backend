@@ -33,12 +33,12 @@ def upgrade():
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_benchmark_jobs_id'), 'benchmark_jobs', ['id'], unique=False)
+    op.drop_table('triton_densenet_clients')
+    op.drop_table('triton_yolo_clients')
+    op.drop_table('triton_inference_clients')
     op.drop_table('benchmark_configs')
     op.drop_table('benchmark_edge_devices')
-    op.drop_table('triton_inference_clients')
-    op.drop_table('triton_densenet_clients')
     op.drop_table('inference_clients')
-    op.drop_table('triton_yolo_clients')
     # ### end Alembic commands ###
 
 
