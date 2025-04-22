@@ -47,6 +47,7 @@ from fastapi import (
     File,
     UploadFile,
     Form,
+    Query,
 )
 from agri_gaia_backend.routers.common import (
     TaskCreator,
@@ -54,6 +55,7 @@ from agri_gaia_backend.routers.common import (
     get_db,
     get_task_creator,
     create_single_file_response,
+    create_zip_file_response,
 )
 
 load_dotenv()
@@ -82,7 +84,7 @@ def get_all_benchmark_jobs(
 
 
 @router.delete("/jobs/{job_id}")
-def delete_train_container(
+def delete_benchmark_job(
     request: Request, job_id: int, db: Session = Depends(get_db)
 ) -> Response:
     user: KeycloakUser = request.user
@@ -110,19 +112,37 @@ def delete_train_container(
 def get_benchmark_job_results(
     request: Request, job_id: int, db: Session = Depends(get_db)
 ) -> dict[str, Any]:
-    _, results = _get_benchmark_job_results(job_id=job_id, request=request, db=db)
+    _, results = _get_benchmark_job_result(job_id=job_id, request=request, db=db)
     return results
 
 
 @router.get("/results/{job_id}/download")
-def download_benchmark_job_results(
+def download_benchmark_job_result(
     request: Request, job_id: int, db: Session = Depends(get_db)
 ) -> FileResponse:
-    job, results = _get_benchmark_job_results(job_id=job_id, request=request, db=db)
+    job, results = _get_benchmark_job_result(job_id=job_id, request=request, db=db)
     return create_single_file_response(
         file=json.dumps(results).encode("utf-8"),
         filename=Path(job.minio_location).name,
         content_type="application/json",
+    )
+
+
+@router.post("/results/download")
+def download_benchmark_job_results(
+    request: Request,
+    job_ids: list[int],
+    db: Session = Depends(get_db),
+) -> FileResponse:
+    return create_zip_file_response(
+        {
+            Path(job.minio_location).name: json.dumps(result).encode("utf-8")
+            for (job, result) in [
+                _get_benchmark_job_result(job_id=job_id, request=request, db=db)
+                for job_id in job_ids
+            ]
+        },
+        filename="results.zip",
     )
 
 
@@ -286,7 +306,7 @@ def _load_dataset(dataset_id: int, minio_token: str, db):
     return (dataset.name, dataset_files), labels
 
 
-def _get_benchmark_job_results(
+def _get_benchmark_job_result(
     request: Request, db: Session, job_id: int
 ) -> tuple[BenchmarkJob, dict]:
     user: KeycloakUser = request.user
