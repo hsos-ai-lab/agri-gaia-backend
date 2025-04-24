@@ -109,6 +109,7 @@ re_whitelist = [
     "\/edge-devices\/\d+\/config",
     "\/edge-devices\/\d+\/register",
     "\/metrics",
+    "\/datasets\/pontusx\/\d+\/download",
 ]
 if debug:
     debug_routes = ["\/docs", "\/openapi.json"]

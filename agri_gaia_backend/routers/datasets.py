@@ -69,10 +69,12 @@ from fastapi import (
     Request,
     Response,
     status,
+    Security
 )
 from fastapi.datastructures import UploadFile
 from fastapi.param_functions import File
 from fastapi.responses import FileResponse
+from fastapi.security.api_key import APIKeyHeader
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 from agri_gaia_backend.util.env import NUCLIO_CVAT_PROJECT_NAME
@@ -83,6 +85,9 @@ ROOT_PATH = "/datasets"
 logger = logging.getLogger("api-logger")
 router = APIRouter(prefix=ROOT_PATH)
 
+PONTUSX_API_KEY = os.environ.get("PONTUSX_PASSWORD")
+API_KEY_NAME = os.environ.get("PONTUSX_API_KEY_NAME")
+api_key_header = APIKeyHeader(name=API_KEY_NAME, auto_error=False)
 
 @router.on_event("startup")
 async def startup():
@@ -104,6 +109,54 @@ async def startup():
         minio_client.make_bucket("triton")
         logger.info("triton bucket created")
 
+
+async def get_api_key(api_key: str = Security(api_key_header)):
+    if api_key == PONTUSX_API_KEY:
+        return api_key
+    else:
+        raise HTTPException(status_code=403, detail="Ungültiger API Key")
+
+@router.get("/pontusx/{dataset_id}/download")
+def download_dataset_pontusx(
+    dataset_id: int,
+    db: Session = Depends(get_db),
+    api_key: str = Depends(get_api_key),
+):
+    """
+    Downloads the Dataset which is identified by the given ID.
+
+    Searches the Dataset for the given ID in the Postgres database.
+    Afterwards all files stored in the folder of the found dataset will be downloaded from MinIO.
+    Those files are converted to a Zip file, which is encapsulated in a response with the required header information.
+
+    Args:
+        request: The request object containing information on the user.
+            (like authentication token, his bucket name in MinIO, ...)
+        dataset_id: The ID of the searched dataset
+        db: Database Session. Created automatically.
+
+    Returns:
+        A response containing all files found in the MinIO storage for the dataset with the given ID as a Zip file.
+
+    Raises:
+        HTTPException: No dataset is found for the given ID.
+    """
+    dataset = check_exists(sql_api.get_dataset(db, dataset_id))
+
+    bucket_name = dataset.bucket_name
+    dataset_prefix = f"datasets/{dataset.id}"
+
+    minio_client = minio_api.get_admin_client()
+
+    downloaded_files = {}
+    prefix = dataset_prefix.rstrip("/") + "/"
+
+    for item in list(minio_client.list_objects(bucket_name, prefix=prefix, recursive=True)):
+        if item.is_dir is False:
+            downloaded_files[item.object_name] = minio_client.get_object(bucket_name, item.object_name).read()
+    return common.create_zip_file_response(
+        downloaded_files, filename=f"{dataset.name}.zip"
+    )
 
 @router.get("", response_model=List[Dataset])
 def get_all_datasets(skip: int = 0, limit: int = 10000, db: Session = Depends(get_db)):
