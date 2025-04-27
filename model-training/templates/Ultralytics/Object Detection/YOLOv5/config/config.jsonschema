@@ -1,174 +1,174 @@
 {
-    "description": "YOLOv5 v6.2 (Jocher et al., 2022) object detector provided by Ultralytics. Documentation: https://docs.ultralytics.com",
-    "type": "object",
-    "required": [],
-    "properties": {
-        "weights": {
-            "title": "Pretrained weights",
-            "type": "string",
-            "default": "yolov5m.pt",
-            "enum": [
-                "yolov5n.pt",
-                "yolov5s.pt",
-                "yolov5m.pt",
-                "yolov5l.pt",
-                "yolov5x.pt",
-                "yolov5n6.pt",
-                "yolov5s6.pt",
-                "yolov5m6.pt",
-                "yolov5l6.pt",
-                "yolov5x6.pt"
-            ],
-            "description": "Pretrained weights of different YOLO network sizes."
-        },
-        "epochs": {
-            "title": "Epochs",
-            "type": "integer",
-            "default": 300,
-            "minimum": 1,
-            "description": "Total training epochs"
-        },
-        "batch-size": {
-            "title": "Batch size",
-            "type": "integer",
-            "default": 16,
-            "minimum": 1,
-            "description": "Total batch size for all GPUs, -1 for autobatch."
-        },
-        "img-size": {
-            "title": "Image size",
-            "type": "integer",
-            "default": 640,
-            "minimum": 1,
-            "description": "Train, val image size (pixels)"
-        },
-        "rect": {
-            "title": "Preserve aspect ratio",
-            "type": "boolean",
-            "default": false,
-            "description": "Rectangular training"
-        },
-        "noautoanchor": {
-            "title": "No AutoAnchor",
-            "type": "boolean",
-            "default": false,
-            "description": "Disable AutoAnchor"
-        },
-        "evolve": {
-            "title": "Evolve hyperparameters",
-            "type": "integer",
-            "default": 0,
-            "minimum": 0,
-            "description": "Evolve hyperparameters for x generations"
-        },
-        "cache": {
-            "title": "Image cache",
-            "type": "string",
-            "default": "ram",
-            "description": "Cache images in 'ram' (default) or 'disk'"
-        },
-        "image-weights": {
-            "title": "Weighted image selection",
-            "type": "boolean",
-            "default": false,
-            "description": "Use weighted image selection for training."
-        },
-        "device": {
-            "title": "Device",
-            "type": "string",
-            "default": "",
-            "description": "CUDA device, i.e. 0 or 0,1,2,3 or cpu"
-        },
-        "multi-scale": {
-            "title": "Multi scale",
-            "type": "boolean",
-            "default": false,
-            "description": "Vary 'img-size' by +/- 50%"
-        },
-        "single-cls": {
-            "title": "Single class",
-            "type": "boolean",
-            "default": false,
-            "description": "Train multi-class data as single-class."
-        },
-        "optimizer": {
-            "title": "Optimizer",
-            "type": "string",
-            "default": "SGD",
-            "enum": [
-                "SGD",
-                "Adam",
-                "AdamW"
-            ],
-            "description": "Optimizer used while training."
-        },
-        "sync-bn": {
-            "title": "Synchronize batch normalization",
-            "type": "boolean",
-            "default": false,
-            "description": "Use SyncBatchNorm, only available in DDP mode."
-        },
-        "workers": {
-            "title": "Dataloader workers",
-            "type": "integer",
-            "default": 8,
-            "minimum": 1,
-            "description": "Max dataloader workers (per RANK in DDP mode)."
-        },
-        "quad": {
-            "title": "Quad dataloader",
-            "type": "boolean",
-            "default": false,
-            "description": "Run dataloader in quad mode."
-        },
-        "cos-ls": {
-            "title": "Cosine learning rate scheduler",
-            "type": "boolean",
-            "default": false,
-            "minimum": 0,
-            "description": "Use a cosine learning rate scheduler."
-        },
-        "label-smoothing": {
-            "title": "Label smoothing",
-            "type": "number",
-            "default": 0,
-            "minimum": 0,
-            "description": "Label smoothing epsilon"
-        },
-        "patience": {
-            "title": "Early stopping patience",
-            "type": "integer",
-            "default": 100,
-            "minimum": 0,
-            "description": "EarlyStopping patience (epochs without improvement)."
-        },
-        "freeze": {
-            "title": "Freeze layers",
-            "type": "array",
-            "default": [
-                0
-            ],
-            "items": {
-                "type": "integer",
-                "default": 0,
-                "description": "Freeze layers: backbone=10, first3=0 1 2"
-            }
-        },
-        "train-split": {
-            "title": "Train split",
-            "type": "number",
-            "default": 0.8,
-            "minimum": 0,
-            "maximum": 1,
-            "description": "Percentage of the dataset used for training."
-        },
-        "test-split": {
-            "title": "Test split",
-            "type": "number",
-            "default": 0.2,
-            "minimum": 0,
-            "maximum": 1,
-            "description": "Percentage of the dataset used for testing the trained model."
-        }
+  "description": "YOLOv5 v6.2 (Jocher et al., 2022) object detector provided by Ultralytics. Documentation: https://docs.ultralytics.com",
+  "type": "object",
+  "required": [],
+  "properties": {
+    "weights": {
+      "title": "Pretrained weights",
+      "type": "string",
+      "default": "yolov5m.pt",
+      "enum": [
+        "yolov5n.pt",
+        "yolov5s.pt",
+        "yolov5m.pt",
+        "yolov5l.pt",
+        "yolov5x.pt",
+        "yolov5n6.pt",
+        "yolov5s6.pt",
+        "yolov5m6.pt",
+        "yolov5l6.pt",
+        "yolov5x6.pt"
+      ],
+      "description": "Pretrained weights of different YOLO network sizes."
+    },
+    "epochs": {
+      "title": "Epochs",
+      "type": "integer",
+      "default": 300,
+      "minimum": 1,
+      "description": "Total training epochs"
+    },
+    "batch-size": {
+      "title": "Batch size",
+      "type": "integer",
+      "default": 16,
+      "minimum": 1,
+      "description": "Total batch size for all GPUs, -1 for autobatch."
+    },
+    "img-size": {
+      "title": "Image size",
+      "type": "integer",
+      "default": 640,
+      "minimum": 1,
+      "description": "Train, val image size (pixels)"
+    },
+    "rect": {
+      "title": "Preserve aspect ratio",
+      "type": "boolean",
+      "default": false,
+      "description": "Rectangular training"
+    },
+    "noautoanchor": {
+      "title": "No AutoAnchor",
+      "type": "boolean",
+      "default": false,
+      "description": "Disable AutoAnchor"
+    },
+    "evolve": {
+      "title": "Evolve hyperparameters",
+      "type": "integer",
+      "default": 0,
+      "minimum": 0,
+      "description": "Evolve hyperparameters for x generations"
+    },
+    "cache": {
+      "title": "Image cache",
+      "type": "string",
+      "default": "ram",
+      "description": "Cache images in 'ram' (default) or 'disk'"
+    },
+    "image-weights": {
+      "title": "Weighted image selection",
+      "type": "boolean",
+      "default": false,
+      "description": "Use weighted image selection for training."
+    },
+    "device": {
+      "title": "Device",
+      "type": "string",
+      "default": "",
+      "description": "CUDA device, i.e. 0 or 0,1,2,3 or cpu"
+    },
+    "multi-scale": {
+      "title": "Multi scale",
+      "type": "boolean",
+      "default": false,
+      "description": "Vary 'img-size' by +/- 50%"
+    },
+    "single-cls": {
+      "title": "Single class",
+      "type": "boolean",
+      "default": false,
+      "description": "Train multi-class data as single-class."
+    },
+    "optimizer": {
+      "title": "Optimizer",
+      "type": "string",
+      "default": "SGD",
+      "enum": [
+        "SGD",
+        "Adam",
+        "AdamW"
+      ],
+      "description": "Optimizer used while training."
+    },
+    "sync-bn": {
+      "title": "Synchronize batch normalization",
+      "type": "boolean",
+      "default": false,
+      "description": "Use SyncBatchNorm, only available in DDP mode."
+    },
+    "workers": {
+      "title": "Dataloader workers",
+      "type": "integer",
+      "default": 8,
+      "minimum": 1,
+      "description": "Max dataloader workers (per RANK in DDP mode)."
+    },
+    "quad": {
+      "title": "Quad dataloader",
+      "type": "boolean",
+      "default": false,
+      "description": "Run dataloader in quad mode."
+    },
+    "cos-ls": {
+      "title": "Cosine learning rate scheduler",
+      "type": "boolean",
+      "default": false,
+      "minimum": 0,
+      "description": "Use a cosine learning rate scheduler."
+    },
+    "label-smoothing": {
+      "title": "Label smoothing",
+      "type": "number",
+      "default": 0,
+      "minimum": 0,
+      "description": "Label smoothing epsilon"
+    },
+    "patience": {
+      "title": "Early stopping patience",
+      "type": "integer",
+      "default": 100,
+      "minimum": 0,
+      "description": "EarlyStopping patience (epochs without improvement)."
+    },
+    "freeze": {
+      "title": "Freeze layers",
+      "type": "array",
+      "default": [
+        0
+      ],
+      "items": {
+        "type": "integer",
+        "default": 0,
+        "description": "Freeze layers: backbone=10, first3=0 1 2"
+      }
+    },
+    "train-split": {
+      "title": "Train split",
+      "type": "number",
+      "default": 0.8,
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Percentage of the dataset used for training."
+    },
+    "test-split": {
+      "title": "Test split",
+      "type": "number",
+      "default": 0.2,
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Percentage of the dataset used for testing the trained model."
     }
+  }
 }
