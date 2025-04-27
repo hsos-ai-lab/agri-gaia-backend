@@ -41,7 +41,9 @@ def _create_labels(
     labels = as_yolo(label_names, files_with_annotations)
     for filepath, annotation_entries in labels.items():
         annotation_entries = list(map(lambda s: f"{s}\n", annotation_entries))
-        with open(labels_path.joinpath(f"{filepath.stem}.txt"), "w") as fh:
+        with open(
+            labels_path.joinpath(f"{filepath.stem}.txt"), "w", encoding="utf-8"
+        ) as fh:
             fh.writelines(annotation_entries)
 
 
@@ -52,7 +54,7 @@ def _create_dataset_yaml(label_names: List[str]) -> None:
         "nc": len(label_names),
         "names": label_names,
     }
-    with open(DATASET_YAML_FILEPATH, "w") as fh:
+    with open(DATASET_YAML_FILEPATH, "w", encoding="utf-8") as fh:
         yaml.dump(dataset_config, fh, allow_unicode=True)
 
 

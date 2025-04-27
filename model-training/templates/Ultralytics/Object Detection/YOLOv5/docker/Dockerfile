@@ -31,9 +31,12 @@ RUN pip install tf2onnx==1.14.0 onnxmltools==1.11.2
 
 WORKDIR /usr/src/app
 
-COPY config_to_args.py config.py dataset.py cvat_dataset.py export.py ./
+RUN mv train.py yolo_train.py
+RUN mv export.py yolo_export.py
 
-COPY requirements.txt setup.py train_config.json presets.json export_config.json ./
+COPY config_to_args.py config.py dataset.py cvat_dataset.py ./
+
+COPY requirements.txt setup.py util.py train.py export.py train_config.json custom.json presets.json export_config.json ./
 RUN pip3 install -r requirements.txt
 
 COPY .env ./
