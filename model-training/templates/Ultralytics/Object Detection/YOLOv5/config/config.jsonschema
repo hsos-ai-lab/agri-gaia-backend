@@ -1,5 +1,5 @@
 {
-  "description": "YOLOv5 v6.2 (Jocher et al., 2022) object detector provided by Ultralytics. Documentation: https://docs.ultralytics.com",
+  "description": "YOLOv5 v6.2 (Jocher et al., 2022) object detector provided by Ultralytics. Documentation: https://docs.ultralytics.com/yolov5",
   "type": "object",
   "required": [],
   "properties": {
