@@ -1,5 +1,5 @@
 {
-  "description": "YOLOv5 v6.2 (Jocher et al., 2022) object detector provided by Ultralytics. Documentation: https://docs.ultralytics.com/yolov5",
+  "description": "YOLOv5 v7.0 (Jocher et al., 2022) object detector provided by Ultralytics. Documentation: https://docs.ultralytics.com/yolov5",
   "type": "object",
   "required": [],
   "properties": {
@@ -111,7 +111,7 @@
     "workers": {
       "title": "Dataloader workers",
       "type": "integer",
-      "default": 8,
+      "default": 4,
       "minimum": 1,
       "description": "Max dataloader workers (per RANK in DDP mode)."
     },
