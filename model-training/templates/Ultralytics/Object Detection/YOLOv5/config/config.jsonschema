@@ -1,5 +1,5 @@
 {
-  "description": "YOLOv5 v6.2 (Jocher et al., 2022) object detector provided by Ultralytics. Documentation: https://docs.ultralytics.com",
+  "description": "YOLOv5 v6.2 (Jocher et al., 2022) object detector provided by Ultralytics. Documentation: https://docs.ultralytics.com/yolov5",
   "type": "object",
   "required": [],
   "properties": {
@@ -65,7 +65,7 @@
       "title": "Image cache",
       "type": "string",
       "default": "ram",
-      "description": "Cache images in 'ram' (default) or 'disk'"
+      "description": "Cache images in 'ram' (default) or 'disk'."
     },
     "image-weights": {
       "title": "Weighted image selection",
@@ -76,14 +76,14 @@
     "device": {
       "title": "Device",
       "type": "string",
-      "default": "",
-      "description": "CUDA device, i.e. 0 or 0,1,2,3 or cpu"
+      "default": "cpu",
+      "description": "CUDA device, i.e. '0' or '0,1,2,3' or 'cpu'."
     },
     "multi-scale": {
       "title": "Multi scale",
       "type": "boolean",
       "default": false,
-      "description": "Vary 'img-size' by +/- 50%"
+      "description": "Vary 'img-size' by +/- 50%."
     },
     "single-cls": {
       "title": "Single class",
@@ -133,7 +133,7 @@
       "type": "number",
       "default": 0,
       "minimum": 0,
-      "description": "Label smoothing epsilon"
+      "description": "Label smoothing epsilon."
     },
     "patience": {
       "title": "Early stopping patience",
@@ -151,7 +151,7 @@
       "items": {
         "type": "integer",
         "default": 0,
-        "description": "Freeze layers: backbone=10, first3=0 1 2"
+        "description": "Freeze layers: backbone=10, first3=0 1 2."
       }
     },
     "train-split": {
