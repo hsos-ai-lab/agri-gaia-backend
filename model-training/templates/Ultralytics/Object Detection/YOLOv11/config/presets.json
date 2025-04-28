@@ -1,0 +1,10 @@
+{
+  "data": "./dataset.yaml",
+  "project": "/train",
+  "name": "detect",
+  "exist_ok": true,
+  "resume": false,
+  "val": false,
+  "save_period": -1,
+  "plots": false
+}

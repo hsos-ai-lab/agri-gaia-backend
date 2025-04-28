@@ -1,0 +1,250 @@
+{
+  "description": "YOLOv11 v8.3.119 (Jocher et al., 2023) object detector provided by Ultralytics. Documentation: https://docs.ultralytics.com/modes/train/#train-settings",
+  "type": "object",
+  "required": [],
+  "properties": {
+    "model": {
+      "title": "Model weights",
+      "type": "string",
+      "default": "yolo11m.pt",
+      "enum": [
+        "yolo11n.pt",
+        "yolo11s.pt",
+        "yolo11m.pt",
+        "yolo11l.pt",
+        "yolo11x.pt"
+      ],
+      "description": "Weights for different YOLO network sizes."
+    },
+    "epochs": {
+      "title": "Epochs",
+      "type": "integer",
+      "default": 100,
+      "minimum": 1,
+      "description": "Total number of training epochs."
+    },
+    "patience": {
+      "title": "Patience",
+      "type": "integer",
+      "default": 100,
+      "minimum": 0,
+      "description": "Number of epochs to wait without improvement in validation metrics before early stopping the training."
+    },
+    "batch": {
+      "title": "Batch size",
+      "type": "integer",
+      "default": 16,
+      "minimum": -1,
+      "description": "Size of a training batch (-1 for autobatch)."
+    },
+    "imgsz": {
+      "title": "Image size",
+      "type": "integer",
+      "default": 640,
+      "minimum": 1,
+      "description": "Target image size for training."
+    },
+    "cache": {
+      "title": "Image cache",
+      "type": "boolean",
+      "default": false,
+      "description": "Cache images in RAM or on disk."
+    },
+    "device": {
+      "title": "Device",
+      "type": "string",
+      "default": "cpu",
+      "description": "CUDA device, i.e. '0' or '0,1,2,3' or 'cpu'."
+    },
+    "workers": {
+      "title": "Dataloader workers",
+      "type": "integer",
+      "default": 4,
+      "minimum": 1,
+      "description": "Max dataloader workers (per RANK in DDP mode)."
+    },
+    "pretrained": {
+      "title": "Use pretrained weights",
+      "type": "boolean",
+      "default": true,
+      "description": "Determines whether to start training from a pretrained model."
+    },
+    "optimizer": {
+      "title": "Optimizer",
+      "type": "string",
+      "default": "auto",
+      "enum": [
+        "auto",
+        "SGD",
+        "Adam",
+        "AdamW",
+        "NAdam",
+        "RAdam",
+        "RMSProp"
+      ],
+      "description": "Optimizer used for training."
+    },
+    "seed": {
+      "title": "Random seed",
+      "type": "integer",
+      "default": 0,
+      "description": "Random seed for training."
+    },
+    "deterministic": {
+      "title": "Train deterministically",
+      "type": "boolean",
+      "default": true,
+      "description": "Force deterministic algorithm use while training."
+    },
+    "single_cls": {
+      "title": "Single class",
+      "type": "boolean",
+      "default": false,
+      "description": "Treat all classes in multi-class datasets as a single class during training."
+    },
+    "rect": {
+      "title": "Preserve aspect ratio",
+      "type": "boolean",
+      "default": false,
+      "description": "Enable rectangular training, optimizing batch composition for minimal padding."
+    },
+    "multi_scale": {
+      "title": "Multi scale",
+      "type": "boolean",
+      "default": false,
+      "description": "Increase/decrease imgsz by up to a factor of 0.5 during training."
+    },
+    "cos_ls": {
+      "title": "Cosine learning rate scheduler",
+      "type": "boolean",
+      "default": false,
+      "description": "Use a cosine learning rate scheduler."
+    },
+    "close_mosaic": {
+      "title": "Close mosaic",
+      "type": "integer",
+      "default": 10,
+      "minimum": 0,
+      "description": "Disable mosaic data augmentation in the last N epochs to stabilize training before completion."
+    },
+    "amp": {
+      "title": "Automatic Mixed Precision",
+      "type": "boolean",
+      "default": true,
+      "description": "Enable Automatic Mixed Precision (AMP) training."
+    },
+    "freeze": {
+      "title": "Freeze layers",
+      "type": "array",
+      "default": [
+        0
+      ],
+      "items": {
+        "type": "integer",
+        "default": 0,
+        "description": "Freezes layer specified by index."
+      }
+    },
+    "lr0": {
+      "title": "Initial learning rate",
+      "type": "number",
+      "default": 0.01,
+      "minimum": 0,
+      "description": "Initial learning rate (i.e. SGD=1E-2, Adam=1E-3)."
+    },
+    "lrf": {
+      "title": "Final learning rate",
+      "type": "number",
+      "default": 0.01,
+      "minimum": 0,
+      "description": "Final learning rate as a fraction of the initial rate = (lr0 * lrf)."
+    },
+    "momentum": {
+      "title": "Momentum",
+      "type": "number",
+      "default": 0.937,
+      "minimum": 0,
+      "description": "Momentum factor for SGD or beta1 for Adam optimizers."
+    },
+    "weight_decay": {
+      "title": "Weight decay",
+      "type": "number",
+      "default": 0.0005,
+      "minimum": 0,
+      "description": "L2 regularization term, penalizing large weights to prevent overfitting."
+    },
+    "warmup_epochs": {
+      "title": "Warmup epochs",
+      "type": "number",
+      "default": 3.0,
+      "minimum": 0,
+      "description": "Number of epochs for learning rate warmup."
+    },
+    "warmup_momentum": {
+      "title": "Warmup momentum",
+      "type": "number",
+      "default": 0.8,
+      "minimum": 0,
+      "description": "Initial momentum for warmup phase."
+    },
+    "warmup_bias_lr": {
+      "title": "Warmup bias learning rate",
+      "type": "number",
+      "default": 0.1,
+      "minimum": 0,
+      "description": "Learning rate for bias parameters during the warmup phase."
+    },
+    "box": {
+      "title": "Box loss weight",
+      "type": "number",
+      "default": 7.5,
+      "minimum": 0,
+      "description": "Weight of the box loss component in the loss function."
+    },
+    "cls": {
+      "title": "Classification loss weight",
+      "type": "number",
+      "default": 0.5,
+      "minimum": 0,
+      "description": "Weight of the classification loss in the total loss function."
+    },
+    "dfl": {
+      "title": "Distribution focal loss weight",
+      "type": "number",
+      "default": 1.5,
+      "minimum": 0,
+      "description": "Weight of the distribution focal loss for certain YOLO versions."
+    },
+    "nbs": {
+      "title": "Nominal batch size",
+      "type": "integer",
+      "default": 64,
+      "minimum": 0,
+      "description": "Nominal batch size for normalization of loss."
+    },
+    "dropout": {
+      "title": "Dropout",
+      "type": "number",
+      "default": 0.0,
+      "maximum": 1,
+      "minimum": 0,
+      "description": "Dropout rate for regularization in classification tasks."
+    },
+    "train-split": {
+      "title": "Train split",
+      "type": "number",
+      "default": 0.8,
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Percentage of the dataset used for training."
+    },
+    "test-split": {
+      "title": "Test split",
+      "type": "number",
+      "default": 0.2,
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Percentage of the dataset used for testing the trained model."
+    }
+  }
+}
