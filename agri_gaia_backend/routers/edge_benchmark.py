@@ -19,7 +19,7 @@ from pathlib import Path
 from datetime import datetime
 from dotenv import load_dotenv
 from sqlalchemy.orm import Session
-from typing import List, Any, Optional
+from typing import List, Any, Optional, Dict
 from requests.auth import HTTPBasicAuth
 from fastapi.responses import FileResponse
 from agri_gaia_backend.services import minio_api
@@ -62,6 +62,9 @@ load_dotenv()
 
 ROOT_PATH = "/edge-benchmark"
 
+EDGE_BENCHMARK_PATH = os.path.abspath("./edge-benchmark")
+EDGE_BENCHMARK_FORMS_PATH = os.path.join(EDGE_BENCHMARK_PATH, "forms")
+
 EDGE_FARM_API_BASIC_AUTH_USERNAME = os.getenv("EDGE_BENCHMARKING_USER")
 EDGE_FARM_API_BASIC_AUTH_PASSWORD = os.getenv("EDGE_BENCHMARKING_PASSWORD")
 EDGE_FARM_API_BASIC_AUTH = HTTPBasicAuth(
@@ -74,6 +77,15 @@ EDGE_FARM_API_URL = f"{EDGE_FARM_API_PROTOCOL}://{EDGE_FARM_API_HOST}"
 
 logger = logging.getLogger("api-logger")
 router = APIRouter(prefix=ROOT_PATH)
+
+
+@router.get("/forms/create")
+def get_benchmark_job_create_form() -> Dict:
+    create_form_schema_filepath = os.path.join(
+        EDGE_BENCHMARK_FORMS_PATH, "create.jsonschema"
+    )
+    with open(create_form_schema_filepath, mode="r", encoding="utf-8") as fh:
+        return json.load(fh)
 
 
 @router.get("/jobs", response_model=List[BenchmarkJob])

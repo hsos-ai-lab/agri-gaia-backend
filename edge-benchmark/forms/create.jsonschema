@@ -1,0 +1,153 @@
+{
+    "type": "object",
+    "properties": {
+        "inference_client": {
+            "title": "Edge inference client",
+            "type": "string",
+            "default": "TritonDenseNetClient",
+            "enum": [
+                "TritonDenseNetClient",
+                "TritonYoloClient"
+            ],
+            "description": "The type of Edge Inference Client to use."
+        },
+        "protocol": {
+            "title": "Inference server protocol",
+            "type": "string",
+            "default": "http",
+            "enum": [
+                "http",
+                "https"
+            ],
+            "description": "Network protocol used by the Inference Server."
+        },
+        "port": {
+            "title": "Inference server port",
+            "type": "integer",
+            "description": "Network port used by the Inference Server.",
+            "default": 8000,
+            "minimum": 1,
+            "maximum": 65535
+        },
+        "num_workers": {
+            "title": "Worker threads",
+            "type": "integer",
+            "description": "Number of worker threads used for pre- and postprocessing inference data.",
+            "default": 1,
+            "minimum": 1
+        },
+        "samples_per_second": {
+            "title": "Samples per second",
+            "type": "number",
+            "description": "Limit inference speed to this many samples per second.",
+            "minimum": 0
+        },
+        "batch_size": {
+            "title": "Batch size",
+            "type": "integer",
+            "description": "Batch size to use for inference requests.",
+            "default": 1,
+            "minimum": 1
+        },
+        "warm_up": {
+            "title": "Apply model warmup",
+            "type": "boolean",
+            "default": false,
+            "description": "Apply model warmup at the beginning of inference."
+        },
+        "cpu_only": {
+            "title": "Benchmark on CPU only",
+            "type": "boolean",
+            "default": false,
+            "description": "Run inference only on CPU during benchmarking."
+        },
+        "num_classes": {
+            "title": "Class count",
+            "type": "integer",
+            "description": "Number of classes present in the inference dataset.",
+            "default": 1000,
+            "minimum": 1
+        },
+        "scaling": {
+            "title": "Image scaling",
+            "type": "string",
+            "default": "inception",
+            "enum": [
+                "inception",
+                "vgg"
+            ],
+            "description": "Type of image scaling applied to the inference dataset."
+        }
+    },
+    "required": [
+        "protocol",
+        "port"
+    ],
+    "allOf": [
+        {
+            "if": {
+                "properties": {
+                    "inference_client": {
+                        "const": "TritonDenseNetClient"
+                    }
+                }
+            },
+            "then": {
+                "properties": {}
+            }
+        },
+        {
+            "if": {
+                "properties": {
+                    "inference_client": {
+                        "const": "TritonYoloClient"
+                    }
+                }
+            },
+            "then": {
+                "properties": {
+                    "confidence_thres": {
+                        "title": "Confidence threshold",
+                        "type": "number",
+                        "default": 0.25,
+                        "description": "Minimum confidence score used to filter out low-confidence detections.",
+                        "minimum": 0,
+                        "maximum": 1
+                    },
+                    "iou_thres": {
+                        "title": "IoU threshold",
+                        "type": "number",
+                        "default": 0.45,
+                        "description": "Parameter used for Non-Maximum Suppression (NMS) to filter out overlapping bounding boxes.",
+                        "minimum": 0,
+                        "maximum": 1
+                    },
+                    "input_width": {
+                        "title": "Input width",
+                        "type": "integer",
+                        "default": 640,
+                        "description": "Input image rescale width in pixel.",
+                        "minimum": 1
+                    },
+                    "input_height": {
+                        "title": "Input height",
+                        "type": "integer",
+                        "default": 640,
+                        "description": "Input image rescale height in pixel.",
+                        "minimum": 1
+                    }
+                },
+                "required": [
+                    "input_width",
+                    "input_height"
+                ]
+            }
+        },
+        {
+            "required": [
+                "inference_client",
+                "protocol"
+            ]
+        }
+    ]
+}
