@@ -124,10 +124,6 @@ def find_annotations_for_files(
                 else:
                     print(f"Skipping file '{filepath}' without annotations.")
                 break
-        if not found and include_without_annotations:
-            # If the image is not in the annotations file at all, create an empty annotation
-            files_with_annotations[filepath] = {"@name": filepath.name, "@width": "0", "@height": "0"}
-            print(f"Including file '{filepath}' with no entry in annotations file.")
     if strict:
         assert len(filepaths) == len(
             files_with_annotations
