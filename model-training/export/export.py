@@ -43,7 +43,7 @@ def _onnx_model_filepath(model_filepath: str) -> Path:
 
 
 def _read_export_config() -> Dict:
-    with open(EXPORT_CONFIG_FILENAME, "r") as fh:
+    with open(EXPORT_CONFIG_FILENAME, "r", encoding="utf-8") as fh:
         return json.load(fh)
 
 
@@ -80,7 +80,7 @@ def _create_export_kwargs(export_config: Dict, format: ModelFormat) -> Dict:
         import torch
 
         export_kwargs["args"] = [
-            torch.ones(input_shape, dtype=eval(f"torch.{input_type}"))
+            torch.ones(input_shape, dtype=getattr(torch, input_type))
             for input_shape, input_type in zip(input_shapes, input_types)
         ]
         export_kwargs["input_names"] = input_names
@@ -89,7 +89,9 @@ def _create_export_kwargs(export_config: Dict, format: ModelFormat) -> Dict:
             ("training", "TrainingMode"),
             ("operator_export_type", "OperatorExportTypes"),
         ):
-            export_kwargs[key] = eval(f"torch.onnx.{enum_class}.{export_config[key]}")
+            export_kwargs[key] = getattr(
+                getattr(torch.onnx, enum_class), export_config[key]
+            )
     elif format == ModelFormat.TENSORFLOW:
         # Nothing to do.
         # See: https://github.com/onnx/onnxmltools/blob/79c34e377fe3a24d22eabac010e464de061d7adf/onnxmltools/convert/main.py#L424
@@ -103,7 +105,7 @@ def _create_export_kwargs(export_config: Dict, format: ModelFormat) -> Dict:
             (
                 input_name,
                 tf.ones(
-                    input_shape, dtype=eval(f"tf.dtype.{input_type}"), name=input_name
+                    input_shape, dtype=getattr(tf.dtype, input_type), name=input_name
                 ),
             )
             for input_name, input_type, input_shape in zip(
@@ -135,7 +137,7 @@ def _export_onnx_model(model, format: ModelFormat, model_filepath: str) -> Path:
 
     export_config = _read_export_config()
     if not export_config:
-        raise Exception(
+        raise RuntimeError(
             f"ONNX export configuration '{EXPORT_CONFIG_FILENAME}' is empty."
         )
 

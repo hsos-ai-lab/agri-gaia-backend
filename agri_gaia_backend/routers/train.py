@@ -116,7 +116,10 @@ def build_train_image(
                 TEMPLATES_PATH, provider, architecture
             )
             copy_tree(os.path.dirname(dockerfile_filepath), context_directory)
-            copy(os.path.join(train_configs_path, "presets.json"), context_directory)
+            for config_filename in ("custom.json", "presets.json"):
+                copy(
+                    os.path.join(train_configs_path, config_filename), context_directory
+                )
             copy(os.path.join(EXPORT_PATH, "export.py"), context_directory)
 
             with open(

@@ -9,7 +9,7 @@
 #
 # SPDX-License-Identifier: MIT
 
-FROM ultralytics/yolov5:v7.0
+FROM ultralytics/ultralytics:8.3.119
 
 ARG DEBIAN_FRONTEND=noninteractive
 
@@ -21,18 +21,15 @@ RUN chmod +x /docker-entrypoint.sh
 COPY mount-s3.sh /mount-s3.sh
 RUN chmod +x /mount-s3.sh
 
-RUN apt update
-RUN apt install -y --no-install-recommends \
-	kmod fuse s3fs jq libxml2-utils curl wget tree \
-	python3 python-is-python3 python3-pip
+RUN apt update \
+  && apt install -y --no-install-recommends \
+  kmod fuse s3fs jq libxml2-utils curl wget tree \
+  python3 python-is-python3 python3-pip
 RUN sed -i '/user_allow_other/s/^#//g' /etc/fuse.conf
 
-RUN pip install tf2onnx==1.14.0 onnxmltools==1.11.2
+RUN pip install tf2onnx==1.16.1 onnxmltools==1.13.0
 
-WORKDIR /usr/src/app
-
-RUN mv train.py yolo_train.py
-RUN mv export.py yolo_export.py
+WORKDIR /workspace
 
 COPY config_to_args.py config.py dataset.py cvat_dataset.py ./
 

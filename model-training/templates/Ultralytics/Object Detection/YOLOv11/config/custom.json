@@ -1,0 +1,5 @@
+{
+  "model_filepath": "/train/detect/weights/best.pt",
+  "score_name": "mAP@.5:.95",
+  "score_regexp": "\\s+all(\\s*(\\d*[.]*\\d*)){6}\\n"
+}
