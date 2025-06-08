@@ -347,8 +347,10 @@ def as_yolo(
     return labels
 
 
-def get_cvat_dataset(include_without_annotations: bool = False) -> Tuple[Dict, List[str], Dict[Path, Dict], Dict[Path, Dict]]:
+def get_cvat_dataset() -> Tuple[Dict, List[str], Dict[Path, Dict], Dict[Path, Dict]]:
     config: Dict = load_config()
+
+    include_without_annotations = config.get("include-without-annotations", False)
 
     try:
         train_split, test_split = itemgetter("train-split", "test-split")(config)
