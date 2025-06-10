@@ -65,18 +65,18 @@ def create_test_images(test_data: Dict[Path, Dict]) -> None:
 
 
 def create_train_labels(
-    create_labels_fn, train_data: Dict[Path, Dict], label_names: List[str]
+    create_labels_fn, train_data: Dict[Path, Dict], label_names: List[str], include_without_annotations: bool = False
 ) -> None:
     create_labels_fn(
-        DATA_DIRS["labels_train"], label_names, files_with_annotations=train_data
+        DATA_DIRS["labels_train"], label_names, files_with_annotations=train_data, include_without_annotations=include_without_annotations
     )
 
 
 def create_test_labels(
-    create_labels_fn, test_data: Dict[Path, Dict], label_names: List[str]
+    create_labels_fn, test_data: Dict[Path, Dict], label_names: List[str], include_without_annotations: bool = False
 ) -> None:
     create_labels_fn(
-        DATA_DIRS["labels_val"], label_names, files_with_annotations=test_data
+        DATA_DIRS["labels_val"], label_names, files_with_annotations=test_data, include_without_annotations=include_without_annotations
     )
 
 
@@ -220,7 +220,7 @@ def as_coco(
         if not annotations:
             if include_without_annotations:
                 print(
-                    f"Image '{filepath}' has no annotations of type '{annotation_type}', but is still included in the dataset."
+                    f"Image '{filepath}' with id '{image_id}' has no annotations of type '{annotation_type}', but is still included in the COCO dataset."
                 )
             else:
                 print(
@@ -336,12 +336,16 @@ def as_yolo(
     for filepath, image in files_with_annotations.items():
         height, width = int(image["@height"]), int(image["@width"])
         annotations = get_image_annotations(image, annotation_type="box")
-        for annotation in annotations:
-            annotation_entry = _calc_annotation_entry(
-                annotation, label_names, height, width
-            )
-            annotation_entry = " ".join(map(str, annotation_entry))
-            labels[filepath].append(annotation_entry)
+        if not annotations and include_without_annotations:
+            print(f"Including file '{filepath}' without annotations in YOLO dataset.")
+            labels[filepath].append("")
+        else:
+            for annotation in annotations:
+                annotation_entry = _calc_annotation_entry(
+                    annotation, label_names, height, width
+                )
+                annotation_entry = " ".join(map(str, annotation_entry))
+                labels[filepath].append(annotation_entry)
     return labels
 
 
