@@ -113,10 +113,8 @@ def find_annotations_for_files(
 ) -> Dict[Path, Dict]:
     files_with_annotations = {}
     for filepath in filepaths:
-        found = False
         for image in annotations:
             if filepath.name == Path(image["@name"]).name:
-                found = True
                 if image_has_annotations(image) or include_without_annotations:
                     files_with_annotations[filepath] = image
                     if not image_has_annotations(image):
@@ -350,7 +348,10 @@ def as_yolo(
 def get_cvat_dataset() -> Tuple[Dict, List[str], Dict[Path, Dict], Dict[Path, Dict]]:
     config: Dict = load_config()
 
-    include_without_annotations = config.get("include-without-annotations", False)
+    try:
+        include_without_annotations = itemgetter("include-without-annotations")(config)
+    except KeyError:
+        include_without_annotations = False
 
     try:
         train_split, test_split = itemgetter("train-split", "test-split")(config)
