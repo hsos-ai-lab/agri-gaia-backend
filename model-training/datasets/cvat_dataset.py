@@ -65,18 +65,18 @@ def create_test_images(test_data: Dict[Path, Dict]) -> None:
 
 
 def create_train_labels(
-    create_labels_fn, train_data: Dict[Path, Dict], label_names: List[str]
+    create_labels_fn, train_data: Dict[Path, Dict], label_names: List[str], include_without_annotations: bool = False
 ) -> None:
     create_labels_fn(
-        DATA_DIRS["labels_train"], label_names, files_with_annotations=train_data
+        DATA_DIRS["labels_train"], label_names, files_with_annotations=train_data, include_without_annotations=include_without_annotations
     )
 
 
 def create_test_labels(
-    create_labels_fn, test_data: Dict[Path, Dict], label_names: List[str]
+    create_labels_fn, test_data: Dict[Path, Dict], label_names: List[str], include_without_annotations: bool = False
 ) -> None:
     create_labels_fn(
-        DATA_DIRS["labels_val"], label_names, files_with_annotations=test_data
+        DATA_DIRS["labels_val"], label_names, files_with_annotations=test_data, include_without_annotations=include_without_annotations
     )
 
 
@@ -106,16 +106,22 @@ def image_has_annotations(image: Dict) -> bool:
 
 
 def find_annotations_for_files(
-    filepaths: List[Path], annotations: List[Dict], strict: bool = False
+    filepaths: List[Path], 
+    annotations: List[Dict], 
+    strict: bool = False,
+    include_without_annotations: bool = False
 ) -> Dict[Path, Dict]:
     files_with_annotations = {}
     for filepath in filepaths:
         for image in annotations:
             if filepath.name == Path(image["@name"]).name:
-                if image_has_annotations(image):
+                if image_has_annotations(image) or include_without_annotations:
                     files_with_annotations[filepath] = image
+                    if not image_has_annotations(image):
+                        print(f"Including file '{filepath}' without annotations.")
                 else:
                     print(f"Skipping file '{filepath}' without annotations.")
+                break
     if strict:
         assert len(filepaths) == len(
             files_with_annotations
@@ -186,6 +192,7 @@ def as_coco(
     label_names: List[str],
     files_with_annotations: Dict[Path, Dict],
     dataset_type="segmentation",
+    include_without_annotations: bool = False
 ) -> Dict[str, List]:
 
     assert dataset_type in {
@@ -209,14 +216,21 @@ def as_coco(
         # annotations
         annotations = get_image_annotations(image, annotation_type=annotation_type)
 
-        # Do not include images without annotations of specific type
+        # Do not include images without annotations of specific type, unless include_without_annotations is set
         if not annotations:
-            print(
-                f"Skipping image '{filepath}' without annotations of type '{annotation_type}'."
-            )
-            continue
+            if include_without_annotations:
+                print(
+                    f"Image '{filepath}' with id '{image_id}' has no annotations of type '{annotation_type}', but is still included in the COCO dataset."
+                )
+            else:
+                print(
+                    f"Skipping image '{filepath}' without annotations of type '{annotation_type}'."
+                )
+                continue
 
-        image_width, image_height = int(image["@width"]), int(image["@height"])
+        # Get image dimensions, defaulting to 0 if not available
+        image_width = int(image.get("@width", 0))
+        image_height = int(image.get("@height", 0))
 
         labels["images"].append(
             {
@@ -226,6 +240,10 @@ def as_coco(
                 "width": image_width,
             }
         )
+
+        # Skip annotation processing if there are none 
+        if not annotations:
+                continue
 
         for annotation in annotations:
             try:
@@ -292,6 +310,7 @@ def as_coco(
 def as_yolo(
     label_names: List[str],
     files_with_annotations: Dict[Path, Dict],
+    include_without_annotations: bool = False
 ) -> Dict[Path, List[str]]:
     def _calc_annotation_entry(
         annotation: Dict, label_names: List[str], height: int, width: int
@@ -317,17 +336,26 @@ def as_yolo(
     for filepath, image in files_with_annotations.items():
         height, width = int(image["@height"]), int(image["@width"])
         annotations = get_image_annotations(image, annotation_type="box")
-        for annotation in annotations:
-            annotation_entry = _calc_annotation_entry(
-                annotation, label_names, height, width
-            )
-            annotation_entry = " ".join(map(str, annotation_entry))
-            labels[filepath].append(annotation_entry)
+        if not annotations and include_without_annotations:
+            print(f"Including file '{filepath}' without annotations in YOLO dataset.")
+            labels[filepath].append("")
+        else:
+            for annotation in annotations:
+                annotation_entry = _calc_annotation_entry(
+                    annotation, label_names, height, width
+                )
+                annotation_entry = " ".join(map(str, annotation_entry))
+                labels[filepath].append(annotation_entry)
     return labels
 
 
 def get_cvat_dataset() -> Tuple[Dict, List[str], Dict[Path, Dict], Dict[Path, Dict]]:
     config: Dict = load_config()
+
+    try:
+        include_without_annotations = itemgetter("include-without-annotations")(config)
+    except KeyError:
+        include_without_annotations = False
 
     try:
         train_split, test_split = itemgetter("train-split", "test-split")(config)
@@ -340,7 +368,7 @@ def get_cvat_dataset() -> Tuple[Dict, List[str], Dict[Path, Dict], Dict[Path, Di
     annotations: List[Dict] = get_annotations(annotation_file)
 
     files_with_annotations: Dict[Path, Dict] = find_annotations_for_files(
-        filepaths, annotations, strict=False
+        filepaths, annotations, strict=False, include_without_annotations=include_without_annotations
     )
 
     train_data, val_data = split_dataset(

@@ -18,7 +18,7 @@ import json
 with open("train_config.json", "r") as fh:
     train_config = json.load(fh)
 
-reserved = {"train-split", "test-split"}
+reserved = {"train-split", "test-split", "include-without-annotations"}
 
 args = []
 for option, value in train_config.items():
