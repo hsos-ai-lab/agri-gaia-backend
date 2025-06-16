@@ -27,7 +27,7 @@ RUN apt install -y --no-install-recommends \
     python3 python-is-python3 python3-pip
 RUN sed -i '/user_allow_other/s/^#//g' /etc/fuse.conf
 
-RUN pip install tf2onnx==1.16.1 onnxmltools==1.13.0
+RUN pip install onnx==1.17.0 tf2onnx==1.16.1 onnxmltools==1.13.0 onnxconverter-common==1.14.0
 
 WORKDIR /workspace
 
