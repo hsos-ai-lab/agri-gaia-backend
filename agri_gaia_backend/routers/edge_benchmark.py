@@ -32,6 +32,7 @@ from edge_benchmarking_types.edge_device.models import (
     DeviceHeader as TDeviceHeader,
     BenchmarkJob as TBenchmarkJob,
 )
+from edge_benchmarking_types.sensors.models import SensorInfo as TSensorInfo
 from agri_gaia_backend.schemas.edge_benchmark import BenchmarkJobRun, BenchmarkJob
 from edge_benchmarking_types.edge_farm.models import (
     BenchmarkConfig,
@@ -85,6 +86,15 @@ def get_benchmark_job_create_form() -> Dict:
         EDGE_BENCHMARK_FORMS_PATH, "create.jsonschema"
     )
     with open(create_form_schema_filepath, mode="r", encoding="utf-8") as fh:
+        return json.load(fh)
+
+
+@router.get("/forms/sensors")
+def get_benchmark_job_create_form() -> Dict:
+    sensors_form_schema_filepath = os.path.join(
+        EDGE_BENCHMARK_FORMS_PATH, "sensors.jsonschema"
+    )
+    with open(sensors_form_schema_filepath, mode="r", encoding="utf-8") as fh:
         return json.load(fh)
 
 
@@ -169,6 +179,13 @@ def get_all_edge_benchmark_device_headers():
 def get_edge_benchmark_device_info(hostname: str) -> dict[str, Any]:
     return requests.get(
         f"{EDGE_FARM_API_URL}/device/{hostname}/info", auth=EDGE_FARM_API_BASIC_AUTH
+    ).json()
+
+
+@router.get("/sensor", response_model=List[TSensorInfo])
+def get_all_edge_benchmark_sensor_infos():
+    return requests.get(
+        f"{EDGE_FARM_API_URL}/sensor", auth=EDGE_FARM_API_BASIC_AUTH
     ).json()
 
 

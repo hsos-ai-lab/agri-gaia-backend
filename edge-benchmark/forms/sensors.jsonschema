@@ -1,0 +1,113 @@
+{
+    "type": "object",
+    "properties": {
+        "client_config": {
+            "title": "Sensor client configuration",
+            "type": "string",
+            "default": "OakClientConfig",
+            "enum": [
+                "OakClientConfig",
+                "WebcamClientConfig"
+            ],
+            "description": "The type of sensor configuration to use."
+        },
+        "max_sample_size": {
+            "title": "Dataset size",
+            "type": "integer",
+            "default": 10,
+            "minimum": 1,
+            "description": "Number of dataset samples the sensor should capture."
+        }
+    },
+    "required": [
+        "max_sample_size"
+    ],
+    "allOf": [
+        {
+            "if": {
+                "properties": {
+                    "client_config": {
+                        "const": "OakClientConfig"
+                    }
+                }
+            },
+            "then": {
+                "properties": {
+                    "rgb_resolution": {
+                        "title": "RGB image resolution",
+                        "type": "string",
+                        "default": "720p",
+                        "enum": [
+                            "720p",
+                            "1080p",
+                            "4k"
+                        ],
+                        "description": "Frames will be captured using this image resolution."
+                    },
+                    "rgb_queue_size": {
+                        "title": "RGB queue size",
+                        "type": "integer",
+                        "default": 1,
+                        "description": "Size of the internal image capture buffer of the camera."
+                    },
+                    "warmup": {
+                        "title": "Warmup",
+                        "type": "integer",
+                        "default": 3,
+                        "minimum": 1,
+                        "description": "Number of seconds to wait for the camera to warmup."
+                    }
+                },
+                "required": [
+                    "rgb_resolution",
+                    "rgb_queue_size",
+                    "warmup"
+                ]
+            }
+        },
+        {
+            "if": {
+                "properties": {
+                    "client_config": {
+                        "const": "WebcamClientConfig"
+                    }
+                }
+            },
+            "then": {
+                "properties": {
+                    "port": {
+                        "title": "Port",
+                        "type": "integer",
+                        "default": 5000,
+                        "minimum": 1,
+                        "maximum": 65535,
+                        "description": "Port number to use for communication with web camera."
+                    },
+                    "timeout": {
+                        "title": "Timeout",
+                        "type": "integer",
+                        "default": 3,
+                        "minimum": 1,
+                        "description": "Number of seconds to wait for webcam to produce frames."
+                    },
+                    "img_format": {
+                        "title": "Image format",
+                        "type": "string",
+                        "default": "raw",
+                        "enum": [
+                            "raw",
+                            "jpeg",
+                            "png"
+                        ],
+                        "description": "Image format used to encode captured frame data."
+                    }
+                },
+                "required": [
+                    "port",
+                    "timeout",
+                    "img_format"
+                ]
+            }
+        }
+    ]
+}
