@@ -29,6 +29,7 @@ from edge_benchmarking_client.client import EdgeBenchmarkingClient
 from agri_gaia_backend.db import edge_benchmark_api as sql_benchmark_api
 from edge_benchmarking_types.edge_device.models import (
     DeviceHeader as TDeviceHeader,
+    DeviceInfo as TDeviceInfo,
     BenchmarkJob as TBenchmarkJob,
 )
 from edge_benchmarking_types.sensors.models import (
@@ -179,7 +180,7 @@ async def get_device_headers(edge_benchmarking_client: EdgeBenchmarkingClientDep
 @router.get("/device/{hostname}/info")
 async def get_device_info(
     hostname: str, edge_benchmarking_client: EdgeBenchmarkingClientDep
-) -> dict[str, Any]:
+) -> TDeviceInfo:
     return edge_benchmarking_client.get_device_info(hostname=hostname)
 
 
