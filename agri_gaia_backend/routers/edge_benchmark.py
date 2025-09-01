@@ -12,17 +12,16 @@
 import os
 import json
 import logging
-import requests
 
 from io import BytesIO
 from pathlib import Path
 from datetime import datetime
 from dotenv import load_dotenv
 from sqlalchemy.orm import Session
-from typing import List, Any, Optional, Dict
-from requests.auth import HTTPBasicAuth
+from fastapi import BackgroundTasks
 from fastapi.responses import FileResponse
 from agri_gaia_backend.services import minio_api
+from typing import List, Any, Optional, Dict, Annotated
 from agri_gaia_backend.db import model_api as sql_model_api
 from agri_gaia_backend.db import dataset_api as sql_dataset_api
 from agri_gaia_backend.schemas.keycloak_user import KeycloakUser
@@ -32,7 +31,10 @@ from edge_benchmarking_types.edge_device.models import (
     DeviceHeader as TDeviceHeader,
     BenchmarkJob as TBenchmarkJob,
 )
-from edge_benchmarking_types.sensors.models import SensorInfo as TSensorInfo
+from edge_benchmarking_types.sensors.models import (
+    SensorInfo as TSensorInfo,
+    SensorConfig as TSensorConfig,
+)
 from agri_gaia_backend.schemas.edge_benchmark import BenchmarkJobRun, BenchmarkJob
 from edge_benchmarking_types.edge_farm.models import (
     BenchmarkConfig,
@@ -48,7 +50,6 @@ from fastapi import (
     File,
     UploadFile,
     Form,
-    Query,
 )
 from agri_gaia_backend.routers.common import (
     TaskCreator,
@@ -66,22 +67,24 @@ ROOT_PATH = "/edge-benchmark"
 EDGE_BENCHMARK_PATH = os.path.abspath("./edge-benchmark")
 EDGE_BENCHMARK_FORMS_PATH = os.path.join(EDGE_BENCHMARK_PATH, "forms")
 
-EDGE_FARM_API_BASIC_AUTH_USERNAME = os.getenv("EDGE_BENCHMARKING_USER")
-EDGE_FARM_API_BASIC_AUTH_PASSWORD = os.getenv("EDGE_BENCHMARKING_PASSWORD")
-EDGE_FARM_API_BASIC_AUTH = HTTPBasicAuth(
-    EDGE_FARM_API_BASIC_AUTH_USERNAME, EDGE_FARM_API_BASIC_AUTH_PASSWORD
-)
-
-EDGE_FARM_API_PROTOCOL = "https"
-EDGE_FARM_API_HOST = os.getenv("EDGE_BENCHMARKING_URL")
-EDGE_FARM_API_URL = f"{EDGE_FARM_API_PROTOCOL}://{EDGE_FARM_API_HOST}"
+EdgeBenchmarkingClientDep = Annotated[
+    EdgeBenchmarkingClient,
+    Depends(
+        lambda: EdgeBenchmarkingClient(
+            protocol="https",
+            host=os.getenv("EDGE_BENCHMARKING_URL"),
+            username=os.getenv("EDGE_BENCHMARKING_USER"),
+            password=os.getenv("EDGE_BENCHMARKING_PASSWORD"),
+        )
+    ),
+]
 
 logger = logging.getLogger("api-logger")
 router = APIRouter(prefix=ROOT_PATH)
 
 
 @router.get("/forms/create")
-def get_benchmark_job_create_form() -> Dict:
+async def get_benchmark_job_create_form() -> Dict:
     create_form_schema_filepath = os.path.join(
         EDGE_BENCHMARK_FORMS_PATH, "create.jsonschema"
     )
@@ -90,7 +93,7 @@ def get_benchmark_job_create_form() -> Dict:
 
 
 @router.get("/forms/sensors")
-def get_benchmark_job_create_form() -> Dict:
+async def get_benchmark_sensors_form() -> Dict:
     sensors_form_schema_filepath = os.path.join(
         EDGE_BENCHMARK_FORMS_PATH, "sensors.jsonschema"
     )
@@ -99,14 +102,14 @@ def get_benchmark_job_create_form() -> Dict:
 
 
 @router.get("/jobs", response_model=List[BenchmarkJob])
-def get_all_benchmark_jobs(
+async def get_all_benchmark_jobs(
     skip: int = 0, limit: int = 10000, db: Session = Depends(get_db)
 ):
     return sql_benchmark_api.get_all_benchmark_jobs(skip=skip, limit=limit, db=db)
 
 
 @router.delete("/jobs/{job_id}")
-def delete_benchmark_job(
+async def delete_benchmark_job(
     request: Request, job_id: int, db: Session = Depends(get_db)
 ) -> Response:
     user: KeycloakUser = request.user
@@ -131,7 +134,7 @@ def delete_benchmark_job(
 
 
 @router.get("/results/{job_id}")
-def get_benchmark_job_results(
+async def get_benchmark_job_results(
     request: Request, job_id: int, db: Session = Depends(get_db)
 ) -> dict[str, Any]:
     _, results = _get_benchmark_job_result(job_id=job_id, request=request, db=db)
@@ -139,7 +142,7 @@ def get_benchmark_job_results(
 
 
 @router.get("/results/{job_id}/download")
-def download_benchmark_job_result(
+async def download_benchmark_job_result(
     request: Request, job_id: int, db: Session = Depends(get_db)
 ) -> FileResponse:
     job, results = _get_benchmark_job_result(job_id=job_id, request=request, db=db)
@@ -151,7 +154,7 @@ def download_benchmark_job_result(
 
 
 @router.post("/results/download")
-def download_benchmark_job_results(
+async def download_benchmark_job_results(
     request: Request,
     job_ids: list[int],
     db: Session = Depends(get_db),
@@ -169,29 +172,50 @@ def download_benchmark_job_results(
 
 
 @router.get("/device/header", response_model=List[TDeviceHeader])
-def get_all_edge_benchmark_device_headers():
-    return requests.get(
-        f"{EDGE_FARM_API_URL}/device/header", auth=EDGE_FARM_API_BASIC_AUTH
-    ).json()
+async def get_device_headers(edge_benchmarking_client: EdgeBenchmarkingClientDep):
+    return edge_benchmarking_client.get_device_headers()
 
 
 @router.get("/device/{hostname}/info")
-def get_edge_benchmark_device_info(hostname: str) -> dict[str, Any]:
-    return requests.get(
-        f"{EDGE_FARM_API_URL}/device/{hostname}/info", auth=EDGE_FARM_API_BASIC_AUTH
-    ).json()
+async def get_device_info(
+    hostname: str, edge_benchmarking_client: EdgeBenchmarkingClientDep
+) -> dict[str, Any]:
+    return edge_benchmarking_client.get_device_info(hostname=hostname)
 
 
 @router.get("/sensor", response_model=List[TSensorInfo])
-def get_all_edge_benchmark_sensor_infos():
-    return requests.get(
-        f"{EDGE_FARM_API_URL}/sensor", auth=EDGE_FARM_API_BASIC_AUTH
-    ).json()
+async def get_sensors(edge_benchmarking_client: EdgeBenchmarkingClientDep):
+    return edge_benchmarking_client.get_sensors()
+
+
+@router.post("/sensor/{hostname}/capture")
+async def capture_dataset(
+    hostname: str,
+    sensor_config: TSensorConfig,
+    edge_benchmarking_client: EdgeBenchmarkingClientDep,
+    background_tasks: BackgroundTasks,
+) -> Response:
+    dataset: List[Path] = edge_benchmarking_client.capture_dataset(
+        root_dir="/tmp", hostname=hostname, sensor_config=sensor_config
+    )
+    if len(dataset) != 1:
+        raise ValueError(f"Error capturing dataset using sensor '{hostname}'.")
+
+    zip_dataset_filepath = dataset[0]
+    background_tasks.add_task(zip_dataset_filepath.unlink, missing_ok=True)
+
+    with open(zip_dataset_filepath, mode="rb") as fh:
+        return create_single_file_response(
+            file=fh.read(),
+            filename=zip_dataset_filepath.name,
+            content_type="application/x-zip-compressed",
+        )
 
 
 @router.post("/start")
 async def edge_benchmark_start(
     request: Request,
+    edge_benchmarking_client: EdgeBenchmarkingClientDep,
     payload: str = Form(...),
     model_metadata: Optional[UploadFile] = File(None),
     db: Session = Depends(get_db),
@@ -227,18 +251,11 @@ async def edge_benchmark_start(
     def _run_benchmark(
         on_error,
         on_progress_change,
+        edge_benchmarking_client: EdgeBenchmarkingClientDep,
         db: Session,
         user: KeycloakUser,
     ) -> None:
-
-        client = EdgeBenchmarkingClient(
-            protocol=EDGE_FARM_API_PROTOCOL,
-            host=EDGE_FARM_API_HOST,
-            username=EDGE_FARM_API_BASIC_AUTH_USERNAME,
-            password=EDGE_FARM_API_BASIC_AUTH_PASSWORD,
-        )
-
-        benchmark_job: TBenchmarkJob = client.benchmark(
+        benchmark_job: TBenchmarkJob = edge_benchmarking_client.benchmark(
             edge_device=benchmark_config.edge_device.host,
             dataset=dataset,
             model=model,
@@ -281,6 +298,7 @@ async def edge_benchmark_start(
 
     _, task_location_url, _ = task_creator.create_background_task(
         func=_run_benchmark,
+        edge_benchmarking_client=edge_benchmarking_client,
         task_title=f"Benchmark job on device '{benchmark_config.edge_device.host}' with dataset '{dataset_name}' and model '{model_name}'.",
         db=db,
         user=user,

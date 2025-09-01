@@ -208,7 +208,7 @@ def create_single_file_response(
     Creates a Response object containing a single file.
 
     Args:
-        file: The file, whicch should be included in the response.
+        file: The file, which should be included in the response.
         filename: The filename of the included file.
         content_type: the content_type of the file. Will be filled automatically, if no type is given and defaults to "application/octet-stream".
 
