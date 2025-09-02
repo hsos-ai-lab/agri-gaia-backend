@@ -30,7 +30,7 @@ WORKDIR /root
 COPY ./config/docker-client/config.json ./config/docker-client/add-nvidia-key.sh ./
 RUN ./add-nvidia-key.sh config.json "$NVIDIA_NGC_API_KEY"
 
-FROM python:3.12
+FROM python:3.12-bookworm
 
 WORKDIR /code
 

@@ -9,7 +9,7 @@
 #
 # SPDX-License-Identifier: MIT
 
-FROM python:3.12-slim AS build_stage
+FROM python:3.12-slim-bookworm AS build_stage
 WORKDIR /work
 
 RUN pip install jinja2~=3.0.3
