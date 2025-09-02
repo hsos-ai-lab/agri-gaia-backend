@@ -4,7 +4,6 @@
         "max_sample_size": {
             "title": "Dataset size",
             "type": "integer",
-            "default": 10,
             "minimum": 1,
             "description": "Number of dataset samples the sensor should capture."
         }
