@@ -1,0 +1,53 @@
+{
+    "type": "object",
+    "properties": {
+        "type": {
+            "title": "Sensor type",
+            "type": "string",
+            "default": "camera",
+            "enum": [
+                "camera"
+            ],
+            "description": "The type of sensor."
+        },
+        "name": {
+            "title": "Name",
+            "type": "string",
+            "description": "Common name to assign to the sensor."
+        },
+        "hostname": {
+            "title": "Hostname",
+            "type": "string",
+            "description": "Hostname to address this sensor (not required to resolve)."
+        },
+        "ip": {
+            "title": "IP address",
+            "type": "string",
+            "description": "IPv4 address of the sensor."
+        },
+        "manufacturer": {
+            "title": "Manufacturer",
+            "type": "string",
+            "description": "Name of the sensor's manufacturer."
+        },
+        "model": {
+            "title": "Model",
+            "type": "string",
+            "description": "Model name of the sensor."
+        },
+        "serial": {
+            "title": "Serial number",
+            "type": "string",
+            "description": "Serial number to uniquely identify the sensor."
+        }
+    },
+    "required": [
+        "hostname",
+        "ip",
+        "manufacturer",
+        "model",
+        "name",
+        "serial",
+        "type"
+    ]
+}

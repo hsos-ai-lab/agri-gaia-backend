@@ -84,21 +84,37 @@ logger = logging.getLogger("api-logger")
 router = APIRouter(prefix=ROOT_PATH)
 
 
-@router.get("/forms/create")
+@router.get("/forms/job-create")
 async def get_benchmark_job_create_form() -> Dict:
     create_form_schema_filepath = os.path.join(
-        EDGE_BENCHMARK_FORMS_PATH, "create.jsonschema"
+        EDGE_BENCHMARK_FORMS_PATH, "job_create.jsonschema"
     )
     with open(create_form_schema_filepath, mode="r", encoding="utf-8") as fh:
         return json.load(fh)
 
 
-@router.get("/forms/sensors")
-async def get_benchmark_sensors_form() -> Dict:
-    sensors_form_schema_filepath = os.path.join(
-        EDGE_BENCHMARK_FORMS_PATH, "sensors.jsonschema"
+@router.get("/forms/sensor-add")
+async def get_benchmark_sensor_add_form() -> Dict:
+    create_form_schema_filepath = os.path.join(
+        EDGE_BENCHMARK_FORMS_PATH, "sensor_info.jsonschema"
     )
-    with open(sensors_form_schema_filepath, mode="r", encoding="utf-8") as fh:
+    with open(create_form_schema_filepath, mode="r", encoding="utf-8") as fh:
+        return json.load(fh)
+
+
+@router.get("/forms/sensor-config")
+async def get_benchmark_sensor_config_form() -> Dict:
+    schema_filepath = os.path.join(
+        EDGE_BENCHMARK_FORMS_PATH, "sensor_config.jsonschema"
+    )
+    with open(schema_filepath, mode="r", encoding="utf-8") as fh:
+        return json.load(fh)
+
+
+@router.get("/forms/sensor-info")
+async def get_benchmark_sensor_info_form() -> Dict:
+    schema_filepath = os.path.join(EDGE_BENCHMARK_FORMS_PATH, "sensor_info.jsonschema")
+    with open(schema_filepath, mode="r", encoding="utf-8") as fh:
         return json.load(fh)
 
 
@@ -173,7 +189,9 @@ async def download_benchmark_job_results(
 
 
 @router.get("/device/header", response_model=List[TDeviceHeader])
-async def get_device_headers(edge_benchmarking_client: EdgeBenchmarkingClientDep):
+async def get_device_headers(
+    edge_benchmarking_client: EdgeBenchmarkingClientDep,
+) -> Any:
     return edge_benchmarking_client.get_device_headers()
 
 
@@ -185,8 +203,22 @@ async def get_device_info(
 
 
 @router.get("/sensor", response_model=List[TSensorInfo])
-async def get_sensors(edge_benchmarking_client: EdgeBenchmarkingClientDep):
+async def get_sensors(edge_benchmarking_client: EdgeBenchmarkingClientDep) -> Any:
     return edge_benchmarking_client.get_sensors()
+
+
+@router.post("/sensor")
+async def create_sensor(
+    sensor_info: TSensorInfo, edge_benchmarking_client: EdgeBenchmarkingClientDep
+) -> TSensorInfo:
+    return edge_benchmarking_client.create_sensor(sensor_info=sensor_info)
+
+
+@router.delete("/sensor/{hostname}")
+async def delete_sensor(
+    hostname: str, edge_benchmarking_client: EdgeBenchmarkingClientDep
+) -> Response:
+    return edge_benchmarking_client.remove_sensor(hostname=hostname)
 
 
 @router.post("/sensor/{hostname}/capture")
