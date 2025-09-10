@@ -214,6 +214,17 @@ async def create_sensor(
     return edge_benchmarking_client.create_sensor(sensor_info=sensor_info)
 
 
+@router.put("/sensor/{hostname}")
+async def replace_sensor(
+    hostname: str,
+    sensor_info: TSensorInfo,
+    edge_benchmarking_client: EdgeBenchmarkingClientDep,
+) -> TSensorInfo:
+    return edge_benchmarking_client.replace_sensor(
+        hostname=hostname, sensor_info=sensor_info
+    )
+
+
 @router.delete("/sensor/{hostname}")
 async def delete_sensor(
     hostname: str, edge_benchmarking_client: EdgeBenchmarkingClientDep
