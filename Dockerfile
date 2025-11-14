@@ -14,10 +14,12 @@ FROM alpine AS backend_binaries
 ARG DOCKER_VERSION="27.1.2"
 ARG NUCLIO_VERSION="1.8.18"
 
-RUN wget https://download.docker.com/linux/static/stable/x86_64/docker-${DOCKER_VERSION}.tgz && tar xzf docker-${DOCKER_VERSION}.tgz
+RUN wget https://download.docker.com/linux/static/stable/x86_64/docker-${DOCKER_VERSION}.tgz
+RUN tar xzf docker-${DOCKER_VERSION}.tgz
 
 RUN wget https://github.com/nuclio/nuclio/releases/download/${NUCLIO_VERSION}/nuctl-${NUCLIO_VERSION}-linux-amd64
-RUN chmod +x nuctl-${NUCLIO_VERSION}-linux-amd64 && mv nuctl-${NUCLIO_VERSION}-linux-amd64 nuctl
+RUN chmod +x nuctl-${NUCLIO_VERSION}-linux-amd64
+RUN mv nuctl-${NUCLIO_VERSION}-linux-amd64 nuctl
 
 FROM alpine AS docker_config_stage
 
@@ -32,6 +34,8 @@ RUN ./add-nvidia-key.sh config.json "$NVIDIA_NGC_API_KEY"
 
 FROM python:3.12-bookworm
 
+ARG PIP_VERSION="25.3"
+
 WORKDIR /code
 
 RUN apt update
@@ -43,6 +47,7 @@ COPY --from=docker/buildx-bin:latest /buildx /usr/local/lib/docker/cli-plugins/d
 COPY --from=backend_binaries nuctl /usr/local/bin
 
 COPY requirements.txt .
+RUN python -m pip install --upgrade pip==${PIP_VERSION}
 RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
 
 COPY . .
