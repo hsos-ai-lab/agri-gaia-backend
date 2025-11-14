@@ -381,9 +381,13 @@ def _load_dataset(dataset_id: int, minio_token: str, db):
 
             dataset_files.append((sample_filename, BytesIO(sample_bytes)))
 
-    label_files = minio_api.get_all_objects(
-        dataset.bucket_name, f"{dataset_prefix}/annotations", minio_token
-    )
+    label_files = [
+        label_file
+        for label_file in minio_api.get_all_objects(
+            dataset.bucket_name, f"{dataset_prefix}/annotations", minio_token
+        )
+        if Path(label_file.object_name).name != "annotations.xml"
+    ]
 
     labels = None
     if len(label_files) == 1:
