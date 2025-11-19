@@ -37,7 +37,7 @@ xmltodict~=0.13.0
 geoalchemy2~=0.12.5
 fiftyone~=0.25.2
 pycocotools~=2.0.6
-requests~=2.30.0
+requests~=2.32.0
 requirements-parser~=0.5.0
 validators~=0.28.0
 mistletoe~=1.0.1
@@ -49,3 +49,4 @@ tritonclient[all]~=2.41.1
 attrdict~=2.0.1
 gitpython~=3.1.43
 debugpy
+python-gitlab>=4.11,<5.0

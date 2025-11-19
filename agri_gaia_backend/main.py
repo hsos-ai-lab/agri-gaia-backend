@@ -43,6 +43,7 @@ from agri_gaia_backend.routers import (
     licenses,
     network,
     triton,
+    agdafair,
 )
 from agri_gaia_backend.util.auth.bearer_token_auth_backend import BearerTokenAuthBackend
 from prometheus_fastapi_instrumentator import Instrumentator
@@ -107,6 +108,7 @@ re_whitelist = [
     "\/edge-devices\/\d+\/config",
     "\/edge-devices\/\d+\/register",
     "\/metrics",
+    "\/agdafair",
 ]
 if debug:
     debug_routes = ["\/docs", "\/openapi.json"]
@@ -190,6 +192,7 @@ app.include_router(integrated_services.router)
 app.include_router(licenses.router)
 app.include_router(network.router)
 app.include_router(triton.router)
+app.include_router(agdafair.router)
 
 app.exception_handler(image_builder.MissingInputDataException)(
     _missing_input_data_exception_handler
