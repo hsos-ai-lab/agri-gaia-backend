@@ -61,13 +61,6 @@
             "default": false,
             "description": "Run inference only on CPU during benchmarking."
         },
-        "num_classes": {
-            "title": "Class count",
-            "type": "integer",
-            "description": "Number of classes present in the inference dataset.",
-            "default": 1000,
-            "minimum": 1
-        },
         "scaling": {
             "title": "Image scaling",
             "type": "string",
