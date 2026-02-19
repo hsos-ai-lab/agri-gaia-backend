@@ -21,7 +21,8 @@ from sqlalchemy.orm import Session
 from fastapi import BackgroundTasks
 from fastapi.responses import FileResponse
 from agri_gaia_backend.services import minio_api
-from typing import List, Any, Optional, Dict, Annotated
+from typing import Generator, List, Any, Optional, Dict, Annotated
+from agri_gaia_backend.db.models import Dataset
 from agri_gaia_backend.db import model_api as sql_model_api
 from agri_gaia_backend.db import dataset_api as sql_dataset_api
 from agri_gaia_backend.schemas.keycloak_user import KeycloakUser
@@ -279,13 +280,12 @@ async def edge_benchmark_start(
     benchmark_config = BenchmarkConfig(**payload["benchmark_config"])
 
     model_name, model = _load_model(model_id, minio_token, db)
-    (dataset_name, dataset), labels = _load_dataset(dataset_id, minio_token, db)
+    dataset = check_exists(sql_dataset_api.get_dataset(db, dataset_id))
 
     if isinstance(benchmark_config.inference_client, TritonInferenceClient):
         model_filename, _ = model
         benchmark_config.inference_client.model_name = Path(model_filename).stem
         benchmark_config.inference_client.model_version = "1"
-        benchmark_config.inference_client.num_classes = 1
 
     model_metadata = (
         (model_metadata.filename, BytesIO(await model_metadata.read()))
@@ -299,10 +299,13 @@ async def edge_benchmark_start(
         edge_benchmarking_client: EdgeBenchmarkingClientDep,
         db: Session,
         user: KeycloakUser,
+        dataset: Dataset = dataset, 
     ) -> None:
+        dataset_files, labels = _load_dataset(minio_token, dataset, chunk_size)
+        
         benchmark_job: TBenchmarkJob = edge_benchmarking_client.benchmark(
             edge_device=benchmark_config.edge_device.host,
-            dataset=dataset,
+            dataset=dataset_files,
             model=model,
             inference_client=benchmark_config.inference_client,
             model_metadata=model_metadata,
@@ -344,7 +347,7 @@ async def edge_benchmark_start(
     _, task_location_url, _ = task_creator.create_background_task(
         func=_run_benchmark,
         edge_benchmarking_client=edge_benchmarking_client,
-        task_title=f"Benchmark job on device '{benchmark_config.edge_device.host}' with dataset '{dataset_name}' and model '{model_name}'.",
+        task_title=f"Benchmark job on device '{benchmark_config.edge_device.host}' with dataset '{dataset.name}' and model '{model_name}'.",
         db=db,
         user=user,
     )
@@ -364,23 +367,29 @@ def _load_model(model_id: int, minio_token: str, db) -> tuple[str, str, BytesIO]
     return model.name, (model.file_name, BytesIO(model_bytes))
 
 
-def _load_dataset(dataset_id: int, minio_token: str, db):
-    dataset = check_exists(sql_dataset_api.get_dataset(db, dataset_id))
+def _load_dataset(minio_token: str, dataset, chunk_size: int):
     _validate_parameters(dataset.bucket_name, minio_token)
 
     dataset_prefix = f"datasets/{dataset.id}"
 
-    dataset_files: list[tuple[str, BytesIO]] = []
-    for dataset_entry in minio_api.get_all_objects(
+    
+    def dataset_generator() -> Generator[list[str, BytesIO], None, None]:
+        all_objects = minio_api.get_all_objects(
         bucket=dataset.bucket_name, prefix=dataset_prefix, token=minio_token
-    ):
-        if not dataset_entry.is_dir and "annotations" not in dataset_entry.object_name:
-            sample_filename = Path(dataset_entry.object_name).name
-            sample_bytes = minio_api.download_file(
-                bucket=dataset.bucket_name, minio_item=dataset_entry, token=minio_token
-            ).read()
-
-            dataset_files.append((sample_filename, BytesIO(sample_bytes)))
+        )
+        all_objects_filtered = list(filter(lambda x: not x.is_dir and "annotations" not in x.object_name, all_objects))
+        for i in range(0, len(all_objects_filtered), chunk_size):
+            dataset_chunk = []
+            for current_file in all_objects_filtered[i: i + chunk_size]:
+                if not current_file.is_dir and "annotations" not in current_file.object_name:
+                    sample_filename = Path(current_file.object_name).name
+                    sample_bytes = minio_api.download_file(
+                        bucket=dataset.bucket_name, minio_item=current_file, token=minio_token
+                    ).read()
+                    dataset_chunk.append((sample_filename, BytesIO(sample_bytes)))
+            yield dataset_chunk
+            
+    dataset_files: Generator[list[str, BytesIO], None, None] = dataset_generator()
 
     label_files = [
         label_file
@@ -399,7 +408,7 @@ def _load_dataset(dataset_id: int, minio_token: str, db):
         label_filename = Path(label_file.object_name).name
         labels = (label_filename, BytesIO(label_bytes))
 
-    return (dataset.name, dataset_files), labels
+    return dataset_files, labels
 
 
 def _get_benchmark_job_result(
