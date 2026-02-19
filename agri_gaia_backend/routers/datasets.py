@@ -612,9 +612,9 @@ def _upload_dataset_to_minio(
 
             zip = zipfile.ZipFile(file=files[0].file._file)
             for name in zip.namelist():
-                if not zip.getinfo(name).is_dir():
+                if not zip.getinfo(name).is_dir() and name.lower().endswith((".png", ".bmp", ".jpeg", ".jpg")):
                     with zip.open(name) as file:
-                        tag = cvat.CVATImageTag(name.split("/")[1])
+                        tag = cvat.CVATImageTag(name.split("/")[-2])
                         image = Image.open(file)
                         images.append(
                             cvat.CVATImage(
