@@ -286,6 +286,7 @@ async def edge_benchmark_start(
         model_filename, _ = model
         benchmark_config.inference_client.model_name = Path(model_filename).stem
         benchmark_config.inference_client.model_version = "1"
+        benchmark_config.inference_client.num_classes = 1
 
     model_metadata = (
         (model_metadata.filename, BytesIO(await model_metadata.read()))
