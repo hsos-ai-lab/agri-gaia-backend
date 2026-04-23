@@ -11,7 +11,7 @@
 
 fastapi~=0.110.0
 pydantic~=1.10.2
-uvicorn~=0.27.1
+uvicorn~=0.30.6
 python-dotenv~=1.0.1
 itsdangerous~=2.1.2
 python-keycloak~=0.26.1
@@ -38,7 +38,7 @@ geoalchemy2~=0.12.5
 fiftyone~=0.25.2
 pycocotools~=2.0.6
 requests~=2.30.0
-requirements-parser~=0.5.0
+requirements-parser~=0.11.0
 validators~=0.28.0
 mistletoe~=1.0.1
 jsonref~=1.1.0
