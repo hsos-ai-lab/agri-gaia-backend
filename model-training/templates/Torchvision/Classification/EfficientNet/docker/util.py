@@ -25,7 +25,7 @@ from torchvision.models.efficientnet import EfficientNet as TEfficientNet
 from typing import Optional, Union, TYPE_CHECKING
 from pytorch_lightning.callbacks import StochasticWeightAveraging
 from pytorch_lightning.callbacks.early_stopping import EarlyStopping
-from pytorch_lightning.strategies import DDPStrategy, DDPSpawnStrategy
+from pytorch_lightning.strategies import DDPStrategy
 from torchmetrics import MetricCollection, Accuracy, Precision, Recall, F1Score
 
 if TYPE_CHECKING:
@@ -103,41 +103,41 @@ def train_and_test_model(
         devices="auto",
         limit_val_batches=0,
         log_every_n_steps=1,
-        auto_lr_find=auto_lr_find,
-        auto_scale_batch_size=auto_scale_batch_size,
         strategy=configure_strategy(strategy),
         callbacks=callbacks,
     )
 
-    if not trainer.auto_lr_find:
-        print("Auto learning rate finder is disabled.")
-
-    if not trainer.auto_scale_batch_size:
-        print("Auto batch size finder is disabled")
-
-    if trainer.auto_lr_find or trainer.auto_scale_batch_size:
-        trainer.tune(model=efficientnet, datamodule=data)
-        if trainer.auto_lr_find:
+    if auto_lr_find or auto_batch_size:
+        tuner = Tuner(trainer)
+        
+        if auto_batch_size:
+            print(f"Automatically determining batch size using 'binsearch' method.")
+            tuner.scale_batch_size(efficientnet, datamodule=data, mode="binsearch")
+            
+        if auto_lr_find:
+            print("Finding optimal learning rate...")
+            # This automatically updates efficientnet.learning_rate or efficientnet.lr
+            tuner.lr_find(efficientnet, datamodule=data)
             print("Automatically determined learning rate:", efficientnet.learning_rate)
 
     trainer.fit(model=efficientnet, datamodule=data)
 
-    trainer = pl.Trainer(devices=1, num_nodes=1, accelerator="auto")
-    trainer.test(model=efficientnet, datamodule=data)
+    test_trainer = pl.Trainer(devices=1, num_nodes=1, accelerator="auto")
+    test_trainer.test(model=efficientnet, datamodule=data)
 
     return efficientnet
 
 
 def configure_strategy(
     strategy: Optional[str],
-) -> Union[DDPStrategy, DDPSpawnStrategy, Optional[str]]:
+) -> Union[DDPStrategy, Optional[str]]:
     if strategy == "ddp":
         return DDPStrategy(find_unused_parameters=False)
 
     if strategy == "ddp_spawn":
-        return DDPSpawnStrategy(find_unused_parameters=False)
+        return DDPStrategy(start_method="spawn", find_unused_parameters=False)
 
-    return strategy
+    return "auto"
 
 
 def get_num_classes(labels_filepath: str) -> int:
@@ -152,7 +152,7 @@ def get_sync_dist(strategy: Optional[str]) -> bool:
 
 
 def create_metrics(
-    num_classes: int, average: str, strategy: Optional[str]
+    num_classes: int, average: str, strategy: Optional[str], task='multiclass'
 ) -> MetricCollection:
     dist_sync_on_step = strategy == "dp"
 
@@ -160,6 +160,7 @@ def create_metrics(
         "num_classes": num_classes,
         "average": average,
         "dist_sync_on_step": dist_sync_on_step,
+        "task": task
     }
 
     return MetricCollection(

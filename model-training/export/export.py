@@ -123,11 +123,12 @@ def _export_onnx_model(model, format: ModelFormat, model_filepath: str) -> Path:
     def export_pytorch(model, model_filepath: str, export_kwargs: Dict) -> Path:
         import torch
 
+        model.eval()
         onnx_model_filepath = _onnx_model_filepath(model_filepath)
         torch.onnx.export(
             model=torch.jit.script(model), f=onnx_model_filepath, **export_kwargs
         )
-
+            
         return onnx_model_filepath
 
     if format not in SUPPORTED_MODEL_FORMATS:
@@ -167,7 +168,9 @@ def export_model(
         _export_onnx_model(model, model_format, model_filepath)
     except:
         print("ONNX model export failed.")
-        print(traceback.format_exc())
+        traceback.print_stack()
+        print(repr(traceback.extract_stack()))
+        print(repr(traceback.format_stack()))
 
         if default_model_export_kwargs is None:
             default_model_export_kwargs = {}

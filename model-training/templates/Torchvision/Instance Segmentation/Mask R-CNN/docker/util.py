@@ -30,7 +30,7 @@ from torchmetrics.detection.mean_ap import MeanAveragePrecision
 from pytorch_lightning.callbacks import StochasticWeightAveraging
 from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
-from pytorch_lightning.strategies import DDPStrategy, DDPSpawnStrategy
+from pytorch_lightning.strategies import DDPStrategy
 
 if TYPE_CHECKING:
     from maskrcnn import MaskRCNN
@@ -143,12 +143,12 @@ def get_num_classes(labels_filepath: str) -> int:
 
 def configure_strategy(
     strategy: Optional[str],
-) -> Union[DDPStrategy, DDPSpawnStrategy, Optional[str]]:
+) -> Union[DDPStrategy, Optional[str]]:
     if strategy == "ddp":
         return DDPStrategy(find_unused_parameters=False)
 
     if strategy == "ddp_spawn":
-        return DDPSpawnStrategy(find_unused_parameters=False)
+        return DDPStrategy(start_method="spawn", find_unused_parameters=False)
 
     return strategy
 

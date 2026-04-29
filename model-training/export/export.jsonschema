@@ -135,7 +135,7 @@
             "default": 14,
             "description": "The targeted ONNX model opset.",
             "minimum": 7,
-            "maximum": 16
+            "maximum": 19
           }
         }
       }

@@ -56,6 +56,9 @@ class EfficientNetDataModule(pl.LightningDataModule):
             img_size=self.img_size,
         )
 
+        print(f"-----Len of train split is:{len(self.train_split)}, and len of test split is: {len(self.test_split)}.-----")
+
+
     def train_dataloader(self) -> DataLoader:
         return DataLoader(
             self.train_split,
