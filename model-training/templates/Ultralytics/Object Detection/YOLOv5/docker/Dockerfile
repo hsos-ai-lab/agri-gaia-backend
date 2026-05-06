@@ -9,7 +9,7 @@
 #
 # SPDX-License-Identifier: MIT
 
-FROM ultralytics/yolov5:v7.0
+FROM ultralytics/ultralytics:8.4.46-runner
 
 ARG DEBIAN_FRONTEND=noninteractive
 
@@ -27,12 +27,9 @@ RUN apt install -y --no-install-recommends \
 	python3 python-is-python3 python3-pip
 RUN sed -i '/user_allow_other/s/^#//g' /etc/fuse.conf
 
-RUN pip install onnx==1.12.0 tf2onnx==1.14.0 onnxmltools==1.11.2 onnxconverter-common==1.13.0
+RUN pip install onnx==1.21.0 tf2onnx==1.17.0 onnxmltools==1.16.0 onnxconverter-common==1.16.0
 
 WORKDIR /usr/src/app
-
-RUN mv train.py yolo_train.py
-RUN mv export.py yolo_export.py
 
 COPY config_to_args.py config.py dataset.py cvat_dataset.py ./
 

@@ -75,23 +75,18 @@ def _create_export_kwargs(export_config: Dict, format: ModelFormat) -> Dict:
         input_names.append(f"Input {input_number}")
 
     if format == ModelFormat.PYTORCH:
-        # See: https://github.com/pytorch/pytorch/blob/31d635803b8d72433ea275d3c36bf829b158d5ec/torch/onnx/utils.py#L190
         _check_installed("torch")
         import torch
 
-        export_kwargs["args"] = [
+        export_kwargs["args"] = tuple(
             torch.ones(input_shape, dtype=getattr(torch, input_type))
             for input_shape, input_type in zip(input_shapes, input_types)
-        ]
+        )
         export_kwargs["input_names"] = input_names
 
-        for key, enum_class in (
-            ("training", "TrainingMode"),
-            ("operator_export_type", "OperatorExportTypes"),
-        ):
-            export_kwargs[key] = getattr(
-                getattr(torch.onnx, enum_class), export_config[key]
-            )
+        # Remove deprecated kwargs not supported by the PyTorch 2.x ONNX exporter
+        for key in ("training", "operator_export_type"):
+            export_kwargs.pop(key, None)
     elif format == ModelFormat.TENSORFLOW:
         # Nothing to do.
         # See: https://github.com/onnx/onnxmltools/blob/79c34e377fe3a24d22eabac010e464de061d7adf/onnxmltools/convert/main.py#L424
@@ -125,9 +120,7 @@ def _export_onnx_model(model, format: ModelFormat, model_filepath: str) -> Path:
 
         model.eval()
         onnx_model_filepath = _onnx_model_filepath(model_filepath)
-        torch.onnx.export(
-            model=torch.jit.script(model), f=onnx_model_filepath, **export_kwargs
-        )
+        torch.onnx.export(model=model, f=onnx_model_filepath, **export_kwargs)
             
         return onnx_model_filepath
 
@@ -166,11 +159,9 @@ def export_model(
 ) -> None:
     try:
         _export_onnx_model(model, model_format, model_filepath)
-    except:
-        print("ONNX model export failed.")
-        traceback.print_stack()
-        print(repr(traceback.extract_stack()))
-        print(repr(traceback.format_stack()))
+    except Exception as e:
+        print(f"ONNX model export failed: {e}")
+        traceback.print_exc()
 
         if default_model_export_kwargs is None:
             default_model_export_kwargs = {}

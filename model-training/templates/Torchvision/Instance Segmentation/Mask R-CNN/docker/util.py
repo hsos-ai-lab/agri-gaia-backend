@@ -160,17 +160,17 @@ def get_sync_dist(strategy: Optional[str]) -> bool:
 
 
 def create_metrics(strategy: Optional[str]) -> Union[MetricCollection, Dict]:
-    dist_sync_on_step = strategy == "dp"
+    sync_on_compute = strategy == "dp"
 
     # Issue with mAP iou_type="segm": https://github.com/Lightning-AI/metrics/issues/1239
     """
     return MetricCollection(
         {
             "bbox": MeanAveragePrecision(
-                iou_type="bbox", dist_sync_on_step=dist_sync_on_step
+                iou_type="bbox", sync_on_compute=sync_on_compute
             ),
             "segm": MeanAveragePrecision(
-                iou_type="segm", dist_sync_on_step=dist_sync_on_step
+                iou_type="segm", sync_on_compute=sync_on_compute
             ),
         },
         prefix="test",
@@ -178,10 +178,10 @@ def create_metrics(strategy: Optional[str]) -> Union[MetricCollection, Dict]:
     """
     return {
         "bbox": MeanAveragePrecision(
-            iou_type="bbox", dist_sync_on_step=dist_sync_on_step
+            iou_type="bbox", sync_on_compute=sync_on_compute
         ),
         "segm": MeanAveragePrecision(
-            iou_type="segm", dist_sync_on_step=dist_sync_on_step
+            iou_type="segm", sync_on_compute=sync_on_compute
         ),
     }
 

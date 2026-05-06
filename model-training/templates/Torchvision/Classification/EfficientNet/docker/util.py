@@ -26,6 +26,7 @@ from typing import Optional, Union, TYPE_CHECKING
 from pytorch_lightning.callbacks import StochasticWeightAveraging
 from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 from pytorch_lightning.strategies import DDPStrategy
+from pytorch_lightning.tuner import Tuner
 from torchmetrics import MetricCollection, Accuracy, Precision, Recall, F1Score
 
 if TYPE_CHECKING:
@@ -154,12 +155,12 @@ def get_sync_dist(strategy: Optional[str]) -> bool:
 def create_metrics(
     num_classes: int, average: str, strategy: Optional[str], task='multiclass'
 ) -> MetricCollection:
-    dist_sync_on_step = strategy == "dp"
+    sync_on_compute = strategy == "dp"
 
     metric_params = {
         "num_classes": num_classes,
         "average": average,
-        "dist_sync_on_step": dist_sync_on_step,
+        "sync_on_compute": sync_on_compute,
         "task": task
     }
 
