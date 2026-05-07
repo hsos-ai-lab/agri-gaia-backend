@@ -16,19 +16,23 @@
 import sys
 import torch
 import subprocess
+import os
 
 from pathlib import Path
-from util import read_custom_config
+from util import read_custom_config, convert_args
 from export import _read_export_config, EXPORT_CONFIG_FILENAME
 
 if __name__ == "__main__":
-    train_args = sys.argv[1:]
-    train_cmd = ["python", "yolo_train.py"] + train_args
+    train_args = convert_args(sys.argv[1:])
+    train_cmd = ["yolo", "task=detect", "mode=train"] + train_args  
     try:
-        subprocess.run(train_cmd, stdout=sys.stdout, stderr=sys.stderr, check=True)
+        subprocess.run(train_cmd,
+        check=True
+        )
     except subprocess.CalledProcessError as e:
-        print(e.stderr)
-        raise e
+        raise RuntimeError(
+            f"Subprocess failed with exitcode {e.returncode}."
+        ) from e
 
     if Path(EXPORT_CONFIG_FILENAME).exists():
         export_config = _read_export_config()
@@ -41,22 +45,25 @@ if __name__ == "__main__":
             opset = export_config["opset_version"]
             verbose = export_config["verbose"]
 
+            try: 
+                model_name = list(filter(lambda element: "yolo" in str(element), sys.argv[1:]))[0]
+                model_name = model_name.replace(".pt", "")
+                os.rename(os.path.join("/train", model_name), os.path.join("/train", "model"))
+            except IndexError: 
+                print("Warning: No unique model name was found in the config. Using default model path.")
+                
+            
+
             export_cmd = [
-                "python",
-                "yolo_export.py",
-                "--weights",
-                model_filepath,
-                "--include",
-                "onnx",
-                "--opset",
-                opset,
-                "--batch-size",
-                batch_size,
-                "--imgsz",
-                height,
-                width,
-                "--device",
-                device,
+                 "yolo",
+                 "export",
+                 f"model={model_filepath}",
+                 "format=onnx",
+                 "task=detect",
+                 f"opset={opset}",
+                 f"batch={batch_size}",
+                 f"imgsz='{[height, width]}'",
+                 f"device={device}",
             ]
 
             export_cmd = list(map(str, export_cmd))

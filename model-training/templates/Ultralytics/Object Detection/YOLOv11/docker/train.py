@@ -25,10 +25,13 @@ if __name__ == "__main__":
     train_args = convert_args(sys.argv[1:])
     train_cmd = ["yolo", "task=detect", "mode=train"] + train_args
     try:
-        subprocess.run(train_cmd, stdout=sys.stdout, stderr=sys.stderr, check=True)
+        subprocess.run(train_cmd,         
+        check=True
+        )
     except subprocess.CalledProcessError as e:
-        print(e.stderr)
-        raise e
+        raise RuntimeError(
+            f"Subprocess failed with exitcode {e.returncode}."
+        ) from e
 
     if Path(EXPORT_CONFIG_FILENAME).exists():
         export_config = _read_export_config()
@@ -39,6 +42,15 @@ if __name__ == "__main__":
             batch_size, _, height, width = export_config["input_shapes"][0]
             device = torch.cuda.current_device() if torch.cuda.is_available() else "cpu"
             opset = export_config["opset_version"]
+
+            try: 
+                model_name = list(filter(lambda element: "yolo" in str(element), sys.argv[1:]))[0]
+                model_name = model_name.replace(".pt", "")
+                os.rename(os.path.join("/train", model_name), os.path.join("/train", "model"))
+            except IndexError: 
+                print("Warning: No unique model name was found in the config. Using default model
+                    path.")
+                
 
             export_cmd = [
                  "yolo",

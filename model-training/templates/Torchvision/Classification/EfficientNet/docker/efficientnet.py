@@ -80,16 +80,10 @@ class EfficientNet(pl.LightningModule):
             prog_bar=True,
             sync_dist=self.sync_dist,
         )
-        return {
-            "loss": train_loss,
-            "class_probabilities": class_probabilities,
-            "targets": targets,
-        }
+        self.train_metrics(class_probabilities, targets)
+        return train_loss
 
-    def training_step_end(self, outputs: Dict) -> None:
-        self.train_metrics(outputs["class_probabilities"], outputs["targets"])
-
-    def training_epoch_end(self, outputs: Dict) -> None:
+    def on_train_epoch_end(self) -> None:
         self.log_dict(
             self.train_metrics,
             on_step=False,
@@ -102,12 +96,9 @@ class EfficientNet(pl.LightningModule):
         images, targets = batch
         logits = self.model(images)
         class_probabilities = F.softmax(logits, dim=1)
-        return {"class_probabilities": class_probabilities, "targets": targets}
+        self.test_metrics(class_probabilities, targets)
 
-    def test_step_end(self, outputs: Dict) -> None:
-        self.test_metrics(outputs["class_probabilities"], outputs["targets"])
-
-    def test_epoch_end(self, outputs) -> None:
+    def on_test_epoch_end(self) -> None:
         self.log_dict(self.test_metrics, sync_dist=self.sync_dist)
 
     def configure_optimizers(self):

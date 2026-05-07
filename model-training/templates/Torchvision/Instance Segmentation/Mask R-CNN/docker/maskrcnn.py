@@ -102,14 +102,11 @@ class MaskRCNN(pl.LightningModule):
     def test_step(self, batch: Tuple[List, List], batch_idx: int) -> Dict:
         images, targets = batch
         predictions = self._threshold_predictions(self.model(images, targets=None))
-        return {"predictions": predictions, "targets": targets}
-
-    def test_step_end(self, outputs: Dict) -> None:
-        # self.test_metrics(outputs["predictions"], outputs["targets"])
         for iou_type in self.test_metrics.keys():
             self.test_metrics[iou_type].update(
-                outputs["predictions"], outputs["targets"]
+                predictions, targets
             )
+        return {"predictions": predictions, "targets": targets}
 
     def test_epoch_end(self, outputs) -> None:
         for iou_type in self.test_metrics.keys():

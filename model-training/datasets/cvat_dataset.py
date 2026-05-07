@@ -200,7 +200,11 @@ def as_coco(
         labels["categories"].append({"id": label_id, "name": label_name})
 
     annotation_id = 1
-    annotation_type = "polygon" if dataset_type == "segmentation" else "box"
+    annotation_type = (
+        "polygon" if dataset_type == "segmentation"
+        else "tag" if dataset_type == "classification"
+        else "box"
+    )
 
     # images
     for image_id, filepath in enumerate(files_with_annotations, start=1):
@@ -267,8 +271,7 @@ def as_coco(
                         "area": polygon.area,
                         "iscrowd": 0,
                     }
-                else:
-                    # annotation_type == "box"
+                elif annotation_type == "box":
                     minx, miny, maxx, maxy = map(
                         float,
                         [
@@ -279,6 +282,9 @@ def as_coco(
                         ],
                     )
                     extra_annotations = {"bbox": [minx, miny, maxx - minx, maxy - miny]}
+                else:
+                    # annotation_type == "tag": whole-image classification, no bbox
+                    extra_annotations = {}
 
                 labels["annotations"].append({**id_annotations, **extra_annotations})
 

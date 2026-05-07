@@ -132,10 +132,10 @@
           "opset_version": {
             "title": "ONNX model opset version",
             "type": "number",
-            "default": 14,
+            "default": 18,
             "description": "The targeted ONNX model opset.",
             "minimum": 7,
-            "maximum": 16
+            "maximum": 19
           }
         }
       }
