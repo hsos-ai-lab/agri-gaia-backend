@@ -120,8 +120,10 @@ def _export_onnx_model(model, format: ModelFormat, model_filepath: str) -> Path:
 
         model.eval()
         onnx_model_filepath = _onnx_model_filepath(model_filepath)
-        torch.onnx.export(model=model, f=onnx_model_filepath, **export_kwargs)
-            
+        torch.onnx.export(
+            model=model, f=onnx_model_filepath, external_data=False, **export_kwargs
+        )
+
         return onnx_model_filepath
 
     if format not in SUPPORTED_MODEL_FORMATS:
