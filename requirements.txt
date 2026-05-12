@@ -30,7 +30,7 @@ python-on-whales~=0.43.0
 prometheus-fastapi-instrumentator~=5.8.1,!=5.8.2
 memory-profiler~=0.60.0
 genson~=1.2.2
-jsonschema~=4.17.3
+jsonschema~=4.23.0
 numpy~=2.4.1
 matplotlib~=3.6.0
 xmltodict~=1.0.4
@@ -42,7 +42,7 @@ requirements-parser~=0.11.0
 validators~=0.28.0
 mistletoe~=1.0.1
 jsonref~=1.1.0
-openapi-spec-validator~=0.5.7
+openapi-spec-validator~=0.7.1
 dockerfile-parse~=2.0.1
 onnx~=1.21.0
 tritonclient[all]~=2.41.1
