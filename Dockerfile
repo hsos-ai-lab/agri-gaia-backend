@@ -29,7 +29,7 @@ WORKDIR /root
 COPY ./config/docker-client/config.json ./config/docker-client/add-nvidia-key.sh ./
 RUN ./add-nvidia-key.sh config.json "$NVIDIA_NGC_API_KEY"
 
-FROM python:3.11.3
+FROM python:3.12-bookworm
 
 WORKDIR /code
 RUN apt update && apt install -y dnsutils
@@ -40,7 +40,7 @@ COPY --from=docker/buildx-bin:latest /buildx /usr/local/lib/docker/cli-plugins/d
 COPY --from=backend_binaries nuctl /usr/local/bin
 
 COPY requirements.txt .
-RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
+RUN pip install --no-cache-dir --upgrade --timeout 120 --retries 5 -r /code/requirements.txt
 
 COPY . .
 ARG KEYCLOAK_REALM_NAME

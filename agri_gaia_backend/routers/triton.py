@@ -73,7 +73,7 @@ def get_tritonInfo(
     request: Request,
     models: List[int],
     datasets: List[int],
-    url: Optional[List[str]] = ["triton:8000"],
+    url: Optional[str] = "triton:8000",
     db: Session = Depends(get_db),
     task_creator: TaskCreator = Depends(get_task_creator),
 ) -> None:
@@ -228,7 +228,7 @@ def get_tritonInfo(
         user=user,
         models=models,
         datasets=datasets,
-        url=url[0],
+        url=url,
     )
 
     headers = {"Location": task_location_url}

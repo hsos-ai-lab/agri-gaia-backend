@@ -14,7 +14,7 @@
 # -*- coding: utf-8 -*-
 
 import json
-from typing import Dict
+from typing import Dict, List
 
 CUSTOM_CONFIG_FILENAME = "custom.json"
 
@@ -22,3 +22,27 @@ CUSTOM_CONFIG_FILENAME = "custom.json"
 def read_custom_config() -> Dict:
     with open(CUSTOM_CONFIG_FILENAME, "r", encoding="utf-8") as fh:
         return json.load(fh)
+
+def convert_args(argv: List[str]) -> List[str]:
+    args = []
+    argc = len(argv)
+    for i, entry in enumerate(argv):
+        if not entry.startswith("--"):
+            continue
+
+        if "=" in entry:
+            arg = entry[2:]
+        else:
+            arg = f"{entry[2:]}="
+
+            if i + 1 < argc:
+                if argv[i + 1].startswith("--"):
+                    value = True
+                else:
+                    value = argv[i + 1]
+            else:
+                value = True
+            arg += str(value)
+
+        args.append(arg)
+    return args

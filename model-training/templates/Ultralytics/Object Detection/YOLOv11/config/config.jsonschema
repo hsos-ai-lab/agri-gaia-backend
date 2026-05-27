@@ -1,5 +1,5 @@
 {
-  "description": "YOLOv11 v8.3.119 (Jocher et al., 2023) object detector provided by Ultralytics. Documentation: https://docs.ultralytics.com/modes/train/#train-settings",
+  "description": "YOLOv11 v8.3.119 (Jocher et al., 2023) object detector provided by Ultralytics. Documentation: https://docs.ultralytics.com/usage/cfg/#train-settings",
   "type": "object",
   "required": [],
   "properties": {

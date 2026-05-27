@@ -17,8 +17,11 @@ import os
 import torch
 import pytorch_lightning as pl
 
+from pathlib import Path
 from torch.utils.data import DataLoader
 from efficientnet_dataset import EfficientNetDataset
+
+from dataset import load_dataset_filepaths
 
 
 class EfficientNetDataModule(pl.LightningDataModule):
@@ -44,6 +47,7 @@ class EfficientNetDataModule(pl.LightningDataModule):
         self.test_split = None
 
     def setup(self, stage: str) -> None:
+
         self.train_split = EfficientNetDataset(
             root=os.path.join(self.images_dir, "train"),
             annFile=os.path.join(self.labels_dir, "train", "labels.json"),
@@ -55,6 +59,7 @@ class EfficientNetDataModule(pl.LightningDataModule):
             annFile=os.path.join(self.labels_dir, "val", "labels.json"),
             img_size=self.img_size,
         )
+
 
     def train_dataloader(self) -> DataLoader:
         return DataLoader(

@@ -30,7 +30,7 @@ from torchmetrics.detection.mean_ap import MeanAveragePrecision
 from pytorch_lightning.callbacks import StochasticWeightAveraging
 from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
-from pytorch_lightning.strategies import DDPStrategy, DDPSpawnStrategy
+from pytorch_lightning.strategies import DDPStrategy
 
 if TYPE_CHECKING:
     from maskrcnn import MaskRCNN
@@ -143,12 +143,12 @@ def get_num_classes(labels_filepath: str) -> int:
 
 def configure_strategy(
     strategy: Optional[str],
-) -> Union[DDPStrategy, DDPSpawnStrategy, Optional[str]]:
+) -> Union[DDPStrategy, Optional[str]]:
     if strategy == "ddp":
         return DDPStrategy(find_unused_parameters=False)
 
     if strategy == "ddp_spawn":
-        return DDPSpawnStrategy(find_unused_parameters=False)
+        return DDPStrategy(start_method="spawn", find_unused_parameters=False)
 
     return strategy
 
@@ -160,17 +160,17 @@ def get_sync_dist(strategy: Optional[str]) -> bool:
 
 
 def create_metrics(strategy: Optional[str]) -> Union[MetricCollection, Dict]:
-    dist_sync_on_step = strategy == "dp"
+    sync_on_compute = strategy == "dp"
 
     # Issue with mAP iou_type="segm": https://github.com/Lightning-AI/metrics/issues/1239
     """
     return MetricCollection(
         {
             "bbox": MeanAveragePrecision(
-                iou_type="bbox", dist_sync_on_step=dist_sync_on_step
+                iou_type="bbox", sync_on_compute=sync_on_compute
             ),
             "segm": MeanAveragePrecision(
-                iou_type="segm", dist_sync_on_step=dist_sync_on_step
+                iou_type="segm", sync_on_compute=sync_on_compute
             ),
         },
         prefix="test",
@@ -178,10 +178,10 @@ def create_metrics(strategy: Optional[str]) -> Union[MetricCollection, Dict]:
     """
     return {
         "bbox": MeanAveragePrecision(
-            iou_type="bbox", dist_sync_on_step=dist_sync_on_step
+            iou_type="bbox", sync_on_compute=sync_on_compute
         ),
         "segm": MeanAveragePrecision(
-            iou_type="segm", dist_sync_on_step=dist_sync_on_step
+            iou_type="segm", sync_on_compute=sync_on_compute
         ),
     }
 
