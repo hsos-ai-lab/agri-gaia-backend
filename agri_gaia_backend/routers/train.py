@@ -39,7 +39,7 @@ from agri_gaia_backend.routers.common import (
     get_db,
     get_task_creator,
 )
-from agri_gaia_backend.util.common import gpu_available
+from agri_gaia_backend.util.common import gpu_available, get_torch_cuda_index
 from agri_gaia_backend.routers.datasets import update_annotations_from_cvat
 from agri_gaia_backend.routers.models import persist_model, persist_model_artifact
 from agri_gaia_backend.schemas.keycloak_user import KeycloakUser
@@ -142,6 +142,13 @@ def build_train_image(
             )
             image_tag = datetime.now().strftime("%Y-%m-%dT%H-%M-%S") + "-train"
 
+            torch_cuda_index = get_torch_cuda_index()
+            build_kwargs = (
+                {"build_args": {"TORCH_CUDA_INDEX": torch_cuda_index}}
+                if torch_cuda_index
+                else {}
+            )
+
             image_builder._build_and_push_image(
                 context_directory=context_directory,
                 repository_url=repository_url,
@@ -150,6 +157,7 @@ def build_train_image(
                 status_callback=lambda type, info: logger.info(
                     f"{type}: {json.dumps(info)}"
                 ),
+                **build_kwargs,
             )
 
         image_id = f"{repository_url}:{image_tag}"
