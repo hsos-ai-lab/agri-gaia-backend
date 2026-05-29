@@ -31,6 +31,7 @@ from pytorch_lightning.callbacks import StochasticWeightAveraging
 from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
 from pytorch_lightning.strategies import DDPStrategy
+from pytorch_lightning.tuner import Tuner
 
 if TYPE_CHECKING:
     from maskrcnn import MaskRCNN
@@ -111,21 +112,24 @@ def train_and_test_model(
         devices="auto",
         limit_val_batches=0,
         log_every_n_steps=1,
-        auto_lr_find=auto_lr_find,
-        auto_scale_batch_size=auto_scale_batch_size,
         strategy=configure_strategy(strategy),
         callbacks=callbacks,
     )
 
-    if not trainer.auto_lr_find:
+    if not auto_lr_find:
         print("Auto learning rate finder is disabled.")
 
-    if not trainer.auto_scale_batch_size:
+    if not auto_scale_batch_size:
         print("Auto batch size finder is disabled")
 
-    if trainer.auto_lr_find or trainer.auto_scale_batch_size:
-        trainer.tune(model=mask_rcnn, datamodule=data)
-        if trainer.auto_lr_find:
+    if auto_lr_find or auto_scale_batch_size:
+        tuner = Tuner(trainer)
+        if auto_scale_batch_size:
+            tuner.scale_batch_size(
+                model=mask_rcnn, datamodule=data, mode=auto_scale_batch_size
+            )
+        if auto_lr_find:
+            tuner.lr_find(model=mask_rcnn, datamodule=data)
             print("Automatically determined learning rate:", mask_rcnn.learning_rate)
 
     trainer.fit(model=mask_rcnn, datamodule=data)

@@ -108,7 +108,7 @@ class MaskRCNN(pl.LightningModule):
             )
         return {"predictions": predictions, "targets": targets}
 
-    def test_epoch_end(self, outputs) -> None:
+    def on_test_epoch_end(self) -> None:
         for iou_type in self.test_metrics.keys():
             test_metrics = {
                 f"{iou_type}_{map_type}": map_value
