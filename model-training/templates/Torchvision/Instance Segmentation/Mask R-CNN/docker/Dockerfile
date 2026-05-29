@@ -9,7 +9,7 @@
 #
 # SPDX-License-Identifier: MIT
 
-FROM nvcr.io/nvidia/pytorch:22.08-py3
+FROM nvcr.io/nvidia/pytorch:26.03-py3
 
 ARG DEBIAN_FRONTEND=noninteractive
 
@@ -38,6 +38,11 @@ COPY config_to_args.py config.py dataset.py cvat_dataset.py export.py ./
 
 COPY train.py args.py util.py setup.py maskrcnn.py maskrcnn_datamodule.py maskrcnn_dataset.py \
   requirements.txt train_config.json presets.json export_config.json ./
+
+# Wheel index auto-selected from host GPUs by the backend (build arg).
+# Default cu126 covers CC 7.0-9.0 (incl. Volta V100) for manual builds / detection failure.
+ARG TORCH_CUDA_INDEX=https://download.pytorch.org/whl/cu126
+RUN pip3 install --index-url ${TORCH_CUDA_INDEX} torch~=2.11.0 torchvision~=0.26.0
 RUN pip3 install -r requirements.txt
 
 COPY .env ./

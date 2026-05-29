@@ -34,6 +34,14 @@ WORKDIR /workspace
 COPY config_to_args.py config.py dataset.py cvat_dataset.py ./
 
 COPY requirements.txt setup.py util.py train.py export.py train_config.json custom.json presets.json export_config.json ./
+
+# Re-point the base image's torch at the host-matched CUDA wheel, keeping the
+# exact version Ultralytics ships. Index is auto-selected from host GPUs by the
+# backend (build arg); default cu126 covers CC 7.0-9.0 (incl. Volta V100).
+ARG TORCH_CUDA_INDEX=https://download.pytorch.org/whl/cu126
+RUN TORCH_VER="$(python3 -c 'import torch; print(torch.__version__.split("+")[0])')" && \
+    TV_VER="$(python3 -c 'import torchvision; print(torchvision.__version__.split("+")[0])')" && \
+    pip3 install --index-url ${TORCH_CUDA_INDEX} "torch==${TORCH_VER}" "torchvision==${TV_VER}"
 RUN pip3 install -r requirements.txt
 
 COPY .env ./
