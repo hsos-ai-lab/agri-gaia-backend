@@ -83,10 +83,6 @@ def _create_export_kwargs(export_config: Dict, format: ModelFormat) -> Dict:
             for input_shape, input_type in zip(input_shapes, input_types)
         )
         export_kwargs["input_names"] = input_names
-
-        # Remove deprecated kwargs not supported by the PyTorch 2.x ONNX exporter
-        for key in ("training", "operator_export_type"):
-            export_kwargs.pop(key, None)
     elif format == ModelFormat.TENSORFLOW:
         # Nothing to do.
         # See: https://github.com/onnx/onnxmltools/blob/79c34e377fe3a24d22eabac010e464de061d7adf/onnxmltools/convert/main.py#L424

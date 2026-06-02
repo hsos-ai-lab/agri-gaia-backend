@@ -154,7 +154,7 @@ def configure_strategy(
     if strategy == "ddp_spawn":
         return DDPStrategy(start_method="spawn", find_unused_parameters=False)
 
-    return strategy
+    return "auto"
 
 
 def get_sync_dist(strategy: Optional[str]) -> bool:

@@ -113,7 +113,7 @@ class MaskRCNN(pl.LightningModule):
             test_metrics = {
                 f"{iou_type}_{map_type}": map_value
                 for map_type, map_value in self.test_metrics[iou_type].compute().items()
-                if float(map_value) >= 0
+                if map_value.numel() == 1 and float(map_value) >= 0
             }
 
             self.log_dict(
