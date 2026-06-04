@@ -447,7 +447,8 @@ def _create_initial_entry_postgres(
 
         return created_dataset
     except Exception as e:
-        logger.error("Saving into Postgres failed. Stacktrace:\n" + get_stacktrace(e))
+        logger.error(
+            "Saving into Postgres failed. Stacktrace:\n" + get_stacktrace(e))
         raise HTTPException(
             status_code=500,
             detail="Initial Creation of Dataset failed. Please try again.",
@@ -491,7 +492,8 @@ def _save_dataset_metadata_to_fuseki(
         HTTPException: If uploading metadata to Fuseki failes.
     """
     try:
-        config_files = validate_dataresource_configuration_files(dataset_type, files)
+        config_files = validate_dataresource_configuration_files(
+            dataset_type, files)
         temporary_fuseki_dataset = "dataset-" + str(dataset.id)
         if labels is None:
             labels = []
@@ -530,7 +532,8 @@ def _save_dataset_metadata_to_fuseki(
         sparql_util.store_graph(graph, temporary_fuseki_dataset)
 
         shape_information = sparql_util.get_shapes()
-        report = sparql_util.shacl_validate(temporary_fuseki_dataset, shape_information)
+        report = sparql_util.shacl_validate(
+            temporary_fuseki_dataset, shape_information)
 
         if not report["sh:conforms"]:
             raise HTTPException(
@@ -544,7 +547,8 @@ def _save_dataset_metadata_to_fuseki(
         return fuseki_id
     except Exception as e:
         logger.error(
-            "Uploading Metadata to Fuseki failed. Stacktrace:\n" + get_stacktrace(e)
+            "Uploading Metadata to Fuseki failed. Stacktrace:\n" +
+            get_stacktrace(e)
         )
         _delete_postgres_entry(dataset.id, db)
         raise HTTPException(
@@ -672,7 +676,8 @@ def _upload_dataset_to_minio(
         return dataset_prefix, labels
     except Exception as e:
         logger.error(
-            "Uploading Files to Minio failed. Stacktrace:\n" + get_stacktrace(e)
+            "Uploading Files to Minio failed. Stacktrace:\n" +
+            get_stacktrace(e)
         )
         _delete_postgres_entry(dataset.id, db)
         _delete_fuseki_entry(fuseki_id, dataset.id)
@@ -712,10 +717,12 @@ def _save_dataset_to_postgres(
 
         return sql_api.update_dataset(db, dataset)
     except Exception as ex:
-        logger.error("Saving into Postgres failed. Stacktrace:\n" + get_stacktrace(ex))
+        logger.error(
+            "Saving into Postgres failed. Stacktrace:\n" + get_stacktrace(ex))
         _delete_postgres_entry(dataset.id, db)
         _delete_fuseki_entry(fuseki_id, dataset.id)
-        _remove_files_from_minio(dataset.bucket_name, f"datasets/{dataset.id}/", token)
+        _remove_files_from_minio(
+            dataset.bucket_name, f"datasets/{dataset.id}/", token)
         raise HTTPException(
             status_code=500,
             detail="Saving of Dataset into Database failed. Please try again.",
@@ -835,7 +842,8 @@ def annotate_dataset(request: Request, dataset_id: int, db: Session = Depends(ge
 
     cvat_server = _get_docker_container_fuzzy("cvat_server")
     if cvat_server is None:
-        raise HTTPException(status_code=500, detail="CVAT server is not running.")
+        raise HTTPException(
+            status_code=500, detail="CVAT server is not running.")
 
     mount_bucket_cmd = f"/bin/bash -c '$HOME/mount-minio-bucket.sh {MINIO_ENDPOINT} {dataset.bucket_name} {dataset.id}'"
     print(f"Executing: docker exec -it {cvat_server.name}", mount_bucket_cmd)
@@ -927,7 +935,8 @@ def convert_labels(
             image_paths = None
             if input_type == fo.types.COCODetectionDataset:
                 labels = json.loads(labels)
-                image_paths = [image["file_name"] for image in labels["images"]]
+                image_paths = [image["file_name"]
+                               for image in labels["images"]]
                 # With COCO, only labels of type "detections" are read by default.
                 from_dir_args["label_types"] = ("detections", "segmentations")
             elif input_type == fo.types.CVATImageDataset:
@@ -936,7 +945,8 @@ def convert_labels(
                 image_paths = [image["@name"] for image in images]
 
             data_path = {
-                image_path: os.path.join(tmp_dir, "data", os.path.basename(image_path))
+                image_path: os.path.join(
+                    tmp_dir, "data", os.path.basename(image_path))
                 for image_path in image_paths
             }
             from_dir_args["data_path"] = data_path
@@ -1022,14 +1032,16 @@ def convert_labels(
                             filename=os.path.basename(label_output_path),
                         )
                 else:
-                    raise RuntimeError("Converted label file was not generated.")
+                    raise RuntimeError(
+                        "Converted label file was not generated.")
 
             output_label_filepaths = list(Path(output_dir).rglob("*.*"))
             if output_label_filepaths:
                 output_label_files = {}
                 for output_label_filepath in output_label_filepaths:
                     with open(output_label_filepath, "rb") as fh:
-                        output_label_files[output_label_filepath.name] = fh.read()
+                        output_label_files[output_label_filepath.name] = fh.read(
+                        )
 
                 return create_zip_file_response(
                     files=output_label_files,
@@ -1067,8 +1079,13 @@ def create_auto_annotation_model(
                     f"nuctl create project {NUCLIO_CVAT_PROJECT_NAME}"
                 )
 
-                archive_dirname, _ = os.path.splitext(auto_annotation_archive.filename)
-                nuclio_deploy_cmd = f"nuctl deploy --project-name={NUCLIO_CVAT_PROJECT_NAME} --path={archive_dirname} --platform=local"
+                archive_dirname, _ = os.path.splitext(
+                    auto_annotation_archive.filename)
+                nuclio_deploy_cmd = (
+                    f"nuctl deploy --project-name={NUCLIO_CVAT_PROJECT_NAME} "
+                    f"--path={archive_dirname} --platform=local "
+                    "--platform-config='{\"attributes\":{\"network\":\"agri_gaia_network\"}}'"
+                )
 
                 if gpu_available():
                     nuclio_deploy_cmd += ' --resource-limit="nvidia.com/gpu=1" --triggers=\'{"myHttpTrigger": {"maxWorkers": 1}}\''
@@ -1101,7 +1118,8 @@ def create_auto_annotation_model(
 
 def _create_zip(dataset: Dataset, token):
     downloaded_files = {}
-    metadata = sparql_util.get_metadata_information_for_uri(dataset.metadata_uri)
+    metadata = sparql_util.get_metadata_information_for_uri(
+        dataset.metadata_uri)
     downloaded_files["metadata.json"] = json.dumps(metadata).encode("utf-8")
     for item in minio_api.get_all_objects(
         dataset.bucket_name, prefix=dataset.minio_location, token=token
@@ -1129,7 +1147,8 @@ def _remove_zip(dataset: Dataset, token):
 
 
 def _create_catalog_entry(dataset: Dataset):
-    metadata = sparql_util.get_metadata_information_for_uri(dataset.metadata_uri)
+    metadata = sparql_util.get_metadata_information_for_uri(
+        dataset.metadata_uri)
     return build_catalogue_entry_from_metadata(dataset, metadata)
 
 
@@ -1178,7 +1197,8 @@ def _remove_catalog_entry(dataset: Dataset):
 # TODO: Move this to docker_api (for some reason, listing all containers does not work using docker_api)
 def _get_docker_container_fuzzy(fuzzy_name: str):
     client = docker.from_env()
-    containers = list(filter(lambda c: fuzzy_name in c.name, client.containers.list()))
+    containers = list(
+        filter(lambda c: fuzzy_name in c.name, client.containers.list()))
     if len(containers) == 1:
         return containers[0]
 
@@ -1205,7 +1225,8 @@ def _delete_fuseki_entry(metadata_uri: str, id: int):
 
 
 def _remove_files_from_minio(bucket_name: str, dataset_prefix: str, token):
-    minio_api.delete_all_objects(bucket_name, prefix=dataset_prefix, token=token)
+    minio_api.delete_all_objects(
+        bucket_name, prefix=dataset_prefix, token=token)
 
 
 def _remove_files_from_cvat(cvat_auth: Dict, dataset: Dataset) -> None:
