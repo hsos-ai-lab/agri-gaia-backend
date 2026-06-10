@@ -111,27 +111,22 @@ def gpu_available() -> bool:
 
 
 def get_torch_cuda_index() -> Optional[str]:
-    """Pick the PyTorch CUDA wheel index matching the host GPUs' compute
-    capabilities. Returns None if detection fails (Dockerfile default applies)."""
-    try:
-        out = subprocess.check_output(
-            ["nvidia-smi", "--query-gpu=compute_cap", "--format=csv,noheader,nounits"],
-            text=True,
-        )
-        caps = sorted({float(line.strip()) for line in out.splitlines() if line.strip()})
-        if not caps:
-            return None
-        if caps[-1] <= 9.0:  # all GPUs Volta..Hopper
-            return TORCH_CUDA_INDEX_CU126
-        if caps[0] >= 7.5:  # all GPUs Turing..Blackwell
-            return TORCH_CUDA_INDEX_CU128
-        logger.warning(  # Volta + Blackwell: no single wheel supports both
-            "Host has both Volta (CC 7.0) and Blackwell (CC>=10) GPUs; no single "
-            "torch wheel supports both. Falling back to cu126 (Blackwell unused)."
-        )
-        return TORCH_CUDA_INDEX_CU126
-    except Exception:
-        return None
+    """Return the PyTorch CUDA wheel index used to build the training images.
+
+    Pinned to cu126 because the deployment fleet is Volta (Tesla V100-DGXS,
+    CC 7.0) and cu126 is the newest wheel line that still ships sm_70 kernels
+    (cu128 dropped Volta as of torch 2.11); cu126 covers CC 7.0-9.0
+    (Volta..Hopper).
+
+    The previous nvidia-smi auto-detection keyed off the *build* host's GPUs,
+    which can differ from the *run* host (the V100). When the build host had
+    only CC>=7.5 GPUs it selected the cu128 wheel, which then fails on the V100
+    with cudaErrorNoKernelImageForDevice. Forcing cu126 removes that mismatch.
+
+    If Blackwell (CC>=10) hardware is ever added, revisit: cu126 cannot serve it
+    and a separate wheel index keyed off the actual run host would be required.
+    """
+    return TORCH_CUDA_INDEX_CU126
 
 
 def is_valid_json(filepath: str) -> Tuple[bool, Optional[str]]:
