@@ -33,24 +33,31 @@ if __name__ == "__main__":
             f"Subprocess failed with exitcode {e.returncode}."
         ) from e
 
+    custom_config = read_custom_config()
+    model_filepath = custom_config["model_filepath"]
+
+    # `yolo train` saves to <project>/<name>/weights/best.pt, but <name> may not
+    # match the fixed path in custom.json (/train/detect) that both the ONNX export
+    # and the backend's model retrieval expect. Normalise the actual run directory
+    # to that fixed location if it drifted (runs whether or not export is on).
+    expected_dir = Path(model_filepath).parent.parent
+    if not expected_dir.exists():
+        produced = sorted(
+            Path("/train").glob("*/weights/best.pt"),
+            key=lambda p: p.stat().st_mtime,
+        )
+        if not produced:
+            raise FileNotFoundError(
+                "No best.pt produced under /train after training."
+            )
+        produced[-1].parent.parent.rename(expected_dir)
+
     if Path(EXPORT_CONFIG_FILENAME).exists():
         export_config = _read_export_config()
         if export_config:
-            custom_config = read_custom_config()
-            model_filepath = custom_config["model_filepath"]
-
             batch_size, _, height, width = export_config["input_shapes"][0]
             device = torch.cuda.current_device() if torch.cuda.is_available() else "cpu"
             opset = export_config["opset_version"]
-
-            try: 
-                model_name = list(filter(lambda element: "yolo" in str(element), sys.argv[1:]))[0]
-                model_name = model_name.replace(".pt", "")
-                os.rename(os.path.join("/train", model_name), os.path.join("/train", "model"))
-            except IndexError: 
-                print("Warning: No unique model name was found in the config. Using default model
-                    path.")
-                
 
             export_cmd = [
                  "yolo",
