@@ -9,7 +9,7 @@
 #
 # SPDX-License-Identifier: MIT
 
-FROM alpine as backend_binaries
+FROM alpine AS backend_binaries
 
 ARG DOCKER_VERSION
 ARG NUCLIO_VERSION
@@ -19,7 +19,7 @@ RUN wget https://download.docker.com/linux/static/stable/x86_64/docker-${DOCKER_
 RUN wget https://github.com/nuclio/nuclio/releases/download/${NUCLIO_VERSION}/nuctl-${NUCLIO_VERSION}-linux-amd64
 RUN chmod +x nuctl-${NUCLIO_VERSION}-linux-amd64 && mv nuctl-${NUCLIO_VERSION}-linux-amd64 nuctl
 
-FROM alpine as docker_config_stage
+FROM alpine AS docker_config_stage
 
 RUN apk update && apk add jq moreutils
 
