@@ -33,10 +33,10 @@ def own_connector_information():
     )
 
     dict = {
-        "connector_data_url": "https://edc-provider."
+        "connector_data_url": "https://edc."
         + PROJECT_BASE_URL
         + "/api/v1/data",
-        "connector_ids_url": "https://edc-provider-ids."
+        "connector_ids_url": "https://edc-ids."
         + PROJECT_BASE_URL.replace("edc-provider", "edc-provider-ids")
         + "/api/v1/ids/data",
         "minio_url": "https://minio."
