@@ -127,7 +127,7 @@ def _upload_files_to_minio(
         data = io.BytesIO(file["content"])
         client.put_object(
             bucket,
-            f"dataset/{dataset_id}/{file['name']}",
+            f"datasets/{dataset_id}/{file['name']}",
             data,
             length=len(file["content"]),
             content_type=file["content_type"],
