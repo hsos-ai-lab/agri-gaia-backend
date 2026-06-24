@@ -11,8 +11,8 @@
 
 FROM alpine AS backend_binaries
 
-ARG DOCKER_VERSION="27.1.2"
-ARG NUCLIO_VERSION="1.8.18"
+ARG DOCKER_VERSION="29.4.1"
+ARG NUCLIO_VERSION="1.16.4"
 
 RUN wget https://download.docker.com/linux/static/stable/x86_64/docker-${DOCKER_VERSION}.tgz
 RUN tar xzf docker-${DOCKER_VERSION}.tgz
@@ -48,7 +48,7 @@ COPY --from=backend_binaries nuctl /usr/local/bin
 
 COPY requirements.txt .
 RUN python -m pip install --upgrade pip==${PIP_VERSION}
-RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
+RUN pip install --no-cache-dir --upgrade --timeout 120 --retries 5 -r /code/requirements.txt
 
 COPY . .
 ARG KEYCLOAK_REALM_NAME

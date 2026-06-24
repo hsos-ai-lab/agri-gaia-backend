@@ -11,6 +11,7 @@
 
 import json
 import shutil
+import logging
 import colorsys
 import traceback
 import numpy as np
@@ -23,6 +24,11 @@ from matplotlib.colors import rgb2hex
 from collections.abc import MutableMapping
 from pathlib import Path
 from json import JSONDecodeError
+
+logger = logging.getLogger("api-logger")
+
+TORCH_CUDA_INDEX_CU126 = "https://download.pytorch.org/whl/cu126"  # CC 7.0-9.0
+TORCH_CUDA_INDEX_CU128 = "https://download.pytorch.org/whl/cu128"  # CC 7.5-12.0
 
 
 def get_stacktrace(exc: Exception) -> str:
@@ -104,9 +110,28 @@ def gpu_available() -> bool:
         return False
 
 
+def get_torch_cuda_index() -> Optional[str]:
+    """Return the PyTorch CUDA wheel index used to build the training images.
+
+    Pinned to cu126 because the deployment fleet is Volta (Tesla V100-DGXS,
+    CC 7.0) and cu126 is the newest wheel line that still ships sm_70 kernels
+    (cu128 dropped Volta as of torch 2.11); cu126 covers CC 7.0-9.0
+    (Volta..Hopper).
+
+    The previous nvidia-smi auto-detection keyed off the *build* host's GPUs,
+    which can differ from the *run* host (the V100). When the build host had
+    only CC>=7.5 GPUs it selected the cu128 wheel, which then fails on the V100
+    with cudaErrorNoKernelImageForDevice. Forcing cu126 removes that mismatch.
+
+    If Blackwell (CC>=10) hardware is ever added, revisit: cu126 cannot serve it
+    and a separate wheel index keyed off the actual run host would be required.
+    """
+    return TORCH_CUDA_INDEX_CU126
+
+
 def is_valid_json(filepath: str) -> Tuple[bool, Optional[str]]:
     try:
-        with open(filepath, "r", encoding="utf-8") as fh:
+        with open(filepath, "r") as fh:
             json.load(fh)
         return True, None
     except JSONDecodeError as e:

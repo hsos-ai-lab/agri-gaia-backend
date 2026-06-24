@@ -25,17 +25,36 @@ if __name__ == "__main__":
     train_args = convert_args(sys.argv[1:])
     train_cmd = ["yolo", "task=detect", "mode=train"] + train_args
     try:
-        subprocess.run(train_cmd, stdout=sys.stdout, stderr=sys.stderr, check=True)
+        subprocess.run(train_cmd,         
+        check=True
+        )
     except subprocess.CalledProcessError as e:
-        print(e.stderr)
-        raise e
+        raise RuntimeError(
+            f"Subprocess failed with exitcode {e.returncode}."
+        ) from e
+
+    custom_config = read_custom_config()
+    model_filepath = custom_config["model_filepath"]
+
+    # `yolo train` saves to <project>/<name>/weights/best.pt, but <name> may not
+    # match the fixed path in custom.json (/train/detect) that both the ONNX export
+    # and the backend's model retrieval expect. Normalise the actual run directory
+    # to that fixed location if it drifted (runs whether or not export is on).
+    expected_dir = Path(model_filepath).parent.parent
+    if not expected_dir.exists():
+        produced = sorted(
+            Path("/train").glob("*/weights/best.pt"),
+            key=lambda p: p.stat().st_mtime,
+        )
+        if not produced:
+            raise FileNotFoundError(
+                "No best.pt produced under /train after training."
+            )
+        produced[-1].parent.parent.rename(expected_dir)
 
     if Path(EXPORT_CONFIG_FILENAME).exists():
         export_config = _read_export_config()
         if export_config:
-            custom_config = read_custom_config()
-            model_filepath = custom_config["model_filepath"]
-
             batch_size, _, height, width = export_config["input_shapes"][0]
             device = torch.cuda.current_device() if torch.cuda.is_available() else "cpu"
             opset = export_config["opset_version"]

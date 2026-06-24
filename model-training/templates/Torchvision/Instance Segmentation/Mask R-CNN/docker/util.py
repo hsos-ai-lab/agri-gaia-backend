@@ -30,7 +30,8 @@ from torchmetrics.detection.mean_ap import MeanAveragePrecision
 from pytorch_lightning.callbacks import StochasticWeightAveraging
 from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
-from pytorch_lightning.strategies import DDPStrategy, DDPSpawnStrategy
+from pytorch_lightning.strategies import DDPStrategy
+from pytorch_lightning.tuner import Tuner
 
 if TYPE_CHECKING:
     from maskrcnn import MaskRCNN
@@ -111,21 +112,24 @@ def train_and_test_model(
         devices="auto",
         limit_val_batches=0,
         log_every_n_steps=1,
-        auto_lr_find=auto_lr_find,
-        auto_scale_batch_size=auto_scale_batch_size,
         strategy=configure_strategy(strategy),
         callbacks=callbacks,
     )
 
-    if not trainer.auto_lr_find:
+    if not auto_lr_find:
         print("Auto learning rate finder is disabled.")
 
-    if not trainer.auto_scale_batch_size:
+    if not auto_scale_batch_size:
         print("Auto batch size finder is disabled")
 
-    if trainer.auto_lr_find or trainer.auto_scale_batch_size:
-        trainer.tune(model=mask_rcnn, datamodule=data)
-        if trainer.auto_lr_find:
+    if auto_lr_find or auto_scale_batch_size:
+        tuner = Tuner(trainer)
+        if auto_scale_batch_size:
+            tuner.scale_batch_size(
+                model=mask_rcnn, datamodule=data, mode=auto_scale_batch_size
+            )
+        if auto_lr_find:
+            tuner.lr_find(model=mask_rcnn, datamodule=data)
             print("Automatically determined learning rate:", mask_rcnn.learning_rate)
 
     trainer.fit(model=mask_rcnn, datamodule=data)
@@ -143,14 +147,14 @@ def get_num_classes(labels_filepath: str) -> int:
 
 def configure_strategy(
     strategy: Optional[str],
-) -> Union[DDPStrategy, DDPSpawnStrategy, Optional[str]]:
+) -> Union[DDPStrategy, Optional[str]]:
     if strategy == "ddp":
         return DDPStrategy(find_unused_parameters=False)
 
     if strategy == "ddp_spawn":
-        return DDPSpawnStrategy(find_unused_parameters=False)
+        return DDPStrategy(start_method="spawn", find_unused_parameters=False)
 
-    return strategy
+    return "auto"
 
 
 def get_sync_dist(strategy: Optional[str]) -> bool:
@@ -160,17 +164,17 @@ def get_sync_dist(strategy: Optional[str]) -> bool:
 
 
 def create_metrics(strategy: Optional[str]) -> Union[MetricCollection, Dict]:
-    dist_sync_on_step = strategy == "dp"
+    sync_on_compute = strategy == "dp"
 
     # Issue with mAP iou_type="segm": https://github.com/Lightning-AI/metrics/issues/1239
     """
     return MetricCollection(
         {
             "bbox": MeanAveragePrecision(
-                iou_type="bbox", dist_sync_on_step=dist_sync_on_step
+                iou_type="bbox", sync_on_compute=sync_on_compute
             ),
             "segm": MeanAveragePrecision(
-                iou_type="segm", dist_sync_on_step=dist_sync_on_step
+                iou_type="segm", sync_on_compute=sync_on_compute
             ),
         },
         prefix="test",
@@ -178,10 +182,10 @@ def create_metrics(strategy: Optional[str]) -> Union[MetricCollection, Dict]:
     """
     return {
         "bbox": MeanAveragePrecision(
-            iou_type="bbox", dist_sync_on_step=dist_sync_on_step
+            iou_type="bbox", sync_on_compute=sync_on_compute
         ),
         "segm": MeanAveragePrecision(
-            iou_type="segm", dist_sync_on_step=dist_sync_on_step
+            iou_type="segm", sync_on_compute=sync_on_compute
         ),
     }
 

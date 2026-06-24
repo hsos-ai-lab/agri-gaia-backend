@@ -106,36 +106,19 @@
             "default": false,
             "description": "Print description of exported model."
           },
-          "training": {
-            "title": "Model export mode",
-            "type": "string",
-            "enum": [
-              "EVAL",
-              "PRESERVE",
-              "TRAINING"
-            ],
-            "default": "EVAL",
-            "description": "Export the model in a specific mode."
-          },
-          "operator_export_type": {
-            "title": "Operator export type",
-            "type": "string",
-            "enum": [
-              "ONNX",
-              "ONNX_FALLTHROUGH",
-              "ONNX_ATEN",
-              "ONNX_ATEN_FALLBACK"
-            ],
-            "default": "ONNX",
-            "description": "Export type for ops"
+          "dynamo": {
+            "title": "Use dynamo-based ONNX exporter",
+            "type": "boolean",
+            "default": false,
+            "description": "If true, uses the torch.export-based ONNX exporter (default in torch>=2.9). If false, uses the legacy TorchScript-based exporter. Set to false for torchvision detection models (Mask R-CNN, Faster R-CNN, RetinaNet, SSD, ...) — the dynamo exporter cannot trace data-dependent shapes in batched_nms."
           },
           "opset_version": {
             "title": "ONNX model opset version",
             "type": "number",
-            "default": 14,
+            "default": 18,
             "description": "The targeted ONNX model opset.",
             "minimum": 7,
-            "maximum": 16
+            "maximum": 19
           }
         }
       }

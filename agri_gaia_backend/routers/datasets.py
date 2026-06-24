@@ -1068,7 +1068,13 @@ def create_auto_annotation_model(
                 )
 
                 archive_dirname, _ = os.path.splitext(auto_annotation_archive.filename)
-                nuclio_deploy_cmd = f"nuctl deploy --project-name={NUCLIO_CVAT_PROJECT_NAME} --path={archive_dirname} --platform=local"
+                platform_config = json.dumps({"attributes": {"network": "agri_gaia_network"}})
+
+                nuclio_deploy_cmd = (
+                    f"nuctl deploy --project-name={NUCLIO_CVAT_PROJECT_NAME} "
+                    f"--path={archive_dirname} --platform=local "
+                    f"--platform-config='{platform_config}'"
+                )
 
                 if gpu_available():
                     nuclio_deploy_cmd += ' --resource-limit="nvidia.com/gpu=1" --triggers=\'{"myHttpTrigger": {"maxWorkers": 1}}\''

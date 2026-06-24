@@ -18,45 +18,59 @@ import torch
 import subprocess
 
 from pathlib import Path
-from util import read_custom_config
+from util import read_custom_config, convert_args
 from export import _read_export_config, EXPORT_CONFIG_FILENAME
 
 if __name__ == "__main__":
-    train_args = sys.argv[1:]
-    train_cmd = ["python", "yolo_train.py"] + train_args
+    train_args = convert_args(sys.argv[1:])
+    train_cmd = ["yolo", "task=detect", "mode=train"] + train_args  
     try:
-        subprocess.run(train_cmd, stdout=sys.stdout, stderr=sys.stderr, check=True)
+        subprocess.run(train_cmd,
+        check=True
+        )
     except subprocess.CalledProcessError as e:
-        print(e.stderr)
-        raise e
+        raise RuntimeError(
+            f"Subprocess failed with exitcode {e.returncode}."
+        ) from e
+
+    custom_config = read_custom_config()
+    model_filepath = custom_config["model_filepath"]
+
+    # `yolo train` saves to <project>/<name>/weights/best.pt, but <name> follows
+    # the chosen model (e.g. /train/yolov5m) and won't match the fixed path in
+    # custom.json (/train/model) that both the ONNX export and the backend's model
+    # retrieval expect. Normalise the actual run directory to that fixed location
+    # so every downstream consumer finds it (runs whether or not export is on).
+    expected_dir = Path(model_filepath).parent.parent
+    if not expected_dir.exists():
+        produced = sorted(
+            Path("/train").glob("*/weights/best.pt"),
+            key=lambda p: p.stat().st_mtime,
+        )
+        if not produced:
+            raise FileNotFoundError(
+                "No best.pt produced under /train after training."
+            )
+        produced[-1].parent.parent.rename(expected_dir)
 
     if Path(EXPORT_CONFIG_FILENAME).exists():
         export_config = _read_export_config()
         if export_config:
-            custom_config = read_custom_config()
-            model_filepath = custom_config["model_filepath"]
-
             batch_size, _, height, width = export_config["input_shapes"][0]
             device = torch.cuda.current_device() if torch.cuda.is_available() else "cpu"
             opset = export_config["opset_version"]
             verbose = export_config["verbose"]
 
             export_cmd = [
-                "python",
-                "yolo_export.py",
-                "--weights",
-                model_filepath,
-                "--include",
-                "onnx",
-                "--opset",
-                opset,
-                "--batch-size",
-                batch_size,
-                "--imgsz",
-                height,
-                width,
-                "--device",
-                device,
+                 "yolo",
+                 "export",
+                 f"model={model_filepath}",
+                 "format=onnx",
+                 "task=detect",
+                 f"opset={opset}",
+                 f"batch={batch_size}",
+                 f"imgsz='{[height, width]}'",
+                 f"device={device}",
             ]
 
             export_cmd = list(map(str, export_cmd))

@@ -9,7 +9,7 @@
 #
 # SPDX-License-Identifier: MIT
 
-FROM ultralytics/yolov5:v7.0
+FROM ultralytics/ultralytics:8.4.46-runner
 
 ARG DEBIAN_FRONTEND=noninteractive
 
@@ -27,16 +27,30 @@ RUN apt install -y --no-install-recommends \
 	python3 python-is-python3 python3-pip
 RUN sed -i '/user_allow_other/s/^#//g' /etc/fuse.conf
 
-RUN pip install onnx==1.12.0 tf2onnx==1.14.0 onnxmltools==1.11.2 onnxconverter-common==1.13.0
+RUN pip install onnx==1.21.0 tf2onnx==1.17.0 onnxmltools==1.16.0 onnxconverter-common==1.16.0
 
 WORKDIR /usr/src/app
-
-RUN mv train.py yolo_train.py
-RUN mv export.py yolo_export.py
 
 COPY config_to_args.py config.py dataset.py cvat_dataset.py ./
 
 COPY requirements.txt setup.py util.py train.py export.py train_config.json custom.json presets.json export_config.json ./
+
+# Re-point the base image's torch at the host-matched CUDA wheel, keeping the
+# exact version Ultralytics ships. Index is auto-selected from host GPUs by the
+# backend (build arg); default cu126 covers CC 7.0-9.0 (incl. Volta V100).
+#
+# IMPORTANT: request the +cuXXX *local* version label. The base image ships
+# torch==2.11.0+cu128; a bare `pip install torch==2.11.0` is a PEP 440 no-op
+# (the installed 2.11.0+cu128 already satisfies ==2.11.0), so the cu126 wheel
+# would never replace it and Volta (sm_70) stays unsupported. Deriving the tag
+# (e.g. cu126) from the index URL and pinning torch==<ver>+cu126 forces pip to
+# actually swap in the Volta-capable build.
+ARG TORCH_CUDA_INDEX=https://download.pytorch.org/whl/cu126
+RUN CU="$(basename "${TORCH_CUDA_INDEX}")" && \
+    TORCH_VER="$(python3 -c 'import torch; print(torch.__version__.split("+")[0])')" && \
+    TV_VER="$(python3 -c 'import torchvision; print(torchvision.__version__.split("+")[0])')" && \
+    pip3 install --index-url "${TORCH_CUDA_INDEX}" \
+      "torch==${TORCH_VER}+${CU}" "torchvision==${TV_VER}+${CU}"
 RUN pip3 install -r requirements.txt
 
 COPY .env ./
