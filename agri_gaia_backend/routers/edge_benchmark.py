@@ -114,7 +114,8 @@ async def get_benchmark_sensor_config_form() -> Dict:
 
 @router.get("/forms/sensor-info")
 async def get_benchmark_sensor_info_form() -> Dict:
-    schema_filepath = os.path.join(EDGE_BENCHMARK_FORMS_PATH, "sensor_info.jsonschema")
+    schema_filepath = os.path.join(
+        EDGE_BENCHMARK_FORMS_PATH, "sensor_info.jsonschema")
     with open(schema_filepath, mode="r", encoding="utf-8") as fh:
         return json.load(fh)
 
@@ -155,7 +156,8 @@ async def delete_benchmark_job(
 async def get_benchmark_job_results(
     request: Request, job_id: int, db: Session = Depends(get_db)
 ) -> dict[str, Any]:
-    _, results = _get_benchmark_job_result(job_id=job_id, request=request, db=db)
+    _, results = _get_benchmark_job_result(
+        job_id=job_id, request=request, db=db)
     return results
 
 
@@ -163,7 +165,8 @@ async def get_benchmark_job_results(
 async def download_benchmark_job_result(
     request: Request, job_id: int, db: Session = Depends(get_db)
 ) -> FileResponse:
-    job, results = _get_benchmark_job_result(job_id=job_id, request=request, db=db)
+    job, results = _get_benchmark_job_result(
+        job_id=job_id, request=request, db=db)
     return create_single_file_response(
         file=json.dumps(results).encode("utf-8"),
         filename=Path(job.minio_location).name,
@@ -181,7 +184,8 @@ async def download_benchmark_job_results(
         {
             Path(job.minio_location).name: json.dumps(result).encode("utf-8")
             for (job, result) in [
-                _get_benchmark_job_result(job_id=job_id, request=request, db=db)
+                _get_benchmark_job_result(
+                    job_id=job_id, request=request, db=db)
                 for job_id in job_ids
             ]
         },
@@ -275,7 +279,8 @@ async def edge_benchmark_start(
     dataset_id = payload["dataset_id"]
     model_id = payload["model_id"]
     chunk_size = payload["chunk_size"]
-    created_at = datetime.fromisoformat(payload["created_at"].replace("Z", "+00:00"))
+    created_at = datetime.fromisoformat(
+        payload["created_at"].replace("Z", "+00:00"))
 
     benchmark_config = BenchmarkConfig(**payload["benchmark_config"])
 
@@ -284,7 +289,8 @@ async def edge_benchmark_start(
 
     if isinstance(benchmark_config.inference_client, TritonInferenceClient):
         model_filename, _ = model
-        benchmark_config.inference_client.model_name = Path(model_filename).stem
+        benchmark_config.inference_client.model_name = Path(
+            model_filename).stem
         benchmark_config.inference_client.model_version = "1"
         benchmark_config.inference_client.num_classes = 1
 
@@ -300,10 +306,10 @@ async def edge_benchmark_start(
         edge_benchmarking_client: EdgeBenchmarkingClientDep,
         db: Session,
         user: KeycloakUser,
-        dataset: Dataset = dataset, 
+        dataset: Dataset = dataset,
     ) -> None:
         dataset_files, labels = _load_dataset(minio_token, dataset, chunk_size)
-        
+
         benchmark_job: TBenchmarkJob = edge_benchmarking_client.benchmark(
             edge_device=benchmark_config.edge_device.host,
             dataset=dataset_files,
@@ -368,29 +374,43 @@ def _load_model(model_id: int, minio_token: str, db) -> tuple[str, str, BytesIO]
     return model.name, (model.file_name, BytesIO(model_bytes))
 
 
+IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png",
+                    ".bmp", ".gif", ".tif", ".tiff", ".webp"}
+
+
+def _is_image_sample(object_name: str) -> bool:
+    return Path(object_name).suffix.lower() in IMAGE_EXTENSIONS
+
+
 def _load_dataset(minio_token: str, dataset, chunk_size: int):
     _validate_parameters(dataset.bucket_name, minio_token)
 
     dataset_prefix = f"datasets/{dataset.id}"
 
-    
     def dataset_generator() -> Generator[list[str, BytesIO], None, None]:
         all_objects = minio_api.get_all_objects(
-        bucket=dataset.bucket_name, prefix=dataset_prefix, token=minio_token
+            bucket=dataset.bucket_name, prefix=dataset_prefix, token=minio_token
         )
-        all_objects_filtered = list(filter(lambda x: not x.is_dir and "annotations" not in x.object_name, all_objects))
+        # Only image files are valid benchmark samples. Exclude directories,
+        # annotations and any non-image sidecars (e.g. EDC metadata folders)
+        # that would otherwise be sent to the device and crash image decoding.
+        all_objects_filtered = [
+            file_object for file_object in all_objects
+            if not file_object.is_dir
+            and _is_image_sample(file_object.object_name)
+        ]
         for i in range(0, len(all_objects_filtered), chunk_size):
             dataset_chunk = []
             for current_file in all_objects_filtered[i: i + chunk_size]:
-                if not current_file.is_dir and "annotations" not in current_file.object_name:
-                    sample_filename = Path(current_file.object_name).name
-                    sample_bytes = minio_api.download_file(
-                        bucket=dataset.bucket_name, minio_item=current_file, token=minio_token
-                    ).read()
-                    dataset_chunk.append((sample_filename, BytesIO(sample_bytes)))
+                sample_filename = Path(current_file.object_name).name
+                sample_bytes = minio_api.download_file(
+                    bucket=dataset.bucket_name, minio_item=current_file, token=minio_token
+                ).read()
+                dataset_chunk.append((sample_filename, BytesIO(sample_bytes)))
             yield dataset_chunk
-            
-    dataset_files: Generator[list[str, BytesIO], None, None] = dataset_generator()
+
+    dataset_files: Generator[list[str, BytesIO],
+                             None, None] = dataset_generator()
 
     label_files = [
         label_file
