@@ -308,7 +308,9 @@ async def edge_benchmark_start(
         user: KeycloakUser,
         dataset: Dataset = dataset,
     ) -> None:
-        dataset_files, labels = _load_dataset(minio_token, dataset, chunk_size)
+        dataset_files, labels, annotation = _load_dataset(
+            minio_token, dataset, chunk_size
+        )
 
         benchmark_job: TBenchmarkJob = edge_benchmarking_client.benchmark(
             edge_device=benchmark_config.edge_device.host,
@@ -317,6 +319,7 @@ async def edge_benchmark_start(
             inference_client=benchmark_config.inference_client,
             model_metadata=model_metadata,
             labels=labels,
+            annotation=annotation,
             chunk_size=chunk_size,
             cpu_only=benchmark_config.cpu_only,
             cleanup=True,
@@ -412,11 +415,15 @@ def _load_dataset(minio_token: str, dataset, chunk_size: int):
     dataset_files: Generator[list[str, BytesIO],
                              None, None] = dataset_generator()
 
-    label_files = [
-        label_file
-        for label_file in minio_api.get_all_objects(
+    annotation_objects = list(
+        minio_api.get_all_objects(
             dataset.bucket_name, f"{dataset_prefix}/annotations", minio_token
         )
+    )
+
+    label_files = [
+        label_file
+        for label_file in annotation_objects
         if Path(label_file.object_name).name != "annotations.xml"
     ]
 
@@ -429,7 +436,23 @@ def _load_dataset(minio_token: str, dataset, chunk_size: int):
         label_filename = Path(label_file.object_name).name
         labels = (label_filename, BytesIO(label_bytes))
 
-    return dataset_files, labels
+    # CVAT ground-truth annotation (annotations.xml). When present, it is forwarded
+    # to the Edge Farm API, which uses it to compute accuracy for the benchmark job.
+    annotation = None
+    annotation_files = [
+        annotation_file
+        for annotation_file in annotation_objects
+        if Path(annotation_file.object_name).name == "annotations.xml"
+    ]
+    if len(annotation_files) == 1:
+        annotation_file = annotation_files[0]
+        annotation_bytes = minio_api.download_file(
+            dataset.bucket_name, minio_token, annotation_file
+        ).read()
+        annotation_filename = Path(annotation_file.object_name).name
+        annotation = (annotation_filename, BytesIO(annotation_bytes))
+
+    return dataset_files, labels, annotation
 
 
 def _get_benchmark_job_result(
