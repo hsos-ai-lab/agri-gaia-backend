@@ -62,7 +62,12 @@ class TaskCreator:
         return f"https://api.{env.PROJECT_BASE_URL}{TASKS_ROOT_PATH}/{task_id}"
 
     def create_background_task(
-        self, func: Callable, task_title: str, *args, **kwargs
+        self,
+        func: Callable,
+        task_title: str,
+        *args,
+        executor: ThreadPoolExecutor = None,
+        **kwargs,
     ) -> Tuple[Task, str]:
         """
         Runs the given callable in a background thread and creates a Task object
@@ -79,6 +84,10 @@ class TaskCreator:
                                                     The given message will be displayed in the task and
                                                     the task will be marked as failed.
             args: positional arguments given to func
+            executor (ThreadPoolExecutor): optional dedicated executor to run the
+                            task on instead of the shared pool. Used to isolate
+                            long-running workloads (e.g. edge benchmarks) so they
+                            cannot starve other background tasks.
             kwargs: keyword arguments given to func
 
         Returns:
@@ -133,7 +142,7 @@ class TaskCreator:
         try:
             db: Session = SessionLocal()
             task = tasks_api.create_task(db, initiator=self.initiator, title=task_title)
-            future = TaskCreator.executor.submit(task_func)
+            future = (executor or TaskCreator.executor).submit(task_func)
         except Exception as e:
             db.close()
             raise e

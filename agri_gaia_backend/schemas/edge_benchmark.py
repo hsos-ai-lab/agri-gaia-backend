@@ -10,13 +10,20 @@
 # SPDX-License-Identifier: MIT
 
 from enum import Enum
-from typing import Optional
+from typing import List, Optional
 from datetime import datetime
 from pydantic import BaseModel
 from agri_gaia_backend.schemas.dataset import Dataset
 from agri_gaia_backend.schemas.model import Model
 from edge_benchmarking_types.edge_device.models import BenchmarkJob as TBenchmarkJob
-from edge_benchmarking_types.edge_farm.models import BenchmarkConfig as TBenchmarkConfig
+from edge_benchmarking_types.edge_farm.enums import (
+    OptimizationFactor,
+    LatencyPercentile,
+)
+from edge_benchmarking_types.edge_farm.models import (
+    BenchmarkConfig as TBenchmarkConfig,
+    DeviceRecommendation as TDeviceRecommendation,
+)
 
 
 class InferenceClient(str, Enum):
@@ -46,4 +53,32 @@ class BenchmarkJobRun(BaseModel):
     dataset_id: int
     benchmark_config: TBenchmarkConfig
     benchmark_job: TBenchmarkJob
+    created_at: datetime
+
+
+class AutoSearchRequest(BaseModel):
+    """Request payload for an auto-search ("recommend best device") run.
+
+    ``benchmark_config`` carries the inference-client template and cpu_only flag;
+    its ``edge_device`` host is overridden per candidate during the search.
+    """
+
+    model_id: int
+    dataset_id: int
+    chunk_size: int
+    candidate_hostnames: List[str]
+    factor: OptimizationFactor
+    latency_metric: LatencyPercentile = LatencyPercentile.P95
+    latency_threshold_ms: float
+    benchmark_config: TBenchmarkConfig
+    created_at: datetime
+
+
+class AutoSearchRun(BaseModel):
+    """Persisted artifact of an auto-search run (stored as JSON in MinIO)."""
+
+    model_id: int
+    dataset_id: int
+    request: AutoSearchRequest
+    recommendation: TDeviceRecommendation
     created_at: datetime

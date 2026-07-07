@@ -10,16 +10,40 @@
 # SPDX-License-Identifier: MIT
 
 import datetime
-from typing import List, Optional
+from typing import List, Optional, Sequence
+from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
 from agri_gaia_backend.db.models import Task, TaskStatus
 
 # from agri_gaia_backend.schemas import task as schemas
 
+# Tasks still occupying a worker / queue slot (not yet finished).
+ACTIVE_TASK_STATUSES = (TaskStatus.created, TaskStatus.inprogress)
+
 
 def get_task(db: Session, task_id: int) -> Task:
     return db.query(Task).filter(Task.id == task_id).first()
+
+
+def count_active_tasks_by_initiator(
+    db: Session, initiator: str, title_prefixes: Optional[Sequence[str]] = None
+) -> int:
+    """Count a user's not-yet-finished tasks (status created/inprogress).
+
+    When ``title_prefixes`` is given, only tasks whose title starts with one of
+    them are counted — used to scope the limit to a single feature (e.g. edge
+    benchmarking) without adding a task-category column.
+    """
+    query = db.query(Task).filter(
+        Task.initiator == initiator,
+        Task.status.in_(ACTIVE_TASK_STATUSES),
+    )
+    if title_prefixes:
+        query = query.filter(
+            or_(*[Task.title.like(f"{prefix}%") for prefix in title_prefixes])
+        )
+    return query.count()
 
 
 def get_tasks(
