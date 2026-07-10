@@ -67,9 +67,10 @@
             "default": "inception",
             "enum": [
                 "inception",
-                "vgg"
+                "vgg",
+                "unit"
             ],
-            "description": "Type of image scaling applied to the inference dataset."
+            "description": "Type of image scaling applied to the inference dataset ('inception' -> [-1, 1]; 'vgg' -> mean subtraction; 'unit' -> [0, 1] via divide by 255)."
         }
     },
     "required": [
