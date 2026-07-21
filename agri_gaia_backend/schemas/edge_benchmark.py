@@ -70,6 +70,8 @@ class AutoSearchRequest(BaseModel):
     factor: OptimizationFactor
     latency_metric: LatencyPercentile = LatencyPercentile.P95
     latency_threshold_ms: float
+    min_accuracy: Optional[float] = None
+    accuracy_metric: str = "accuracy"
     benchmark_config: TBenchmarkConfig
     created_at: datetime
 

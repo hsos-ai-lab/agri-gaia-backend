@@ -34,6 +34,7 @@ class DatasetBase(BaseModel):
 
 class Dataset(DatasetBase):
     id: int
+    has_annotation_file: bool = False
 
     class Config:
         from_attributes = True

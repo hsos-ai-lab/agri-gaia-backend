@@ -47,7 +47,7 @@ dockerfile-parse==2.0.1
 onnx==1.21.0
 tritonclient[all]~=2.41.1
 attrdict==2.0.1
-edge_benchmarking_client @ git+https://github.com/agrifoodTEF-de/edge-benchmarking-client.git@1f0ef48813b2439f82b447d2bc6634cb013aa53e
+edge_benchmarking_client @ git+https://github.com/agrifoodTEF-de/edge-benchmarking-client.git@75cc3569c2f45020269b13495b2d50a59233d191
 gitpython==3.1.45
 pytest==8.3.5
 debugpy==1.8.16

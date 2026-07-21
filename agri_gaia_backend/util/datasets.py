@@ -10,9 +10,14 @@
 # SPDX-License-Identifier: MIT
 
 import xmltodict
+from pathlib import Path
 from typing import List, Optional
 from fastapi import HTTPException
 from fastapi.datastructures import UploadFile
+
+from agri_gaia_backend.services import minio_api
+
+ANNOTATIONS_FILENAME = "annotations.xml"
 
 
 def validate_name(name: str):
@@ -70,3 +75,27 @@ def is_cvat_annotation_xml(annotation_file: UploadFile) -> bool:
         return False
     finally:
         annotation_file.file.seek(0)
+
+
+def find_annotation_file_object(dataset, minio_token: str):
+    """The dataset's CVAT ``annotations.xml`` MinIO object, or ``None``.
+
+    Single source of truth for "does this dataset have ground-truth annotations":
+    used by the edge-benchmark accuracy path (to forward the file to the Edge Farm
+    API) and by the Datasets tab column. Requires exactly one match under
+    ``datasets/{id}/annotations``.
+    """
+    annotation_objects = minio_api.get_all_objects(
+        dataset.bucket_name, f"datasets/{dataset.id}/annotations", minio_token
+    )
+    matches = [
+        annotation_object
+        for annotation_object in annotation_objects
+        if Path(annotation_object.object_name).name == ANNOTATIONS_FILENAME
+    ]
+    return matches[0] if len(matches) == 1 else None
+
+
+def dataset_has_annotation_file(dataset, minio_token: str) -> bool:
+    """Whether a dataset carries a CVAT ground-truth annotation file."""
+    return find_annotation_file_object(dataset, minio_token) is not None

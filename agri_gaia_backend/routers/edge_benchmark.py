@@ -24,6 +24,11 @@ from fastapi import BackgroundTasks
 from fastapi.responses import FileResponse
 from agri_gaia_backend.services import minio_api
 from agri_gaia_backend.util import env
+from agri_gaia_backend.util.datasets import (
+    ANNOTATIONS_FILENAME,
+    find_annotation_file_object,
+    dataset_has_annotation_file,
+)
 from typing import Generator, List, Any, Optional, Dict, Annotated
 from agri_gaia_backend.db.models import Dataset
 from agri_gaia_backend.db import model_api as sql_model_api
@@ -175,6 +180,20 @@ async def get_all_benchmark_jobs(
     skip: int = 0, limit: int = 10000, db: Session = Depends(get_db)
 ):
     return sql_benchmark_api.get_all_benchmark_jobs(skip=skip, limit=limit, db=db)
+
+
+@router.get("/datasets/{dataset_id}/ground-truth")
+async def get_dataset_ground_truth(
+    request: Request, dataset_id: int, db: Session = Depends(get_db)
+) -> Dict[str, bool]:
+    """Whether a dataset has CVAT ground truth (annotations.xml) for accuracy.
+
+    The benchmark create / auto-search UIs call this to warn that accuracy will
+    be N/A before a run, steering the user to add annotations in the Datasets tab.
+    """
+    user: KeycloakUser = request.user
+    dataset = check_exists(sql_dataset_api.get_dataset(db, dataset_id))
+    return {"has_ground_truth": dataset_has_annotation_file(dataset, user.minio_token)}
 
 
 def _delete_benchmark_job_record(
@@ -597,6 +616,8 @@ async def edge_benchmark_auto_search(
             factor=auto_search_request.factor,
             latency_metric=auto_search_request.latency_metric,
             latency_threshold_ms=auto_search_request.latency_threshold_ms,
+            min_accuracy=auto_search_request.min_accuracy,
+            accuracy_metric=auto_search_request.accuracy_metric,
         )
 
         auto_search_run = AutoSearchRun(
@@ -819,18 +840,12 @@ def _load_dataset(minio_token: str, dataset, chunk_size: int):
     # CVAT ground-truth annotation (annotations.xml). When present, it is forwarded
     # to the Edge Farm API, which uses it to compute accuracy for the benchmark job.
     annotation = None
-    annotation_files = [
-        annotation_file
-        for annotation_file in annotation_objects
-        if Path(annotation_file.object_name).name == "annotations.xml"
-    ]
-    if len(annotation_files) == 1:
-        annotation_file = annotation_files[0]
+    annotation_object = find_annotation_file_object(dataset, minio_token)
+    if annotation_object is not None:
         annotation_bytes = minio_api.download_file(
-            dataset.bucket_name, minio_token, annotation_file
+            dataset.bucket_name, minio_token, annotation_object
         ).read()
-        annotation_filename = Path(annotation_file.object_name).name
-        annotation = (annotation_filename, BytesIO(annotation_bytes))
+        annotation = (ANNOTATIONS_FILENAME, BytesIO(annotation_bytes))
 
     return dataset_files, labels, annotation
 

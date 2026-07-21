@@ -60,6 +60,7 @@ from agri_gaia_backend.util.datasets import (
     validate_name,
     is_cvat_annotation_xml,
     validate_dataresource_configuration_files,
+    dataset_has_annotation_file,
 )
 from fastapi import (
     APIRouter,
@@ -106,19 +107,31 @@ async def startup():
 
 
 @router.get("", response_model=List[Dataset])
-def get_all_datasets(skip: int = 0, limit: int = 10000, db: Session = Depends(get_db)):
+def get_all_datasets(
+    request: Request, skip: int = 0, limit: int = 10000, db: Session = Depends(get_db)
+):
     """
     Fetches all Datasets from the postgres database
 
     Args:
+        request: The incoming request (carries the authenticated user + MinIO token).
         skip: How many dataset entries shall be skipped. Defaults to 0.
         limit: What is the maximum number of datasets to be fetched? Defaults to 100.
         db: Database Session. Created automatically.
 
     Returns:
-        A list of all datasets, which are stored by the plattform.
+        A list of all datasets, which are stored by the plattform. Each dataset is
+        annotated with ``has_annotation_file`` (whether a CVAT ``annotations.xml``
+        ground-truth file exists in its bucket — only image datasets are checked).
     """
-    return sql_api.get_datasets(db, skip=skip, limit=limit)
+    user: KeycloakUser = request.user
+    datasets = sql_api.get_datasets(db, skip=skip, limit=limit)
+    for dataset in datasets:
+        dataset.has_annotation_file = (
+            dataset.dataset_type == "AgriImageDataResource"
+            and dataset_has_annotation_file(dataset, user.minio_token)
+        )
+    return datasets
 
 
 @router.get("/keyword")
@@ -612,7 +625,9 @@ def _upload_dataset_to_minio(
 
             zip = zipfile.ZipFile(file=files[0].file._file)
             for name in zip.namelist():
-                if not zip.getinfo(name).is_dir() and name.lower().endswith((".png", ".bmp", ".jpeg", ".jpg")):
+                if not zip.getinfo(name).is_dir() and name.lower().endswith(
+                    (".png", ".bmp", ".jpeg", ".jpg")
+                ):
                     with zip.open(name) as file:
                         tag = cvat.CVATImageTag(name.split("/")[-2])
                         image = Image.open(file)
@@ -1068,7 +1083,9 @@ def create_auto_annotation_model(
                 )
 
                 archive_dirname, _ = os.path.splitext(auto_annotation_archive.filename)
-                platform_config = json.dumps({"attributes": {"network": "agri_gaia_network"}})
+                platform_config = json.dumps(
+                    {"attributes": {"network": "agri_gaia_network"}}
+                )
 
                 nuclio_deploy_cmd = (
                     f"nuctl deploy --project-name={NUCLIO_CVAT_PROJECT_NAME} "
