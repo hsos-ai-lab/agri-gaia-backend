@@ -9,12 +9,14 @@
 #
 # SPDX-License-Identifier: MIT
 
+import asyncio
 import base64
 import datetime
 import io
 import json
 import logging
 import os
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Any
 
 import gitlab
@@ -30,6 +32,9 @@ from agri_gaia_backend.services.graph.sparql_operations import util as sparql_ut
 ROOT_PATH = "/agdafair"
 LFS_RESOLVER_URL = "https://lfs-resolver.nfdi4plants.org/presigned-url/"
 GITLAB_API_PREFIX = "https://gitdev.nfdi4plants.org/api/v4/projects/"
+
+NUM_RANGES = 8
+NUM_THREADS = 8
 
 logger = logging.getLogger("api-logger")
 router = APIRouter(prefix=ROOT_PATH)
@@ -71,14 +76,61 @@ def _parse_ro_crate_metadata(content: dict[str, Any]) -> str:
         if node["@id"] == "./":
             name = node["identifier"].replace(" ", "")
             sparql_util.createFusekiDataset(name)
-            sparql_util.store_json(content, node["name"].replace(" ", ""))
+            sparql_util.store_json(json.dumps(content), name)
             return name
 
     raise ValueError("RO-Crate metadata does not contain a root dataset descriptor (@id='./')).")
 
+def _download_range(url: str, start: int, end: int) -> tuple[int, bytes]:
+    response = requests.get(url, headers={"Range": f"bytes={start}-{end}"})
+    response.raise_for_status()
+    return response.content
+
+
+def _download_file(node: dict[str, Any]) -> dict[str, Any]:
+    oid = node["sha256"]
+    logger.debug("Resolving LFS object: oid=%s, name=%s", oid, node.get("name"))
+
+    with requests.get(f"{LFS_RESOLVER_URL}?oid={oid}", headers={"Range": "bytes=0-0"}, allow_redirects=True, stream=True) as probe:
+        probe.raise_for_status()
+        range_supported = probe.status_code == 206
+        content_type = probe.headers.get("Content-Type", "application/octet-stream")
+        resolved_url = probe.url
+        content_range = probe.headers.get("Content-Range", "")
+
+    content_length = int(content_range.split("/")[-1]) if range_supported and "/" in content_range else 0
+
+    if not range_supported or not content_length:
+        logger.debug("Range requests not supported for oid=%s, falling back to single request", oid)
+        response = requests.get(resolved_url)
+        response.raise_for_status()
+        return {
+            "name": node["name"],
+            "content": response.content,
+            "content_type": response.headers.get("Content-Type", content_type),
+        }
+
+    chunk_size = content_length // NUM_RANGES
+    ranges = [
+        (i * chunk_size, (i + 1) * chunk_size - 1 if i < NUM_RANGES - 1 else content_length - 1)
+        for i in range(NUM_RANGES)
+    ]
+
+    chunks = [None] * NUM_RANGES
+    with ThreadPoolExecutor(max_workers=NUM_RANGES) as executor:
+        futures = {executor.submit(_download_range, resolved_url, start, end): i
+                   for i, (start, end) in enumerate(ranges)}
+        for future in as_completed(futures):
+            chunks[futures[future]] = future.result()
+
+    return {
+        "name": node["name"],
+        "content": b"".join(chunks),
+        "content_type": content_type,
+    }
 
 def _download_files(content: dict[str, Any]) -> list[dict[str, Any]]:
-    """Download all LFS-tracked files referenced in the RO-Crate graph.
+    """Download all LFS-tracked files referenced in the RO-Crate graph in parallel.
 
     Files are identified by the presence of a ``sha256`` field. Each file is
     resolved via the NFDI4Plants LFS resolver and its binary content is
@@ -91,24 +143,15 @@ def _download_files(content: dict[str, Any]) -> list[dict[str, Any]]:
         A list of dicts, each containing ``name``, ``content`` (bytes), and
         ``content_type`` of a downloaded file.
     """
+    nodes = [node for node in content["@graph"] if node.get("sha256")]
+
     files = []
-    for node in content["@graph"]:
-        oid = node.get("sha256")
-        if not oid:
-            continue
-
-        logger.debug("Resolving LFS object: oid=%s, name=%s", oid, node.get("name"))
-        response = requests.get(f"{LFS_RESOLVER_URL}?oid={oid}", allow_redirects=True)
-        response.raise_for_status()
-
-        files.append({
-            "name": node["name"],
-            "content": response.content,
-            "content_type": response.headers.get("Content-Type", "application/octet-stream"),
-        })
+    with ThreadPoolExecutor(max_workers=NUM_THREADS) as executor:
+        futures = {executor.submit(_download_file, node): node for node in nodes}
+        for future in as_completed(futures):
+            files.append(future.result())
 
     return files
-
 
 def _upload_files_to_minio(
     bucket: str,
@@ -132,7 +175,6 @@ def _upload_files_to_minio(
             length=len(file["content"]),
             content_type=file["content_type"],
         )
-
 
 def _import_ro_crate(
     db: Session,
@@ -191,12 +233,10 @@ def _import_ro_crate(
 
     return {"message": "Data imported!"}
 
-
 @router.get("/test")
 def heartbeat():
     """Health-check endpoint."""
     return {"message": "Service alive!"}
-
 
 @router.post("/import")
 async def import_arc(request: Request, db: Session = Depends(get_db)):
@@ -223,14 +263,14 @@ async def import_arc(request: Request, db: Session = Depends(get_db)):
     raw = project.files.get(file_path=file_path, ref="main")
     content = json.loads(base64.b64decode(raw.content).decode("utf-8"))
 
-    return _import_ro_crate(
+    return await asyncio.to_thread(
+        _import_ro_crate,
         db,
         content,
         owner=body["username"],
         bucket=body["username"],
         dataset_type=body["datasetType"],
     )
-
 
 @router.post("/importCrate")
 async def import_crate(request: Request, db: Session = Depends(get_db)):
@@ -242,10 +282,10 @@ async def import_crate(request: Request, db: Session = Depends(get_db)):
     """
     content = json.loads(await request.body())
 
-    return _import_ro_crate(
-        db,
-        content,
-        owner="towamhof",
-        bucket="towamhof",
-        dataset_type="AgriImageDataResource",
-    )
+    def _run():
+        client = _get_minio_client()
+        if not client.bucket_exists("towamhof"):
+            client.make_bucket("towamhof")
+        return _import_ro_crate(db, content, owner="towamhof", bucket="towamhof", dataset_type="AgriImageDataResource")
+
+    return await asyncio.to_thread(_run)
