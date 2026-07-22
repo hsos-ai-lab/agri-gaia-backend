@@ -71,7 +71,7 @@ def _parse_ro_crate_metadata(content: dict[str, Any]) -> str:
         if node["@id"] == "./":
             name = node["identifier"].replace(" ", "")
             sparql_util.createFusekiDataset(name)
-            sparql_util.store_json(content, node["name"].replace(" ", ""))
+            sparql_util.store_json(content, name)
             return name
 
     raise ValueError("RO-Crate metadata does not contain a root dataset descriptor (@id='./')).")
