@@ -204,7 +204,7 @@ def _import_ro_crate(
     Raises:
         HTTPException: If the RO-Crate metadata is invalid or file download fails.
     """
-    identifier
+    identifier = ""
     for node in content["@graph"]:
         if node["@id"] == "./":
             identifier = node["identifier"].replace(" ", "")
