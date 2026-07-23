@@ -56,7 +56,8 @@ def _get_minio_client() -> Minio:
 
 def _parse_ro_crate_metadata(
     content: dict[str, Any],
-    dataset_id: str
+    dataset_id: str,
+    identifier: str
 ) -> str:
     """Parse an RO-Crate metadata JSON, register it in Fuseki, and return the dataset name.
 
@@ -75,13 +76,10 @@ def _parse_ro_crate_metadata(
     Raises:
         ValueError: If no root dataset descriptor is found in the graph.
     """
-    for node in content["@graph"]:
-        if node["@id"] == "./":
-            name = dataset_idnode["identifier"].replace(" ", "")
-            name = f"{dataset_id}_{name}"
-            sparql_util.createFusekiDataset(name)
-            sparql_util.store_json(json.dumps(content), name)
-            return name
+    name = f"{dataset_id}_{identifier}"
+    sparql_util.createFusekiDataset(name)
+    sparql_util.store_json(json.dumps(content), name)
+    return name
 
     raise ValueError("RO-Crate metadata does not contain a root dataset descriptor (@id='./')).")
 
@@ -206,11 +204,19 @@ def _import_ro_crate(
     Raises:
         HTTPException: If the RO-Crate metadata is invalid or file download fails.
     """
+    identifier
+    for node in content["@graph"]:
+        if node["@id"] == "./":
+            identifier = node["identifier"].replace(" ", "")
+
+    if not identifier:
+        raise HTTPException(status_code=400, detail="No identifier found in given crate.")
+
     files = _download_files(content)
 
     dataset = sql_api.create_dataset(
         db,
-        name=name,
+        name=identifier,
         owner=owner,
         filecount=len(files),
         total_filesize=sum(len(f["content"]) for f in files),
@@ -231,7 +237,7 @@ def _import_ro_crate(
         raise HTTPException(status_code=500, detail="Failed to upload files to storage.")
 
     try:
-        name = _parse_ro_crate_metadata(content, dataset.id)
+        name = _parse_ro_crate_metadata(content, dataset_id=dataset.id, identifier=identifier)
     except (ValueError, KeyError) as exc:
         raise HTTPException(status_code=400, detail=str(exc))
 
