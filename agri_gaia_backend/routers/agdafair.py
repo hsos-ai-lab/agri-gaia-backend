@@ -229,8 +229,6 @@ def _import_ro_crate(
     try:
         _upload_files_to_minio(bucket, dataset.id, files)
         dataset.minio_location = f"datasets/{dataset.id}"
-        dataset.metadata_uri = name
-        sql_api.update_dataset(db, dataset)
     except Exception:
         logger.exception("Upload failed for dataset %s — rolling back", dataset.id)
         sql_api.delete_dataset(db, dataset)
@@ -238,6 +236,8 @@ def _import_ro_crate(
 
     try:
         name = _parse_ro_crate_metadata(content, dataset_id=dataset.id, identifier=identifier)
+        dataset.metadata_uri = name
+        sql_api.update_dataset(db, dataset)
     except (ValueError, KeyError) as exc:
         raise HTTPException(status_code=400, detail=str(exc))
 
