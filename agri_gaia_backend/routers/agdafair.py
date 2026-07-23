@@ -54,7 +54,10 @@ def _get_minio_client() -> Minio:
     )
 
 
-def _parse_ro_crate_metadata(content: dict[str, Any]) -> str:
+def _parse_ro_crate_metadata(
+    content: dict[str, Any],
+    dataset_id: str
+) -> str:
     """Parse an RO-Crate metadata JSON, register it in Fuseki, and return the dataset name.
 
     Iterates over the ``@graph`` array looking for the root dataset descriptor
@@ -74,7 +77,8 @@ def _parse_ro_crate_metadata(content: dict[str, Any]) -> str:
     """
     for node in content["@graph"]:
         if node["@id"] == "./":
-            name = node["identifier"].replace(" ", "")
+            name = dataset_idnode["identifier"].replace(" ", "")
+            name = f"{dataset_id}_{name}"
             sparql_util.createFusekiDataset(name)
             sparql_util.store_json(json.dumps(content), name)
             return name
@@ -202,11 +206,6 @@ def _import_ro_crate(
     Raises:
         HTTPException: If the RO-Crate metadata is invalid or file download fails.
     """
-    try:
-        name = _parse_ro_crate_metadata(content)
-    except (ValueError, KeyError) as exc:
-        raise HTTPException(status_code=400, detail=str(exc))
-
     files = _download_files(content)
 
     dataset = sql_api.create_dataset(
@@ -230,6 +229,11 @@ def _import_ro_crate(
         logger.exception("Upload failed for dataset %s — rolling back", dataset.id)
         sql_api.delete_dataset(db, dataset)
         raise HTTPException(status_code=500, detail="Failed to upload files to storage.")
+
+    try:
+        name = _parse_ro_crate_metadata(content, dataset.id)
+    except (ValueError, KeyError) as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
 
     return {"message": "Data imported!"}
 
