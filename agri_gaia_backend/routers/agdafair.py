@@ -241,7 +241,7 @@ def _import_ro_crate(
     except (ValueError, KeyError) as exc:
         raise HTTPException(status_code=400, detail=str(exc))
 
-    return {"message": "Data imported!"}
+    return {"follow_me":"https://google.de"}
 
 @router.get("/test")
 def heartbeat():
