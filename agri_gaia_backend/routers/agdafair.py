@@ -42,6 +42,7 @@ router = APIRouter(prefix=ROOT_PATH)
 minio_endpoint = os.environ.get("MINIO_ENDPOINT")
 minio_user = os.environ.get("MINIO_ROOT_USER")
 minio_pass = os.environ.get("MINIO_ROOT_PASSWORD")
+project_base = os.environ.get("PROJECT_BASE_URL")
 
 
 def _get_minio_client() -> Minio:
@@ -241,7 +242,7 @@ def _import_ro_crate(
     except (ValueError, KeyError) as exc:
         raise HTTPException(status_code=400, detail=str(exc))
 
-    return {"follow_me":"https://google.de"}
+    return {"follow_me":project_base}
 
 @router.get("/test")
 def heartbeat():
@@ -261,7 +262,9 @@ async def import_arc(request: Request, db: Session = Depends(get_db)):
         - ``datasetType``: Classification of the dataset.
     """
     body = json.loads(await request.body())
+    logger.info(body)
 
+    """
     gl = gitlab.Gitlab(body["package_endpoint"], private_token=body["gitlab_token"])
     project = gl.projects.get(body["project_id"])
     logger.info("Importing ARC from project: %s", project.name)
@@ -281,6 +284,8 @@ async def import_arc(request: Request, db: Session = Depends(get_db)):
         bucket=body["username"],
         dataset_type=body["datasetType"],
     )
+    """
+    return {"follow_me":project_base}
 
 @router.post("/importCrate")
 async def import_crate(request: Request, db: Session = Depends(get_db)):
