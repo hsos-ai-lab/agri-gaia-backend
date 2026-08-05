@@ -42,7 +42,7 @@ router = APIRouter(prefix=ROOT_PATH)
 minio_endpoint = os.environ.get("MINIO_ENDPOINT")
 minio_user = os.environ.get("MINIO_ROOT_USER")
 minio_pass = os.environ.get("MINIO_ROOT_PASSWORD")
-project_base_app = f"app.{os.environ.get("PROJECT_BASE_URL")}"
+project_base_app = f"https://app.{os.environ.get("PROJECT_BASE_URL")}"
 
 
 def _get_minio_client() -> Minio:
