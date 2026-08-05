@@ -42,7 +42,7 @@ router = APIRouter(prefix=ROOT_PATH)
 minio_endpoint = os.environ.get("MINIO_ENDPOINT")
 minio_user = os.environ.get("MINIO_ROOT_USER")
 minio_pass = os.environ.get("MINIO_ROOT_PASSWORD")
-project_base = os.environ.get("PROJECT_BASE_URL")
+project_base_app = f"app.{os.environ.get("PROJECT_BASE_URL")}"
 
 
 def _get_minio_client() -> Minio:
@@ -242,7 +242,7 @@ def _import_ro_crate(
     except (ValueError, KeyError) as exc:
         raise HTTPException(status_code=400, detail=str(exc))
 
-    return {"follow_me":project_base}
+    return {"follow_me":project_base_app}
 
 @router.get("/test")
 def heartbeat():
@@ -285,7 +285,7 @@ async def import_arc(request: Request, db: Session = Depends(get_db)):
         dataset_type=body["datasetType"],
     )
     """
-    return {"follow_me":project_base}
+    return {"follow_me":project_base_app}
 
 @router.post("/importCrate")
 async def import_crate(request: Request, db: Session = Depends(get_db)):
