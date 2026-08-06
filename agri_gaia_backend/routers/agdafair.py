@@ -10,7 +10,6 @@
 # SPDX-License-Identifier: MIT
 
 import asyncio
-import base64
 import datetime
 import io
 import json
@@ -19,7 +18,6 @@ import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Any
 
-import gitlab
 import requests
 from fastapi import APIRouter, Depends, HTTPException, Request
 from minio import Minio
@@ -31,7 +29,6 @@ from agri_gaia_backend.services.graph.sparql_operations import util as sparql_ut
 
 ROOT_PATH = "/agdafair"
 LFS_RESOLVER_URL = "https://lfs-resolver.nfdi4plants.org/presigned-url/"
-GITLAB_API_PREFIX = "https://gitdev.nfdi4plants.org/api/v4/projects/"
 
 NUM_RANGES = 8
 NUM_THREADS = 8
@@ -254,38 +251,33 @@ async def import_arc(request: Request, db: Session = Depends(get_db)):
     """Import a dataset from a GitLab-hosted ARC repository.
 
     Expects a JSON body with:
-        - ``package_endpoint``: GitLab instance URL.
+        - ``package_payload``: dict with ``Name``, ``Description``, ``DatasetType``
+          and ``UserName`` (the dataset owner).
         - ``gitlab_token``: Personal access token for the GitLab API.
-        - ``project_id``: Numeric GitLab project ID.
-        - ``ro_crate_url``: Full API URL to the RO-Crate metadata file.
-        - ``username``: Owner of the imported dataset.
-        - ``datasetType``: Classification of the dataset.
+        - ``ro_crate_url``: Full URL to the RO-Crate metadata file.
     """
     body = json.loads(await request.body())
-    logger.info(body)
+    logger.info({k: v for k, v in body.items() if k != "gitlab_token"})
 
-    """
-    gl = gitlab.Gitlab(body["package_endpoint"], private_token=body["gitlab_token"])
-    project = gl.projects.get(body["project_id"])
-    logger.info("Importing ARC from project: %s", project.name)
+    package_payload = body["package_payload"]
+    owner = package_payload["UserName"]
+    dataset_type = package_payload["DatasetType"]
 
-    # Strip the GitLab API prefix to get the repository-relative file path
-    file_path = body["ro_crate_url"].removeprefix(GITLAB_API_PREFIX).split("/", 1)[1]
-    logger.info("RO-Crate file path: %s", file_path)
+    def _run():
+        response = requests.get(
+            body["ro_crate_url"],
+            headers={"PRIVATE-TOKEN": body["gitlab_token"]},
+        )
+        response.raise_for_status()
+        content = response.json()
 
-    raw = project.files.get(file_path=file_path, ref="main")
-    content = json.loads(base64.b64decode(raw.content).decode("utf-8"))
+        client = _get_minio_client()
+        if not client.bucket_exists(owner):
+            client.make_bucket(owner)
 
-    return await asyncio.to_thread(
-        _import_ro_crate,
-        db,
-        content,
-        owner=body["username"],
-        bucket=body["username"],
-        dataset_type=body["datasetType"],
-    )
-    """
-    return {"follow_me":project_base_app}
+        return _import_ro_crate(db, content, owner=owner, bucket=owner, dataset_type=dataset_type)
+
+    return await asyncio.to_thread(_run)
 
 @router.post("/importCrate")
 async def import_crate(request: Request, db: Session = Depends(get_db)):
