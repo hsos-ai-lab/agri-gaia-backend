@@ -257,17 +257,23 @@ async def import_arc(request: Request, db: Session = Depends(get_db)):
         - ``ro_crate_url``: Full URL to the RO-Crate metadata file.
     """
     body = json.loads(await request.body())
-    logger.info({k: v for k, v in body.items() if k != "gitlab_token"})
+    logger.info(body)
 
     package_payload = body["package_payload"]
     owner = package_payload["UserName"]
     dataset_type = package_payload["DatasetType"]
 
     def _run():
-        response = requests.get(
-            body["ro_crate_url"],
-            headers={"PRIVATE-TOKEN": body["gitlab_token"]},
-        )
+        token = body["gitlab_token"]
+        response = None
+        for headers in (
+            {"JOB-TOKEN": token},
+            {"PRIVATE-TOKEN": token},
+            {"Authorization": f"Bearer {token}"},
+        ):
+            response = requests.get(body["ro_crate_url"], headers=headers)
+            if response.status_code != 401:
+                break
         response.raise_for_status()
         content = response.json()
 
