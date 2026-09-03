@@ -12,6 +12,7 @@
 import base64
 import hashlib
 from pathlib import PurePosixPath
+from typing import Optional
 from urllib.parse import quote
 
 import requests
@@ -28,7 +29,7 @@ def _checked(response: requests.Response) -> requests.Response:
 def push_file_as_lfs_object(
     gitlab_api_url: str,
     project_id: str,
-    branch: str,
+    branch: Optional[str],
     gitlab_token: str,
     filename: str,
     data: bytes,
@@ -39,6 +40,9 @@ def push_file_as_lfs_object(
     to GitLab's LFS storage, a pointer file is committed, ``.gitattributes``
     is updated to track the target path via LFS, and the pointer is finally
     moved to its real path.
+
+    If ``branch`` is not given (e.g. it wasn't recorded for a dataset imported
+    before this was tracked), the project's default branch is used instead.
     """
     gitlab_host = gitlab_api_url.rsplit("/api/v4", 1)[0]
     api_headers = {"PRIVATE-TOKEN": gitlab_token}
@@ -47,6 +51,7 @@ def push_file_as_lfs_object(
         requests.get(f"{gitlab_api_url}/projects/{project_id}", headers=api_headers)
     ).json()
     project_path = project["path_with_namespace"]
+    branch = branch or project["default_branch"]
 
     remote_path = filename.lstrip("/")
 

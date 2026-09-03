@@ -500,7 +500,7 @@ def push_model_to_gitlab(
     gitlab_ref = sparql_datasets_api.get_gitlab_reference(
         MINIO_ENDPOINT, dataset.bucket_name, dataset.id
     )
-    if not gitlab_ref or not gitlab_ref.get("gitlab_branch"):
+    if not gitlab_ref:
         raise HTTPException(
             status_code=400, detail="Linked dataset has no GitLab reference."
         )
