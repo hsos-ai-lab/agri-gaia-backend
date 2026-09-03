@@ -210,9 +210,13 @@ def _import_ro_crate(
         HTTPException: If the RO-Crate metadata is invalid or file download fails.
     """
     identifier = ""
+    title = None
+    description = None
     for node in content["@graph"]:
         if node["@id"] == "./":
             identifier = node["identifier"].replace(" ", "")
+            title = node.get("name")
+            description = node.get("description")
 
     if not identifier:
         raise HTTPException(status_code=400, detail="No identifier found in given crate.")
@@ -245,6 +249,11 @@ def _import_ro_crate(
         sql_api.update_dataset(db, dataset)
     except (ValueError, KeyError) as exc:
         raise HTTPException(status_code=400, detail=str(exc))
+
+    graph, _ = sparql_datasets_api.create_graph_for_import(
+        minio_endpoint, bucket, title or identifier, dataset.id, description, dataset_type
+    )
+    sparql_util.store_graph(graph)
 
     if gitlab_project_id and gitlab_api_url:
         sparql_datasets_api.add_gitlab_reference(

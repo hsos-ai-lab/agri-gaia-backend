@@ -193,6 +193,43 @@ def get_default_graph(minio_server, bucket, dataset_name, dataset_id):
     return graph, id_string
 
 
+def create_graph_for_import(
+    minio_server: str,
+    bucket: str,
+    dataset_name: str,
+    dataset_id: int,
+    description: str,
+    dataset_type: str,
+):
+    """
+    Returns a default graph for an imported dataset (e.g. from an ARC RO-Crate),
+    for which no pre-resolved keyword/location concepts are available.
+
+    Args:
+        minio_server: The location of the MinIO instance.
+        bucket: The bucket, where the dataset is stored.
+        dataset_name: The dataset title (e.g. the RO-Crate root node's ``name``).
+        dataset_id: The Dataset ID.
+        description: The dataset description, if any.
+        dataset_type: The dataset type.
+
+    Returns:
+        A tuple of the graph object and the dataset's URIRef.
+    """
+    graph, id_string = get_default_graph(minio_server, bucket, dataset_name, dataset_id)
+    dcat = Namespace("http://www.w3.org/ns/dcat#")
+    datasetid = URIRef(id_string + "#_Dataset")
+
+    if description:
+        graph.add((datasetid, dcat.description, Literal(description)))
+
+    agri_gaia = Namespace("http://w3id.org/agri-gaia-x/asset#")
+    graph.bind("agri_gaia", agri_gaia)
+    graph.add((datasetid, RDF.type, getattr(agri_gaia, dataset_type)))
+
+    return graph, datasetid
+
+
 def create_graph(
     label_uris,
     location_uris,
