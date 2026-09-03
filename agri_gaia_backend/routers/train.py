@@ -445,6 +445,7 @@ async def get_train_container_model(
             filename=trained_model_filename,
             model_file=io.BytesIO(trained_model_data),
             format=infer_model_format(trained_model_filename),
+            dataset_id=dataset.id,
         )
 
         persist_model_artifact(

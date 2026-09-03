@@ -34,6 +34,9 @@ from agri_gaia_backend.services.edc.connector import (
     delete_catalog_entry_model,
 )
 from agri_gaia_backend.services.graph.sparql_operations import (
+    datasets as sparql_datasets_api,
+)
+from agri_gaia_backend.services.graph.sparql_operations import (
     models as sparql_models_api,
 )
 from agri_gaia_backend.services.graph.sparql_operations import util as sparql_util
@@ -159,6 +162,7 @@ def create_model(
     labels: Optional[List[str]] = Form(None),
     description: str = Form(...),
     format: str = Form(...),
+    dataset_id: Optional[int] = Form(None),
     db: Session = Depends(get_db),
 ):
     validate_name(name)
@@ -175,6 +179,7 @@ def create_model(
         format=format,
         labels=labels,
         description=description,
+        dataset_id=dataset_id,
     )
 
     return model
@@ -189,9 +194,10 @@ def persist_model(
     format: str,
     labels: Optional[List[str]] = None,
     description: Optional[str] = None,
+    dataset_id: Optional[int] = None,
 ) -> Model:
     created_model = create_initial_entry_postgres(
-        db=db, user=user, name=name, filename=filename, format=format
+        db=db, user=user, name=name, filename=filename, format=format, dataset_id=dataset_id
     )
     fuseki_id: Optional[str] = None
     if description is not None:
@@ -252,7 +258,12 @@ def persist_model_artifact(
 
 
 def create_initial_entry_postgres(
-    db: Session, user: KeycloakUser, name: str, filename: str, format: str
+    db: Session,
+    user: KeycloakUser,
+    name: str,
+    filename: str,
+    format: str,
+    dataset_id: Optional[int] = None,
 ):
     try:
         # Replace model name by name(2), (3)... if name already exist
@@ -271,6 +282,7 @@ def create_initial_entry_postgres(
             bucket_name=user.minio_bucket_name,
             file_size=None,
             file_name=filename,
+            dataset_id=dataset_id,
         )
 
         return created_model
@@ -469,6 +481,25 @@ def _remove_zip(model: Model, token):
 
 def _remove_catalog_entry(model: Model):
     delete_catalog_entry_model(model)
+
+
+@router.post("/{model_id}/push-to-gitlab")
+def push_model_to_gitlab(model_id: int, db: Session = Depends(get_db)):
+    model = check_exists(sql_api.get_model(db, model_id))
+    if model.dataset_id is None:
+        raise HTTPException(status_code=400, detail="Model has no linked dataset.")
+
+    dataset = check_exists(dataset_sql_api.get_dataset(db, model.dataset_id))
+    gitlab_ref = sparql_datasets_api.get_gitlab_reference(
+        MINIO_ENDPOINT, dataset.bucket_name, dataset.id
+    )
+    if not gitlab_ref:
+        raise HTTPException(
+            status_code=400, detail="Linked dataset has no GitLab reference."
+        )
+
+    # Placeholder: actual push-back logic is wired in once the upload script is provided.
+    return {"status": "not_implemented"}
 
 
 # Deletes dataset from bucket on minio and all information in Fuseki

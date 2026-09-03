@@ -34,6 +34,8 @@ class DatasetBase(BaseModel):
 
 class Dataset(DatasetBase):
     id: int
+    gitlab_project_id: Optional[str]
+    gitlab_api_url: Optional[str]
 
     class Config:
         orm_mode = True

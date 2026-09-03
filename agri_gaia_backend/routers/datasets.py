@@ -105,6 +105,15 @@ async def startup():
         logger.info("triton bucket created")
 
 
+def _attach_gitlab_reference(dataset):
+    gitlab_ref = sparql_datasets_api.get_gitlab_reference(
+        MINIO_ENDPOINT, dataset.bucket_name, dataset.id
+    )
+    dataset.gitlab_project_id = gitlab_ref["gitlab_project_id"] if gitlab_ref else None
+    dataset.gitlab_api_url = gitlab_ref["gitlab_api_url"] if gitlab_ref else None
+    return dataset
+
+
 @router.get("", response_model=List[Dataset])
 def get_all_datasets(skip: int = 0, limit: int = 10000, db: Session = Depends(get_db)):
     """
@@ -118,7 +127,10 @@ def get_all_datasets(skip: int = 0, limit: int = 10000, db: Session = Depends(ge
     Returns:
         A list of all datasets, which are stored by the plattform.
     """
-    return sql_api.get_datasets(db, skip=skip, limit=limit)
+    return [
+        _attach_gitlab_reference(dataset)
+        for dataset in sql_api.get_datasets(db, skip=skip, limit=limit)
+    ]
 
 
 @router.get("/keyword")
@@ -176,7 +188,7 @@ def get_dataset(dataset_id: int, db: Session = Depends(get_db)):
     Raises:
         HTTPException: No dataset is found for the given ID.
     """
-    return check_exists(sql_api.get_dataset(db, dataset_id))
+    return _attach_gitlab_reference(check_exists(sql_api.get_dataset(db, dataset_id)))
 
 
 @router.get("/{dataset_id}/download")

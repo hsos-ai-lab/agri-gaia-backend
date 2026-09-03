@@ -16,7 +16,7 @@ import json
 import logging
 import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from typing import Any
+from typing import Any, Optional
 
 import requests
 from fastapi import APIRouter, Depends, HTTPException, Request
@@ -26,6 +26,9 @@ from sqlalchemy.orm import Session
 from agri_gaia_backend.db import dataset_api as sql_api
 from agri_gaia_backend.routers.common import get_db
 from agri_gaia_backend.services.graph.sparql_operations import util as sparql_util
+from agri_gaia_backend.services.graph.sparql_operations import (
+    datasets as sparql_datasets_api,
+)
 
 ROOT_PATH = "/agdafair"
 LFS_RESOLVER_URL = "https://lfs-resolver.nfdi4plants.org/presigned-url/"
@@ -182,6 +185,8 @@ def _import_ro_crate(
     owner: str,
     bucket: str,
     dataset_type: str,
+    gitlab_project_id: Optional[str] = None,
+    gitlab_api_url: Optional[str] = None,
 ) -> dict[str, str]:
     """Shared import logic for both ``/import`` and ``/importCrate`` endpoints.
 
@@ -195,6 +200,8 @@ def _import_ro_crate(
         owner: Username that owns the imported dataset.
         bucket: MinIO bucket to upload files into.
         dataset_type: Classification of the dataset (e.g. ``"AgriImageDataResource"``).
+        gitlab_project_id: GitLab project ID the dataset was imported from, if any.
+        gitlab_api_url: GitLab API base URL the dataset was imported from, if any.
 
     Returns:
         A dict with a success message.
@@ -239,6 +246,11 @@ def _import_ro_crate(
     except (ValueError, KeyError) as exc:
         raise HTTPException(status_code=400, detail=str(exc))
 
+    if gitlab_project_id and gitlab_api_url:
+        sparql_datasets_api.add_gitlab_reference(
+            minio_endpoint, bucket, dataset.id, gitlab_project_id, gitlab_api_url
+        )
+
     return {"follow_me":project_base_app}
 
 @router.get("/test")
@@ -257,7 +269,7 @@ async def import_arc(request: Request, db: Session = Depends(get_db)):
         - ``ro_crate_url``: Full URL to the RO-Crate metadata file.
     """
     body = json.loads(await request.body())
-    logger.info(body)
+    logger.info({k: v for k, v in body.items() if k != "gitlab_token"})
 
     package_payload = body["package_payload"]
     owner = package_payload["UserName"]
@@ -265,15 +277,7 @@ async def import_arc(request: Request, db: Session = Depends(get_db)):
 
     def _run():
         token = body["gitlab_token"]
-        response = None
-        for headers in (
-            {"JOB-TOKEN": token},
-            {"PRIVATE-TOKEN": token},
-            {"Authorization": f"Bearer {token}"},
-        ):
-            response = requests.get(body["ro_crate_url"], headers=headers)
-            if response.status_code != 401:
-                break
+        response = requests.get(body["ro_crate_url"], headers={"Authorization": f"Bearer {token}"})
         response.raise_for_status()
         content = response.json()
 
@@ -281,7 +285,15 @@ async def import_arc(request: Request, db: Session = Depends(get_db)):
         if not client.bucket_exists(owner):
             client.make_bucket(owner)
 
-        return _import_ro_crate(db, content, owner=owner, bucket=owner, dataset_type=dataset_type)
+        return _import_ro_crate(
+            db,
+            content,
+            owner=owner,
+            bucket=owner,
+            dataset_type=dataset_type,
+            gitlab_project_id=body["project_id"],
+            gitlab_api_url=body["gitlab_api_url"],
+        )
 
     return await asyncio.to_thread(_run)
 

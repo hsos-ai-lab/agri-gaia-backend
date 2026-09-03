@@ -44,6 +44,7 @@ class Model(ModelBase):
     metadata_uri: Optional[str]
     file_size: Optional[int]
     file_name: Optional[str]
+    dataset_id: Optional[int]
     input_name: Optional[str]
     input_datatype: Optional[TensorDatatype]
     input_shape: Optional[List[int]]

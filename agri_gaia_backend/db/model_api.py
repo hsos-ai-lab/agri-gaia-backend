@@ -11,7 +11,7 @@
 
 from multiprocessing.dummy import Array
 
-from typing import List
+from typing import List, Optional
 
 from sqlalchemy.orm import Session
 
@@ -80,6 +80,7 @@ def create_model(
     bucket_name: str,
     file_size: int,
     file_name: str,
+    dataset_id: Optional[int] = None,
 ):
     db_model = models.Model(
         name=name,
@@ -89,6 +90,7 @@ def create_model(
         bucket_name=bucket_name,
         file_size=file_size,
         file_name=file_name,
+        dataset_id=dataset_id,
     )
     db.add(db_model)
     db.commit()

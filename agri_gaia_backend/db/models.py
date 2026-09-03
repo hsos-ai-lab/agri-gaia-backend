@@ -129,6 +129,8 @@ class Model(Base):
     file_name = Column(String, nullable=True)
     metadata_uri = Column(String, nullable=True)
     deployments = relationship("ModelDeployment", back_populates="model")
+    dataset_id = Column(Integer, ForeignKey("datasets.id"), nullable=True)
+    dataset = relationship("Dataset")
 
     format = Column(Enum(ModelFormat), nullable=True)
     input_name = Column(String, nullable=True)

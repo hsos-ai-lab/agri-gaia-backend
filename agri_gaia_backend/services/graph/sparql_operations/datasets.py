@@ -89,6 +89,46 @@ def get_description_for_dataset(dataset_id):
     return description
 
 
+def add_gitlab_reference(minio_server, bucket, dataset_id, project_id, gitlab_api_url):
+    """Adds GitLab source-repository triples for a dataset into the shared 'ds' graph."""
+    id_string = "https://" + minio_server + "/" + bucket + "/datasets/" + str(dataset_id)
+    subject = URIRef(id_string + "#_Dataset")
+
+    platform_ns = Namespace("http://w3id.org/agri-gaia-x/platform#")
+    graph = Graph()
+    graph.bind("platform", platform_ns)
+    graph.add((subject, platform_ns.gitlabProjectId, Literal(project_id)))
+    graph.add(
+        (subject, platform_ns.gitlabApiUrl, Literal(gitlab_api_url, datatype=XSD.anyURI))
+    )
+    return util.store_graph(graph)
+
+
+def get_gitlab_reference(minio_server, bucket, dataset_id):
+    """Retrieves the GitLab project_id/api_url triples for a dataset, or None if absent."""
+    id_string = "https://" + minio_server + "/" + bucket + "/datasets/" + str(dataset_id)
+    subject = id_string + "#_Dataset"
+
+    query = f"""
+        PREFIX platform: <http://w3id.org/agri-gaia-x/platform#>
+        SELECT ?projectId ?apiUrl WHERE {{
+            OPTIONAL {{ <{subject}> platform:gitlabProjectId ?projectId }}
+            OPTIONAL {{ <{subject}> platform:gitlabApiUrl ?apiUrl }}
+        }}
+    """
+    bindings = util.send_query(SPARQL_QUERY_ENDPOINT, query)["results"]["bindings"]
+    if not bindings:
+        return None
+
+    row = bindings[0]
+    project_id = row.get("projectId", {}).get("value")
+    api_url = row.get("apiUrl", {}).get("value")
+    if not project_id and not api_url:
+        return None
+
+    return {"gitlab_project_id": project_id, "gitlab_api_url": api_url}
+
+
 def get_metadata_information(dataset_id):
     query = f"""Select ?sub ?pred ?obj WHERE {{
         ?sub ?pred ?obj
