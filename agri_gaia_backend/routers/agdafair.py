@@ -187,6 +187,7 @@ def _import_ro_crate(
     dataset_type: str,
     gitlab_project_id: Optional[str] = None,
     gitlab_api_url: Optional[str] = None,
+    gitlab_branch: Optional[str] = None,
 ) -> dict[str, str]:
     """Shared import logic for both ``/import`` and ``/importCrate`` endpoints.
 
@@ -202,6 +203,7 @@ def _import_ro_crate(
         dataset_type: Classification of the dataset (e.g. ``"AgriImageDataResource"``).
         gitlab_project_id: GitLab project ID the dataset was imported from, if any.
         gitlab_api_url: GitLab API base URL the dataset was imported from, if any.
+        gitlab_branch: GitLab branch the dataset was imported from, if any.
 
     Returns:
         A dict with a success message.
@@ -257,7 +259,12 @@ def _import_ro_crate(
 
     if gitlab_project_id and gitlab_api_url:
         sparql_datasets_api.add_gitlab_reference(
-            minio_endpoint, bucket, dataset.id, gitlab_project_id, gitlab_api_url
+            minio_endpoint,
+            bucket,
+            dataset.id,
+            gitlab_project_id,
+            gitlab_api_url,
+            gitlab_branch,
         )
 
     return {"follow_me":project_base_app}
@@ -302,6 +309,7 @@ async def import_arc(request: Request, db: Session = Depends(get_db)):
             dataset_type=dataset_type,
             gitlab_project_id=body["project_id"],
             gitlab_api_url=body["gitlab_api_url"],
+            gitlab_branch=body["branch"],
         )
 
     return await asyncio.to_thread(_run)

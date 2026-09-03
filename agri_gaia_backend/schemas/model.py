@@ -35,6 +35,10 @@ class ModelPatch(ModelBase):
     output_labels: Optional[List[str]]
 
 
+class PushToGitlabRequest(BaseModel):
+    gitlab_token: str
+
+
 class Model(ModelBase):
     id: int
     owner: str

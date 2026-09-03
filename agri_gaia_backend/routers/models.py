@@ -27,12 +27,13 @@ from agri_gaia_backend.db import models
 from agri_gaia_backend.routers import common
 from agri_gaia_backend.routers.common import check_exists, get_db
 from agri_gaia_backend.schemas.keycloak_user import KeycloakUser
-from agri_gaia_backend.schemas.model import Model, ModelPatch
+from agri_gaia_backend.schemas.model import Model, ModelPatch, PushToGitlabRequest
 from agri_gaia_backend.services import minio_api
 from agri_gaia_backend.services.edc.connector import (
     create_catalog_entry_model,
     delete_catalog_entry_model,
 )
+from agri_gaia_backend.services.gitlab.lfs import push_file_as_lfs_object
 from agri_gaia_backend.services.graph.sparql_operations import (
     datasets as sparql_datasets_api,
 )
@@ -484,7 +485,13 @@ def _remove_catalog_entry(model: Model):
 
 
 @router.post("/{model_id}/push-to-gitlab")
-def push_model_to_gitlab(model_id: int, db: Session = Depends(get_db)):
+def push_model_to_gitlab(
+    request: Request,
+    model_id: int,
+    body: PushToGitlabRequest,
+    db: Session = Depends(get_db),
+):
+    user: KeycloakUser = request.user
     model = check_exists(sql_api.get_model(db, model_id))
     if model.dataset_id is None:
         raise HTTPException(status_code=400, detail="Model has no linked dataset.")
@@ -493,13 +500,32 @@ def push_model_to_gitlab(model_id: int, db: Session = Depends(get_db)):
     gitlab_ref = sparql_datasets_api.get_gitlab_reference(
         MINIO_ENDPOINT, dataset.bucket_name, dataset.id
     )
-    if not gitlab_ref:
+    if not gitlab_ref or not gitlab_ref.get("gitlab_branch"):
         raise HTTPException(
             status_code=400, detail="Linked dataset has no GitLab reference."
         )
 
-    # Placeholder: actual push-back logic is wired in once the upload script is provided.
-    return {"status": "not_implemented"}
+    _validate_parameters(model.bucket_name, user.minio_token)
+    model_filepath = f"models/{model.id}/{model.file_name}"
+    model_data = minio_api.get_object(
+        model.bucket_name, object_name=model_filepath, token=user.minio_token
+    ).read()
+
+    try:
+        push_file_as_lfs_object(
+            gitlab_api_url=gitlab_ref["gitlab_api_url"],
+            project_id=gitlab_ref["gitlab_project_id"],
+            branch=gitlab_ref["gitlab_branch"],
+            gitlab_token=body.gitlab_token,
+            filename=model.file_name,
+            data=model_data,
+        )
+    except RuntimeError as exc:
+        raise HTTPException(
+            status_code=502, detail=f"Pushing model to GitLab failed: {exc}"
+        )
+
+    return {"status": "ok"}
 
 
 # Deletes dataset from bucket on minio and all information in Fuseki
