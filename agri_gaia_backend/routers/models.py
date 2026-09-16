@@ -27,13 +27,13 @@ from agri_gaia_backend.db import models
 from agri_gaia_backend.routers import common
 from agri_gaia_backend.routers.common import check_exists, get_db
 from agri_gaia_backend.schemas.keycloak_user import KeycloakUser
-from agri_gaia_backend.schemas.model import Model, ModelPatch, PushToGitlabRequest
+from agri_gaia_backend.schemas.model import Model, ModelPatch
 from agri_gaia_backend.services import minio_api
 from agri_gaia_backend.services.edc.connector import (
     create_catalog_entry_model,
     delete_catalog_entry_model,
 )
-from agri_gaia_backend.services.gitlab.lfs import push_file_as_lfs_object
+from agri_gaia_backend.services.gitlab.lfs import push_files_as_lfs_objects
 from agri_gaia_backend.services.graph.sparql_operations import (
     datasets as sparql_datasets_api,
 )
@@ -488,7 +488,8 @@ def _remove_catalog_entry(model: Model):
 def push_model_to_gitlab(
     request: Request,
     model_id: int,
-    body: PushToGitlabRequest,
+    gitlab_token: str = Form(...),
+    files: List[UploadFile] = File(default=[]),
     db: Session = Depends(get_db),
 ):
     user: KeycloakUser = request.user
@@ -511,14 +512,19 @@ def push_model_to_gitlab(
         model.bucket_name, object_name=model_filepath, token=user.minio_token
     ).read()
 
+    run_path = f"runs/{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}"
+    push_files = [(f"{run_path}/{model.file_name}", model_data)]
+    push_files.extend(
+        (f"{run_path}/{upload.filename}", upload.file.read()) for upload in files
+    )
+
     try:
-        push_file_as_lfs_object(
+        push_files_as_lfs_objects(
             gitlab_api_url=gitlab_ref["gitlab_api_url"],
             project_id=gitlab_ref["gitlab_project_id"],
             branch=gitlab_ref["gitlab_branch"],
-            gitlab_token=body.gitlab_token,
-            filename=model.file_name,
-            data=model_data,
+            gitlab_token=gitlab_token,
+            files=push_files,
         )
     except RuntimeError as exc:
         raise HTTPException(

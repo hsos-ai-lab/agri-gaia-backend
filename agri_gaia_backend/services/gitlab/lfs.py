@@ -12,7 +12,7 @@
 import base64
 import hashlib
 from pathlib import PurePosixPath
-from typing import Optional
+from typing import List, Optional, Tuple
 from urllib.parse import quote
 
 import requests
@@ -26,24 +26,28 @@ def _checked(response: requests.Response) -> requests.Response:
     return response
 
 
-def push_file_as_lfs_object(
+def push_files_as_lfs_objects(
     gitlab_api_url: str,
     project_id: str,
     branch: Optional[str],
     gitlab_token: str,
-    filename: str,
-    data: bytes,
+    files: List[Tuple[str, bytes]],
 ) -> None:
-    """Uploads ``data`` as a Git LFS-tracked file at the repository root of ``branch``.
+    """Uploads ``files`` as Git LFS-tracked files in the repository, in one push.
 
-    Mirrors the classic Git LFS batch-API upload flow: the object is uploaded
-    to GitLab's LFS storage, a pointer file is committed, ``.gitattributes``
-    is updated to track the target path via LFS, and the pointer is finally
-    moved to its real path.
+    ``files`` is a list of ``(remote_path, data)`` pairs. Mirrors the classic
+    Git LFS batch-API upload flow: the objects are uploaded to GitLab's LFS
+    storage in a single batch call, pointer files are committed,
+    ``.gitattributes`` is updated to track the target paths via LFS, and the
+    pointers are finally moved to their real paths — each step done as one
+    commit covering all files, rather than one commit per file.
 
     If ``branch`` is not given (e.g. it wasn't recorded for a dataset imported
     before this was tracked), the project's default branch is used instead.
     """
+    if not files:
+        return
+
     gitlab_host = gitlab_api_url.rsplit("/api/v4", 1)[0]
     api_headers = {"PRIVATE-TOKEN": gitlab_token}
 
@@ -53,10 +57,15 @@ def push_file_as_lfs_object(
     project_path = project["path_with_namespace"]
     branch = branch or project["default_branch"]
 
-    remote_path = filename.lstrip("/")
-
-    oid = hashlib.sha256(data).hexdigest()
-    size = len(data)
+    entries = [
+        {
+            "remote_path": remote_path.lstrip("/"),
+            "data": data,
+            "oid": hashlib.sha256(data).hexdigest(),
+            "size": len(data),
+        }
+        for remote_path, data in files
+    ]
 
     batch = _checked(
         requests.post(
@@ -69,39 +78,45 @@ def push_file_as_lfs_object(
             json={
                 "operation": "upload",
                 "transfers": ["basic"],
-                "objects": [{"oid": oid, "size": size}],
+                "objects": [
+                    {"oid": entry["oid"], "size": entry["size"]} for entry in entries
+                ],
                 "ref": {"name": f"refs/heads/{branch}"},
             },
         )
     ).json()
 
-    lfs_object = batch["objects"][0]
-    if "error" in lfs_object:
-        raise RuntimeError(f"LFS error: {lfs_object['error']}")
+    lfs_objects_by_oid = {obj.get("oid"): obj for obj in batch["objects"]}
 
-    upload = lfs_object.get("actions", {}).get("upload")
-    if upload:
-        upload_headers = {
-            key: value
-            for key, value in upload.get("header", {}).items()
-            if key.lower() != "transfer-encoding"
-        }
-        upload_auth = (
-            None
-            if any(key.lower() == "authorization" for key in upload_headers)
-            else ("oauth2", gitlab_token)
-        )
-        _checked(
-            requests.put(
-                upload["href"], data=data, headers=upload_headers, auth=upload_auth
+    for entry in entries:
+        lfs_object = lfs_objects_by_oid.get(entry["oid"])
+        if lfs_object is None:
+            raise RuntimeError(f"No LFS batch response for {entry['remote_path']}")
+        if "error" in lfs_object:
+            raise RuntimeError(
+                f"LFS error for {entry['remote_path']}: {lfs_object['error']}"
             )
-        )
 
-    pointer = (
-        "version https://git-lfs.github.com/spec/v1\n"
-        f"oid sha256:{oid}\n"
-        f"size {size}\n"
-    )
+        upload = lfs_object.get("actions", {}).get("upload")
+        if upload:
+            upload_headers = {
+                key: value
+                for key, value in upload.get("header", {}).items()
+                if key.lower() != "transfer-encoding"
+            }
+            upload_auth = (
+                None
+                if any(key.lower() == "authorization" for key in upload_headers)
+                else ("oauth2", gitlab_token)
+            )
+            _checked(
+                requests.put(
+                    upload["href"],
+                    data=entry["data"],
+                    headers=upload_headers,
+                    auth=upload_auth,
+                )
+            )
 
     def commit(message: str, actions: list) -> None:
         _checked(
@@ -116,23 +131,30 @@ def push_file_as_lfs_object(
             )
         )
 
-    # Store the pointer temporarily before marking its final path as LFS-managed.
-    parent = PurePosixPath(remote_path).parent
-    temporary_path = oid if str(parent) == "." else str(parent / oid)
+    # Store the pointers temporarily before marking their final paths as LFS-managed.
+    create_actions = []
+    for entry in entries:
+        pointer = (
+            "version https://git-lfs.github.com/spec/v1\n"
+            f"oid sha256:{entry['oid']}\n"
+            f"size {entry['size']}\n"
+        )
+        parent = PurePosixPath(entry["remote_path"]).parent
+        entry["temporary_path"] = (
+            entry["oid"] if str(parent) == "." else str(parent / entry["oid"])
+        )
+        create_actions.append(
+            {"action": "create", "file_path": entry["temporary_path"], "content": pointer}
+        )
 
-    commit(
-        f"Add LFS pointer for {remote_path}",
-        [{"action": "create", "file_path": temporary_path, "content": pointer}],
-    )
+    commit(f"Add LFS pointer(s) for {len(entries)} file(s)", create_actions)
 
-    # Add the target path to .gitattributes.
+    # Add the target paths to .gitattributes.
     attributes_url = (
         f"{gitlab_api_url}/projects/{project_id}/repository/files/"
         f"{quote('.gitattributes', safe='')}"
     )
     response = requests.get(attributes_url, headers=api_headers, params={"ref": branch})
-
-    attribute = f"{remote_path} filter=lfs diff=lfs merge=lfs -text"
 
     if response.status_code == 404:
         existing_attributes = ""
@@ -144,11 +166,19 @@ def push_file_as_lfs_object(
         )
         attribute_action = "update"
 
-    if attribute not in existing_attributes.splitlines():
+    existing_lines = existing_attributes.splitlines()
+    new_lines = [
+        f"{entry['remote_path']} filter=lfs diff=lfs merge=lfs -text"
+        for entry in entries
+        if f"{entry['remote_path']} filter=lfs diff=lfs merge=lfs -text"
+        not in existing_lines
+    ]
+
+    if new_lines:
         new_attributes = existing_attributes.rstrip()
         if new_attributes:
             new_attributes += "\n"
-        new_attributes += attribute + "\n"
+        new_attributes += "\n".join(new_lines) + "\n"
 
         commit(
             "Update .gitattributes",
@@ -161,8 +191,16 @@ def push_file_as_lfs_object(
             ],
         )
 
-    # Move the pointer to its final path.
+    # Move the pointers to their final paths.
+    move_actions = [
+        {
+            "action": "move",
+            "previous_path": entry["temporary_path"],
+            "file_path": entry["remote_path"],
+        }
+        for entry in entries
+    ]
     commit(
-        f"Add LFS file {remote_path}",
-        [{"action": "move", "previous_path": temporary_path, "file_path": remote_path}],
+        f"Add LFS file(s): {', '.join(entry['remote_path'] for entry in entries)}",
+        move_actions,
     )
