@@ -404,6 +404,11 @@ async def edge_benchmark_start(
             annotation=annotation,
             chunk_size=chunk_size,
             cpu_only=benchmark_config.cpu_only,
+            # Where the benchmark loop runs. Forwarded explicitly because this
+            # call destructures benchmark_config rather than passing it whole,
+            # so anything not named here is silently dropped and the job
+            # quietly runs in manager mode.
+            execution_mode=benchmark_config.execution_mode,
             cleanup=True,
         )
 
@@ -560,6 +565,11 @@ async def edge_benchmark_auto_search(
                     annotation=annotation,
                     chunk_size=auto_search_request.chunk_size,
                     cpu_only=device_config.cpu_only,
+                    # Same mode for every candidate, or the ranking compares
+                    # numbers measured on different machines: in manager mode
+                    # pre/postprocessing happen here on x86 and are identical
+                    # across candidates, which flatters slower devices.
+                    execution_mode=device_config.execution_mode,
                     cleanup=True,
                 )
 

@@ -61,6 +61,16 @@
             "default": false,
             "description": "Run inference only on CPU during benchmarking."
         },
+        "execution_mode": {
+            "title": "Execution mode",
+            "type": "string",
+            "default": "manager",
+            "enum": [
+                "manager",
+                "device"
+            ],
+            "description": "Where the benchmark loop runs. 'manager': the Edge-Farm server runs it, so preprocessing and postprocessing are measured on the server's x86 CPU and every inference includes a network round trip to the device. 'device': the whole pipeline runs on the edge device, which is what a field deployment does -- more faithful, but roughly 16% slower end to end and not comparable to a manager run."
+        },
         "scaling": {
             "title": "Image scaling",
             "type": "string",
