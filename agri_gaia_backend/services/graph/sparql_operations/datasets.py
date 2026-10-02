@@ -90,7 +90,7 @@ def get_description_for_dataset(dataset_id):
 
 
 def add_gitlab_reference(
-    minio_server, bucket, dataset_id, project_id, gitlab_api_url, branch
+    minio_server, bucket, dataset_id, project_id, gitlab_api_url, branch, commit_id
 ):
     """Adds GitLab source-repository triples for a dataset into the shared 'ds' graph."""
     id_string = "https://" + minio_server + "/" + bucket + "/datasets/" + str(dataset_id)
@@ -104,20 +104,22 @@ def add_gitlab_reference(
         (subject, platform_ns.gitlabApiUrl, Literal(gitlab_api_url, datatype=XSD.anyURI))
     )
     graph.add((subject, platform_ns.gitlabBranch, Literal(branch)))
+    graph.add((subject, platform_ns.gitlabCommitId, Literal(commit_id)))
     return util.store_graph(graph)
 
 
 def get_gitlab_reference(minio_server, bucket, dataset_id):
-    """Retrieves the GitLab project_id/api_url/branch triples for a dataset, or None if absent."""
+    """Retrieves the GitLab project_id/api_url/branch/commit_id triples for a dataset, or None if absent."""
     id_string = "https://" + minio_server + "/" + bucket + "/datasets/" + str(dataset_id)
     subject = id_string + "#_Dataset"
 
     query = f"""
         PREFIX platform: <http://w3id.org/agri-gaia-x/platform#>
-        SELECT ?projectId ?apiUrl ?branch WHERE {{
+        SELECT ?projectId ?apiUrl ?branch ?commitId WHERE {{
             OPTIONAL {{ <{subject}> platform:gitlabProjectId ?projectId }}
             OPTIONAL {{ <{subject}> platform:gitlabApiUrl ?apiUrl }}
             OPTIONAL {{ <{subject}> platform:gitlabBranch ?branch }}
+            OPTIONAL {{ <{subject}> platform:gitlabCommitId ?commitId }}
         }}
     """
     bindings = util.send_query(SPARQL_QUERY_ENDPOINT, query)["results"]["bindings"]
@@ -128,10 +130,16 @@ def get_gitlab_reference(minio_server, bucket, dataset_id):
     project_id = row.get("projectId", {}).get("value")
     api_url = row.get("apiUrl", {}).get("value")
     branch = row.get("branch", {}).get("value")
+    commit_id = row.get("commitId", {}).get("value")
     if not project_id and not api_url:
         return None
 
-    return {"gitlab_project_id": project_id, "gitlab_api_url": api_url, "gitlab_branch": branch}
+    return {
+        "gitlab_project_id": project_id,
+        "gitlab_api_url": api_url,
+        "gitlab_branch": branch,
+        "gitlab_commit_id": commit_id,
+    }
 
 
 def get_metadata_information(dataset_id):

@@ -188,6 +188,7 @@ def _import_ro_crate(
     gitlab_project_id: Optional[str] = None,
     gitlab_api_url: Optional[str] = None,
     gitlab_branch: Optional[str] = None,
+    gitlab_commit_id: Optional[str] = None,
 ) -> dict[str, str]:
     """Shared import logic for both ``/import`` and ``/importCrate`` endpoints.
 
@@ -204,6 +205,7 @@ def _import_ro_crate(
         gitlab_project_id: GitLab project ID the dataset was imported from, if any.
         gitlab_api_url: GitLab API base URL the dataset was imported from, if any.
         gitlab_branch: GitLab branch the dataset was imported from, if any.
+        gitlab_commit_id: GitLab commit ID the dataset was imported from, if any.
 
     Returns:
         A dict with a success message.
@@ -265,6 +267,7 @@ def _import_ro_crate(
             gitlab_project_id,
             gitlab_api_url,
             gitlab_branch,
+            gitlab_commit_id,
         )
 
     return {"follow_me":project_base_app}
@@ -310,6 +313,7 @@ async def import_arc(request: Request, db: Session = Depends(get_db)):
             gitlab_project_id=body["project_id"],
             gitlab_api_url=body["gitlab_api_url"],
             gitlab_branch=body["branch"],
+            gitlab_commit_id=body["commit_id"],
         )
 
     return await asyncio.to_thread(_run)

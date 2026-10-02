@@ -517,6 +517,10 @@ def push_model_to_gitlab(
     push_files.extend(
         (f"{run_path}/{upload.filename}", upload.file.read()) for upload in files
     )
+    if gitlab_ref.get("gitlab_commit_id"):
+        push_files.append(
+            (f"{run_path}/source_commit.txt", gitlab_ref["gitlab_commit_id"].encode())
+        )
 
     try:
         push_files_as_lfs_objects(
