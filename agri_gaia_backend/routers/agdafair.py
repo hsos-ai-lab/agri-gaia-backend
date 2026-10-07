@@ -190,7 +190,7 @@ def _import_ro_crate(
     gitlab_branch: Optional[str] = None,
     gitlab_commit_id: Optional[str] = None,
 ) -> dict[str, str]:
-    """Shared import logic for both ``/import`` and ``/importCrate`` endpoints.
+    """Shared import logic for the ``/import`` endpoint.
 
     Parses the RO-Crate metadata, downloads referenced files, persists a
     dataset record in the database, and uploads the files to MinIO. On failure
@@ -315,23 +315,5 @@ async def import_arc(request: Request, db: Session = Depends(get_db)):
             gitlab_branch=body["branch"],
             gitlab_commit_id=body["commit_id"],
         )
-
-    return await asyncio.to_thread(_run)
-
-@router.post("/importCrate")
-async def import_crate(request: Request, db: Session = Depends(get_db)):
-    """Import a dataset from a directly submitted RO-Crate JSON-LD payload.
-
-    Expects the raw request body to be a valid RO-Crate ``metadata.json``
-    document. Uses ``"towamhof"`` as both owner and bucket name, and defaults the
-    dataset type to ``"AgriImageDataResource"``.
-    """
-    content = json.loads(await request.body())
-
-    def _run():
-        client = _get_minio_client()
-        if not client.bucket_exists("towamhof"):
-            client.make_bucket("towamhof")
-        return _import_ro_crate(db, content, owner="towamhof", bucket="towamhof", dataset_type="AgriImageDataResource")
 
     return await asyncio.to_thread(_run)
