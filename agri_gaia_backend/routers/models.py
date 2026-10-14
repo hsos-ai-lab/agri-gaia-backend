@@ -26,6 +26,7 @@ from agri_gaia_backend.db import dataset_api as dataset_sql_api
 from agri_gaia_backend.db import models
 from agri_gaia_backend.routers import common
 from agri_gaia_backend.routers.common import check_exists, get_db
+from agri_gaia_backend.routers.datasets import update_annotations_from_cvat
 from agri_gaia_backend.schemas.keycloak_user import KeycloakUser
 from agri_gaia_backend.schemas.model import Model, ModelPatch
 from agri_gaia_backend.services import minio_api
@@ -521,6 +522,21 @@ def push_model_to_gitlab(
         push_files.append(
             (f"{run_path}/source_commit.txt", gitlab_ref["gitlab_commit_id"].encode())
         )
+
+    if dataset.annotation_task_id is not None:
+        try:
+            update_annotations_from_cvat(dataset, user.minio_token)
+            annotations_data = minio_api.get_object(
+                dataset.bucket_name,
+                object_name=f"datasets/{dataset.id}/annotations/annotations.xml",
+                token=user.minio_token,
+            ).read()
+            push_files.append((f"{run_path}/annotations.xml", annotations_data))
+        except Exception:
+            logger.exception(
+                "Failed to fetch CVAT annotations for dataset %s — pushing without them",
+                dataset.id,
+            )
 
     try:
         push_files_as_lfs_objects(
