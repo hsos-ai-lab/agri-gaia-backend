@@ -55,35 +55,6 @@ def _get_minio_client() -> Minio:
     )
 
 
-def _parse_ro_crate_metadata(
-    content: dict[str, Any],
-    dataset_id: str,
-    identifier: str
-) -> str:
-    """Parse an RO-Crate metadata JSON, register it in Fuseki, and return the dataset name.
-
-    Iterates over the ``@graph`` array looking for the root dataset descriptor
-    (``@id == "./"``). When found, creates a Fuseki dataset named after the
-    ``identifier`` field and stores the full JSON-LD metadata under the
-    ``name`` field.
-
-    Args:
-        content: Parsed RO-Crate JSON-LD metadata dictionary.
-
-    Returns:
-        The sanitised dataset identifier (spaces removed) used as the Fuseki
-        dataset name.
-
-    Raises:
-        ValueError: If no root dataset descriptor is found in the graph.
-    """
-    name = f"{dataset_id}_{identifier}"
-    sparql_util.createFusekiDataset(name)
-    sparql_util.store_json(json.dumps(content), name)
-    return name
-
-    raise ValueError("RO-Crate metadata does not contain a root dataset descriptor (@id='./')).")
-
 def _download_range(url: str, start: int, end: int) -> tuple[int, bytes]:
     response = requests.get(url, headers={"Range": f"bytes={start}-{end}"})
     response.raise_for_status()
@@ -247,17 +218,14 @@ def _import_ro_crate(
         sql_api.delete_dataset(db, dataset)
         raise HTTPException(status_code=500, detail="Failed to upload files to storage.")
 
-    try:
-        name = _parse_ro_crate_metadata(content, dataset_id=dataset.id, identifier=identifier)
-        dataset.metadata_uri = name
-        sql_api.update_dataset(db, dataset)
-    except (ValueError, KeyError) as exc:
-        raise HTTPException(status_code=400, detail=str(exc))
+    sparql_datasets_api.store_ro_crate(minio_endpoint, bucket, dataset.id, json.dumps(content))
 
-    graph, _ = sparql_datasets_api.create_graph_for_import(
+    graph, metadata_uri = sparql_datasets_api.create_graph_for_import(
         minio_endpoint, bucket, title or identifier, dataset.id, description, dataset_type
     )
     sparql_util.store_graph(graph)
+    dataset.metadata_uri = str(metadata_uri)
+    sql_api.update_dataset(db, dataset)
 
     if gitlab_project_id and gitlab_api_url:
         sparql_datasets_api.add_gitlab_reference(

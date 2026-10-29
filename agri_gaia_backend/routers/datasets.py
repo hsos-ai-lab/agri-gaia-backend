@@ -191,6 +191,36 @@ def get_dataset(dataset_id: int, db: Session = Depends(get_db)):
     return _attach_gitlab_reference(check_exists(sql_api.get_dataset(db, dataset_id)))
 
 
+@router.get("/{dataset_id}/ro-crate/files")
+def get_dataset_ro_crate_files(dataset_id: int, db: Session = Depends(get_db)):
+    """
+    Fetches per-file metadata from the RO-Crate a dataset was imported with.
+
+    Args:
+        dataset_id: The ID of the dataset.
+        db: Database Session. Created automatically.
+
+    Returns:
+        One entry per file, with its path relative to the dataset root, the
+        sample it was taken from and that sample's characteristics (e.g.
+        "Infection Label"), and the parameter values of the process that
+        produced it (e.g. "Latitude", "Date and Time").
+
+    Raises:
+        HTTPException: No dataset is found for the given ID, or it has no
+            stored RO-Crate metadata (i.e. it wasn't imported from an ARC).
+    """
+    dataset = check_exists(sql_api.get_dataset(db, dataset_id))
+    files = sparql_datasets_api.get_ro_crate_file_metadata(
+        MINIO_ENDPOINT, dataset.bucket_name, dataset.id
+    )
+    if not files:
+        raise HTTPException(
+            status_code=404, detail="No RO-Crate metadata stored for this dataset."
+        )
+    return files
+
+
 @router.get("/{dataset_id}/download")
 def download_dataset(
     request: Request,

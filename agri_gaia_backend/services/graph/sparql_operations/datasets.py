@@ -142,6 +142,59 @@ def get_gitlab_reference(minio_server, bucket, dataset_id):
     }
 
 
+def store_ro_crate(minio_server, bucket, dataset_id, ro_crate_json: str):
+    """Stores an imported RO-Crate's JSON-LD as its own named graph in the persistent 'ds' dataset."""
+    id_string = "https://" + minio_server + "/" + bucket + "/datasets/" + str(dataset_id)
+    response = util.store_json(ro_crate_json, graph=id_string + "#_ROCrate")
+    response.raise_for_status()
+
+
+def get_ro_crate_file_metadata(minio_server, bucket, dataset_id):
+    """Returns per-file metadata from a dataset's stored RO-Crate, keyed by the file's path.
+
+    For every file that is the result of an (ISA/ARC) LabProcess, collects the
+    characteristics of the sample the process was applied to (e.g. "Infection
+    Label") and the parameter values of the process itself (e.g. GPS position).
+    """
+    id_string = "https://" + minio_server + "/" + bucket + "/datasets/" + str(dataset_id)
+    query = f"""
+        PREFIX schema: <http://schema.org/>
+        PREFIX bioschemas: <https://bioschemas.org/properties/>
+        SELECT ?path ?sample ?kind ?name ?value WHERE {{
+            GRAPH <{id_string}#_ROCrate> {{
+                ?process schema:result ?file .
+                ?file a schema:MediaObject ;
+                      schema:name ?path .
+                OPTIONAL {{ ?process schema:object/schema:name ?sample }}
+                {{
+                    ?process schema:object/schema:additionalProperty ?pv .
+                    BIND("characteristic" AS ?kind)
+                }} UNION {{
+                    ?process bioschemas:parameterValue ?pv .
+                    BIND("parameter" AS ?kind)
+                }}
+                ?pv schema:name ?name .
+                OPTIONAL {{ ?pv schema:value ?value }}
+            }}
+        }}
+    """
+    bindings = util.send_query(SPARQL_QUERY_ENDPOINT, query)["results"]["bindings"]
+
+    files = {}
+    for row in bindings:
+        path = row["path"]["value"]
+        entry = files.setdefault(
+            path,
+            {"path": path, "sample": None, "characteristics": {}, "parameters": {}},
+        )
+        if "sample" in row:
+            entry["sample"] = row["sample"]["value"]
+        section = "characteristics" if row["kind"]["value"] == "characteristic" else "parameters"
+        entry[section][row["name"]["value"]] = row.get("value", {}).get("value")
+
+    return list(files.values())
+
+
 def get_metadata_information(dataset_id):
     query = f"""Select ?sub ?pred ?obj WHERE {{
         ?sub ?pred ?obj
@@ -156,8 +209,11 @@ def delete_dataset(dataset_id):
     dataset_id_splitted = dataset_id.split("#")
     dataset_id_splitted[-1] = "_Distribution"
     distribution_id = "#".join(dataset_id_splitted)
+    dataset_id_splitted[-1] = "_ROCrate"
+    ro_crate_graph = "#".join(dataset_id_splitted)
 
     query = f"""
+        DROP SILENT GRAPH <{ro_crate_graph}> ;
         DELETE{{  ?id ?p ?o }}
             WHERE{{   
                 {{

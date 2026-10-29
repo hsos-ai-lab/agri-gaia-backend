@@ -13,7 +13,7 @@ import requests
 import os
 
 from rdflib import URIRef
-from typing import Dict, List
+from typing import Dict, List, Optional
 from base64 import b64encode
 
 
@@ -267,19 +267,21 @@ def store_graph(graph, fuseki_dataset: str = "ds"):
     )
 
 
-def store_json(metadata, fuseki_dataset: str = "ds"):
+def store_json(metadata, fuseki_dataset: str = "ds", graph: Optional[str] = None):
     """
     Stores metadata to the triple store located using the given endpoint.
 
     Args:
         metadata: The Metadata, which should be stored in the RDF storage.
         fuseki_dataset: The Dataset identifier in Fuseki, where the metadata should be stored. Defaults to "ds".
+        graph: IRI of a named graph to store the metadata in. Defaults to the default graph.
 
     Returns:
         The response object returned by Fuseki.
     """
     return requests.post(
         UPLOAD_ENDPOINT.replace("ds", fuseki_dataset),
+        params={"graph": graph} if graph else None,
         data=metadata,
         headers={**_create_auth_header(), **{"Content-Type": "application/ld+json"}},
     )
