@@ -31,6 +31,7 @@ import io
 from PIL import Image
 
 from agri_gaia_backend.db import dataset_api as sql_api
+from agri_gaia_backend.db import model_api as model_sql_api
 from agri_gaia_backend.routers import common
 from agri_gaia_backend.routers.agrovoc import check_keyword
 from agri_gaia_backend.routers.common import (
@@ -114,6 +115,12 @@ def _attach_gitlab_reference(dataset):
     return dataset
 
 
+def _attach_referencing_models(datasets, model_names_by_dataset_id):
+    for dataset in datasets:
+        dataset.referencing_model_names = model_names_by_dataset_id.get(dataset.id, [])
+    return datasets
+
+
 @router.get("", response_model=List[Dataset])
 def get_all_datasets(skip: int = 0, limit: int = 10000, db: Session = Depends(get_db)):
     """
@@ -127,10 +134,13 @@ def get_all_datasets(skip: int = 0, limit: int = 10000, db: Session = Depends(ge
     Returns:
         A list of all datasets, which are stored by the plattform.
     """
-    return [
+    datasets = [
         _attach_gitlab_reference(dataset)
         for dataset in sql_api.get_datasets(db, skip=skip, limit=limit)
     ]
+    return _attach_referencing_models(
+        datasets, model_sql_api.get_model_names_by_dataset_id(db)
+    )
 
 
 @router.get("/keyword")
@@ -188,7 +198,11 @@ def get_dataset(dataset_id: int, db: Session = Depends(get_db)):
     Raises:
         HTTPException: No dataset is found for the given ID.
     """
-    return _attach_gitlab_reference(check_exists(sql_api.get_dataset(db, dataset_id)))
+    dataset = _attach_gitlab_reference(check_exists(sql_api.get_dataset(db, dataset_id)))
+    _attach_referencing_models(
+        [dataset], model_sql_api.get_model_names_by_dataset_id(db, dataset_id)
+    )
+    return dataset
 
 
 @router.get("/{dataset_id}/ro-crate/files")
@@ -799,6 +813,13 @@ def delete_dataset(
     if user.username != dataset.owner:
         raise HTTPException(
             status_code=403, detail="Only the owner can delete datasets."
+        )
+
+    model_names = model_sql_api.get_model_names_by_dataset_id(db, dataset_id).get(dataset_id)
+    if model_names:
+        raise HTTPException(
+            status_code=409,
+            detail=f"Dataset is used by model(s) {', '.join(model_names)}. Delete those models first.",
         )
 
     _validate_parameters(dataset.bucket_name, user.minio_token)

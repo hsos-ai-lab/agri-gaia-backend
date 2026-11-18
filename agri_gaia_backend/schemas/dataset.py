@@ -36,6 +36,7 @@ class Dataset(DatasetBase):
     id: int
     gitlab_project_id: Optional[str]
     gitlab_api_url: Optional[str]
+    referencing_model_names: Optional[List[str]]
 
     class Config:
         orm_mode = True

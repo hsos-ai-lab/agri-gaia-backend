@@ -9,9 +9,10 @@
 #
 # SPDX-License-Identifier: MIT
 
+from collections import defaultdict
 from multiprocessing.dummy import Array
 
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 from sqlalchemy.orm import Session
 
@@ -69,6 +70,22 @@ def get_models_by_metadata_uri(
 
 def get_models(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.Model).offset(skip).limit(limit).all()
+
+
+def get_model_names_by_dataset_id(
+    db: Session, dataset_id: Optional[int] = None
+) -> Dict[int, List[str]]:
+    """Maps dataset IDs to the names of the models linked to them (optionally for one dataset)."""
+    query = db.query(models.Model.dataset_id, models.Model.name).filter(
+        models.Model.dataset_id.isnot(None)
+    )
+    if dataset_id is not None:
+        query = query.filter(models.Model.dataset_id == dataset_id)
+
+    names = defaultdict(list)
+    for linked_dataset_id, name in query:
+        names[linked_dataset_id].append(name)
+    return names
 
 
 def create_model(
