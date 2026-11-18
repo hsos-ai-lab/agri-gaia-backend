@@ -10,6 +10,7 @@
 # SPDX-License-Identifier: MIT
 
 import os
+from urllib.parse import quote, urljoin
 
 from rdflib.namespace import RDF, DCTERMS, XSD, PROV
 from rdflib import Namespace, Graph, Literal, URIRef, OWL, BNode, DCAT
@@ -142,11 +143,48 @@ def get_gitlab_reference(minio_server, bucket, dataset_id):
     }
 
 
-def store_ro_crate(minio_server, bucket, dataset_id, ro_crate_json: str):
+def store_ro_crate(minio_server, bucket, dataset_id, ro_crate: dict):
     """Stores an imported RO-Crate's JSON-LD as its own named graph in the persistent 'ds' dataset."""
     id_string = "https://" + minio_server + "/" + bucket + "/datasets/" + str(dataset_id)
-    response = util.store_json(ro_crate_json, graph=id_string + "#_ROCrate")
+
+    # RO-Crates identify their entities with relative IDs ("./", "#Process_1",
+    # "assays/x.jpeg"). Left to Fuseki, these are resolved against the upload
+    # URL, whose ?graph=...#_ROCrate turns "#Process_1" into an IRI with two
+    # fragments, and Jena silently drops every such entity. Resolve them against
+    # the dataset itself instead (so files map to their MinIO paths), up front,
+    # since Jena also decodes "%20" while resolving relative IRIs, which drops
+    # files with spaces in their names.
+    base = id_string + "/"
+    context = ro_crate.get("@context", [])
+    if not isinstance(context, list):
+        context = [context]
+    crate = {
+        **ro_crate,
+        "@context": [*context, {"@base": base}],
+        "@graph": _absolute_ids(ro_crate.get("@graph", []), base),
+    }
+
+    response = util.store_json(json.dumps(crate), graph=id_string + "#_ROCrate")
     response.raise_for_status()
+
+
+def _absolute_ids(value, base):
+    """Resolves every "@id" against ``base`` and percent-encodes characters
+    that aren't valid in IRIs (e.g. spaces in file names). Entities and
+    references to them change alike, so links survive; files keep their real
+    path in "name"."""
+    if isinstance(value, list):
+        return [_absolute_ids(item, base) for item in value]
+    if isinstance(value, dict):
+        return {
+            key: (
+                quote(urljoin(base, item), safe="/:#?&=@!$'()*+,;~%[]")
+                if key == "@id" and isinstance(item, str) and not item.startswith("_:")
+                else _absolute_ids(item, base)
+            )
+            for key, item in value.items()
+        }
+    return value
 
 
 def get_ro_crate_file_metadata(minio_server, bucket, dataset_id):

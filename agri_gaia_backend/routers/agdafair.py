@@ -218,7 +218,7 @@ def _import_ro_crate(
         sql_api.delete_dataset(db, dataset)
         raise HTTPException(status_code=500, detail="Failed to upload files to storage.")
 
-    sparql_datasets_api.store_ro_crate(minio_endpoint, bucket, dataset.id, json.dumps(content))
+    sparql_datasets_api.store_ro_crate(minio_endpoint, bucket, dataset.id, content)
 
     graph, metadata_uri = sparql_datasets_api.create_graph_for_import(
         minio_endpoint, bucket, title or identifier, dataset.id, description, dataset_type
